@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "../pruning/op_mutex.h"
+
 class TaskProxy;
 
 namespace options {
@@ -27,6 +29,9 @@ class MergeAndShrinkAlgorithm {
     std::shared_ptr<MergeStrategyFactory> merge_strategy_factory;
     std::shared_ptr<ShrinkStrategy> shrink_strategy;
     std::shared_ptr<LabelReduction> label_reduction;
+
+    // Operator mutex
+    const std::shared_ptr<op_mutex_pruning::OpMutexPruningMethod> operator_mutex_pruning;
 
     // Options for shrinking
     // Hard limit: the maximum size of a transition system at any point.

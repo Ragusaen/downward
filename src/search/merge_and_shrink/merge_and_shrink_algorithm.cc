@@ -18,6 +18,9 @@
 
 #include "../task_utils/task_properties.h"
 
+#include "../pruning/op_mutex.h"
+#include "../pruning_method.h"
+
 #include "../utils/countdown_timer.h"
 #include "../utils/logging.h"
 #include "../utils/markup.h"
@@ -46,6 +49,7 @@ MergeAndShrinkAlgorithm::MergeAndShrinkAlgorithm(const Options &opts) :
     merge_strategy_factory(opts.get<shared_ptr<MergeStrategyFactory>>("merge_strategy")),
     shrink_strategy(opts.get<shared_ptr<ShrinkStrategy>>("shrink_strategy")),
     label_reduction(opts.get<shared_ptr<LabelReduction>>("label_reduction", nullptr)),
+    operator_mutex_pruning(opts.get<shared_ptr<op_mutex_pruning::OpMutexPruningMethod>>("op_mutex")),
     max_states(opts.get<int>("max_states")),
     max_states_before_merge(opts.get<int>("max_states_before_merge")),
     shrink_threshold_before_merge(opts.get<int>("threshold_before_merge")),
@@ -403,14 +407,20 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
         "We currently recommend SCC-DFP, which can be achieved using "
         "{{{merge_strategy=merge_sccs(order_of_sccs=topological,merge_selector="
         "score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order"
-        "]))}}}");
+        "]))}}}",
+        "merge_strategy=merge_stateless("
+        "merge_selector=score_based_filtering("
+        "scoring_functions=[goal_relevance,dfp,total_order("
+        "atomic_ts_order=reverse_level,product_ts_order=new_to_old,atomic_before_product=true)]))"
+        );
 
     // Shrink strategy option.
     parser.add_option<shared_ptr<ShrinkStrategy>>(
         "shrink_strategy",
         "See detailed documentation for shrink strategies. "
         "We currently recommend non-greedy shrink_bisimulation, which can be "
-        "achieved using {{{shrink_strategy=shrink_bisimulation(greedy=false)}}}");
+        "achieved using {{{shrink_strategy=shrink_bisimulation(greedy=false)}}}",
+        "shrink_strategy=shrink_bisimulation(greedy=false)");
 
     // Label reduction option.
     parser.add_option<shared_ptr<LabelReduction>>(
@@ -418,7 +428,7 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
         "See detailed documentation for labels. There is currently only "
         "one 'option' to use label_reduction, which is {{{label_reduction=exact}}} "
         "Also note the interaction with shrink strategies.",
-        OptionParser::NONE);
+        "label_reduction=exact(before_shrinking=true,before_merging=false)");
 
     // Pruning options.
     parser.add_option<bool>(
@@ -457,7 +467,7 @@ void add_transition_system_size_limit_options_to_parser(OptionParser &parser) {
     parser.add_option<int>(
         "max_states",
         "maximum transition system size allowed at any time point.",
-        "-1",
+        "max_states=50000",
         Bounds("-1", "infinity"));
     parser.add_option<int>(
         "max_states_before_merge",
@@ -470,8 +480,14 @@ void add_transition_system_size_limit_options_to_parser(OptionParser &parser) {
         "If a transition system, before being merged, surpasses this soft "
         "transition system size limit, the shrink strategy is called to "
         "possibly shrink the transition system.",
-        "-1",
+        "1",
         Bounds("-1", "infinity"));
+
+    // operator mutex
+    parser.add_option<shared_ptr<op_mutex_pruning::OpMutexPruningMethod>>(
+            "op_mutex",
+            "Operator mutex pruning."
+            );
 }
 
 void handle_shrink_limit_options_defaults(Options &opts) {

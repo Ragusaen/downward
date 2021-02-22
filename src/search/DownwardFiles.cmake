@@ -770,6 +770,13 @@ fast_downward_plugin(
     DEPENDENCY_ONLY
 )
 
+fast_downward_plugin(
+        NAME OP_MUTEX
+        HELP "Plugin for operator mutex pruning"
+        SOURCES
+            pruning/op_mutex
+)
+
 fast_downward_add_plugin_sources(PLANNER_SOURCES)
 
 # The order in PLANNER_SOURCES influences the order in which object
