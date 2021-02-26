@@ -3,7 +3,7 @@
 
 #include <memory>
 
-#include "../pruning/op_mutex.h"
+#include "../operator_mutex/op_mutex.h"
 
 class TaskProxy;
 

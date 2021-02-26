@@ -18,7 +18,7 @@
 
 #include "../task_utils/task_properties.h"
 
-#include "../pruning/op_mutex.h"
+#include "../operator_mutex/op_mutex.h"
 #include "../pruning_method.h"
 
 #include "../utils/countdown_timer.h"

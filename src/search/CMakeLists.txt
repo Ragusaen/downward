@@ -13,6 +13,8 @@ endif()
 
 project(downward)
 
+SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
+
 # TODO: use multi-line strings to break up the long string when we switch to CMake 3.
 # https://stackoverflow.com/questions/7637539/how-to-split-strings-across-multiple-lines-in-cmake
 option(
@@ -25,7 +27,7 @@ fast_downward_set_linker_flags()
 
 # Collect source files needed for the active plugins.
 include("${CMAKE_CURRENT_SOURCE_DIR}/DownwardFiles.cmake")
-add_executable(downward ${PLANNER_SOURCES} )
+add_executable(downward ${PLANNER_SOURCES} operator_mutex/CondensedTransitionSystem.cpp operator_mutex/CondensedTransitionSystem.h)
 
 ## == Includes ==
 

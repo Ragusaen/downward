@@ -7,9 +7,7 @@
 using merge_and_shrink::FactoredTransitionSystem;
 
 namespace op_mutex_pruning {
-    class OpMutexPruningMethod {
-
-        const int size;
+class OpMutexPruningMethod {
     public:
         explicit OpMutexPruningMethod(const options::Options &opts);
         FactoredTransitionSystem* run(FactoredTransitionSystem* fts);

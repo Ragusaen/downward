@@ -177,6 +177,10 @@ public:
         const std::vector<std::pair<int, std::vector<int>>> &label_mapping,
         bool only_equivalent_labels);
 
+    std::vector<std::vector<Transition>> get_transitions() {
+        return transitions_by_group_id;
+    }
+
     TSConstIterator begin() const {
         return TSConstIterator(*label_equivalence_relation,
                                transitions_by_group_id,
@@ -224,6 +228,10 @@ public:
 
     const std::vector<int> &get_incorporated_variables() const {
         return incorporated_variables;
+    }
+
+    int get_num_states() {
+        return num_states;
     }
 };
 }

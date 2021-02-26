@@ -30,9 +30,9 @@ MergeAndShrinkHeuristic::MergeAndShrinkHeuristic(const options::Options &opts)
     utils::g_log << "Initializing merge-and-shrink heuristic..." << endl;
     MergeAndShrinkAlgorithm algorithm(opts);
     FactoredTransitionSystem fts = algorithm.build_factored_transition_system(task_proxy);
+    operator_mutex_pruning->run(&fts);
     extract_factors(fts);
     utils::g_log << "Done initializing merge-and-shrink heuristic." << endl << endl;
-    operator_mutex_pruning->run(&fts);
 }
 
 void MergeAndShrinkHeuristic::extract_factor(
