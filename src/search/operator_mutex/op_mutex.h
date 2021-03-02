@@ -3,15 +3,25 @@
 
 #include "../pruning_method.h"
 #include "../merge_and_shrink/factored_transition_system.h"
+#include "../merge_and_shrink/transition_system.h"
+#include "CondensedTransitionSystem.h"
 
 using merge_and_shrink::FactoredTransitionSystem;
+using merge_and_shrink::Transition;
 
 namespace op_mutex_pruning {
 class OpMutexPruningMethod {
-    public:
-        explicit OpMutexPruningMethod(const options::Options &opts);
-        FactoredTransitionSystem* run(FactoredTransitionSystem* fts);
-    };
+private:
+    std::vector<std::pair<Transition, Transition>>
+    infer_transition_mutex_in_condensed_ts(CondensedTransitionSystem cts);
+public:
+    explicit OpMutexPruningMethod(const options::Options &opts);
+    FactoredTransitionSystem* run(FactoredTransitionSystem* fts);
+
+    void state_reachability();
+
+    void state_reachability(int int_state, int src_state, CondensedTransitionSystem &cts, std::vector<bool> &reach);
+};
 }
 
 #endif

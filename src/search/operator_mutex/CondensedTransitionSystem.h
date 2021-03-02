@@ -11,12 +11,13 @@
 
 using namespace merge_and_shrink;
 
+std::string to_string(Transition);
+
 class CondensedTransitionSystem {
 
 public:
     CondensedTransitionSystem(std::vector<Transition> concrete_transitions, int num_concrete_states);
 
-private:
     std::vector<Transition> abstract_transitions;
     std::vector<Transition> concrete_transitions;
     std::vector<int> concrete_to_abstract_transitions;
@@ -24,6 +25,8 @@ private:
     int num_abstract_states;
     int num_concrete_states;
     std::vector<int> concrete_to_abstract_state;
+
+private:
 
     void discover_sccs();
 
