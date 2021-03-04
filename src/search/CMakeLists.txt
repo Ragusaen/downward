@@ -27,7 +27,7 @@ fast_downward_set_linker_flags()
 
 # Collect source files needed for the active plugins.
 include("${CMAKE_CURRENT_SOURCE_DIR}/DownwardFiles.cmake")
-add_executable(downward ${PLANNER_SOURCES} operator_mutex/CondensedTransitionSystem.cpp operator_mutex/CondensedTransitionSystem.h)
+add_executable(downward ${PLANNER_SOURCES})
 
 ## == Includes ==
 
@@ -54,6 +54,7 @@ option(
   USE_LP
   "Compile with support for all LP solvers installed on this system."
   TRUE)
+
 
 if(PLUGIN_LP_SOLVER_ENABLED AND USE_LP)
     find_package(OSI OPTIONAL_COMPONENTS Cpx Clp Grb Spx)

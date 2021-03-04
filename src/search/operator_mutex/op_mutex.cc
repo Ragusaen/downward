@@ -44,16 +44,20 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     TransitionSystem ts = fts->get_transition_system(fts->get_size() - 1);
     std::vector<Transition> transitions = flatten(ts.get_transitions());
 
+    int symmetric_transitions = 0;
     for (Transition t: transitions) {
         for (Transition s: transitions) {
             if (t.src == s.target && t.target == s.src)
                 goto found;
         }
-        utils::g_log << "(" << t.src << "," << t.target << ")" << endl;
+        symmetric_transitions++;
         found:
         ;
     }
 
+    utils::g_log << "Found " << symmetric_transitions << " symmetric transitions" << std::endl;
+
+    /*
     std::vector<Transition> k_ts = std::vector<Transition>();
     k_ts.push_back(Transition(0, 1));
     k_ts.push_back(Transition(1, 0));
@@ -63,26 +67,39 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     k_ts.push_back(Transition(2, 5));
     k_ts.push_back(Transition(5, 4));
     k_ts.push_back(Transition(4, 3));
+    */
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(k_ts, 6);
+    CondensedTransitionSystem cts = CondensedTransitionSystem(transitions, ts.get_num_states());
 
     utils::g_log << "Concrete to abstract conversion" << std::endl;
-    for (int i = 0; i < cts.concrete_to_abstract_state.size(); i++) {
-        utils::g_log << i << " -> " << cts.concrete_to_abstract_state[i] << std::endl;
+    if (cts.concrete_to_abstract_transitions.size() > 50) {
+        utils::g_log << "Found " << cts.concrete_to_abstract_transitions.size() << std::endl;
+    } else {
+        for (size_t i = 0; i < cts.concrete_to_abstract_state.size(); i++) {
+            utils::g_log << i << " -> " << cts.concrete_to_abstract_state[i] << std::endl;
+        }
     }
 
     utils::g_log << "Abstract transitions" << std::endl;
-    for (Transition at : cts.abstract_transitions) {
-        utils::g_log << to_string(at) << std::endl;
+    if (cts.abstract_transitions.size() > 50) {
+        utils::g_log << "Found " << cts.abstract_transitions.size() << "!" << std::endl;
+    } else {
+        for (Transition at : cts.abstract_transitions) {
+            utils::g_log << to_string(at) << std::endl;
+        }
     }
 
     auto ts_mutexes = infer_transition_mutex_in_condensed_ts(cts);
 
-    for (auto mutex : ts_mutexes) {
-        utils::g_log << to_string(mutex.first) << " is transition mutex with " << to_string(mutex.second) << std::endl;
+    if (ts_mutexes.size() > 50) {
+        utils::g_log << "Found " << ts_mutexes.size() << " transitions mutexes!" << std::endl;
+    } else {
+        for (auto mutex : ts_mutexes) {
+            utils::g_log << to_string(mutex.first) << " is transition mutex with " << to_string(mutex.second) << std::endl;
+        }
     }
 
-    utils::g_log << "Operator mutex done" << endl;
+    utils::g_log << "Operator mutex done" << endl << endl;
     return fts;
 }
 
