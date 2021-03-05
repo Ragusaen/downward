@@ -2,7 +2,9 @@
 #define MERGE_AND_SHRINK_LABELS_H
 
 #include <memory>
+#include <utility>
 #include <vector>
+#include <string>
 
 namespace merge_and_shrink {
 class Label {
@@ -12,15 +14,15 @@ class Label {
     */
     int cost;
 public:
-    explicit Label(int cost_)
-        : cost(cost_) {
+    explicit Label(int cost_, std::string name_ = "UNKNOWN")
+        : cost(cost_),  name(std::move(name_)){
     }
     ~Label() {}
     int get_cost() const {
         return cost;
     }
 
-    int op_id = -1;
+    std::string name;
 };
 
 /*
@@ -42,6 +44,7 @@ public:
     int get_max_size() const {
         return max_size;
     }
+    std::string get_name(int label_no) const;
 };
 }
 

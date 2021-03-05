@@ -186,6 +186,9 @@ public:
     const Labels &get_labels() const {
         return *labels;
     }
+    // Added this method to retrieve labels, as the other one cause some static_assert to fail. I think it has to do with
+    // not being a smart pointer
+    std::shared_ptr<Labels> get_labels_fixed();
 
     // The following methods are used for iterating over the FTS
     FTSConstIterator begin() const {

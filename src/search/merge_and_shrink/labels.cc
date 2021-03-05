@@ -59,4 +59,8 @@ void Labels::dump_labels() const {
         }
     }
 }
+
+    std::string Labels::get_name(int label_no) const {
+        return labels[label_no]->name;
+    }
 }
