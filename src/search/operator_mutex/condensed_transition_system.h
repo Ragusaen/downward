@@ -2,8 +2,8 @@
 // Created by ragusa on 2/25/21.
 //
 
-#ifndef FAST_DOWNWARD_CONDENSEDTRANSITIONSYSTEM_H
-#define FAST_DOWNWARD_CONDENSEDTRANSITIONSYSTEM_H
+#ifndef FAST_DOWNWARD_CONDENSED_TRANSITION_SYSTEM_H
+#define FAST_DOWNWARD_CONDENSED_TRANSITION_SYSTEM_H
 
 
 #include <vector>
@@ -26,6 +26,8 @@ public:
     int num_concrete_states;
     std::vector<int> concrete_to_abstract_state;
 
+    Transition lookup_concrete(std::vector<Transition>::iterator t);
+
 private:
 
     void discover_sccs();
@@ -41,4 +43,4 @@ private:
 };
 
 
-#endif //FAST_DOWNWARD_CONDENSEDTRANSITIONSYSTEM_H
+#endif //FAST_DOWNWARD_CONDENSED_TRANSITION_SYSTEM_H

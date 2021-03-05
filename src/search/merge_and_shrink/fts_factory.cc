@@ -291,6 +291,7 @@ void FTSFactory::build_transitions_for_operator(OperatorProxy op) {
             continue;
         }
         vector<Transition> &transitions = transitions_by_var[var_no];
+
         /*
           TODO: Our method for generating transitions is only guarantueed
           to generate sorted and unique transitions if the task has no
@@ -321,6 +322,7 @@ void FTSFactory::build_transitions_for_operator(OperatorProxy op) {
             label_groups.push_back({label_no});
         }
     }
+
 }
 
 void FTSFactory::build_transitions_for_irrelevant_ops(VariableProxy variable) {

@@ -4,7 +4,7 @@
 #include "../pruning_method.h"
 #include "../merge_and_shrink/factored_transition_system.h"
 #include "../merge_and_shrink/transition_system.h"
-#include "CondensedTransitionSystem.h"
+#include "condensed_transition_system.h"
 
 using merge_and_shrink::FactoredTransitionSystem;
 using merge_and_shrink::Transition;
@@ -21,6 +21,9 @@ public:
     void state_reachability();
 
     void state_reachability(int int_state, int src_state, CondensedTransitionSystem &cts, std::vector<bool> &reach);
+
+    std::vector<std::pair<int, int>>
+    infer_label_mutex_in_condensed_ts(CondensedTransitionSystem cts, int num_labels);
 };
 }
 

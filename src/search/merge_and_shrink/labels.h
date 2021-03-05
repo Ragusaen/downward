@@ -19,6 +19,8 @@ public:
     int get_cost() const {
         return cost;
     }
+
+    int op_id = -1;
 };
 
 /*

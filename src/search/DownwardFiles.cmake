@@ -774,7 +774,7 @@ fast_downward_plugin(
         NAME OP_MUTEX
         HELP "Plugin for operator mutex pruning"
         SOURCES
-            operator_mutex/CondensedTransitionSystem
+            operator_mutex/condensed_transition_system
             operator_mutex/op_mutex
 )
 
