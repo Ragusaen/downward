@@ -428,7 +428,7 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
         "See detailed documentation for labels. There is currently only "
         "one 'option' to use label_reduction, which is {{{label_reduction=exact}}} "
         "Also note the interaction with shrink strategies.",
-        "label_reduction=exact(before_shrinking=true,before_merging=false)");
+        "label_reduction=none");
 
     // Pruning options.
     parser.add_option<bool>(
@@ -482,12 +482,6 @@ void add_transition_system_size_limit_options_to_parser(OptionParser &parser) {
         "possibly shrink the transition system.",
         "1",
         Bounds("-1", "infinity"));
-
-    // operator mutex
-    parser.add_option<shared_ptr<op_mutex_pruning::OpMutexPruningMethod>>(
-            "op_mutex",
-            "Operator mutex pruning."
-            );
 }
 
 void handle_shrink_limit_options_defaults(Options &opts) {

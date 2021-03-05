@@ -545,4 +545,8 @@ void TransitionSystem::statistics() const {
     utils::g_log << tag() << get_size() << " states, "
                  << compute_total_transitions() << " arcs " << endl;
 }
+
+std::shared_ptr<LabelEquivalenceRelation> TransitionSystem::get_label_equivalence_relation() {
+    return move(label_equivalence_relation);
+}
 }

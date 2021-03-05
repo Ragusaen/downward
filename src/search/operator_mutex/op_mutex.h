@@ -4,7 +4,7 @@
 #include "../pruning_method.h"
 #include "../merge_and_shrink/factored_transition_system.h"
 #include "../merge_and_shrink/transition_system.h"
-#include "CondensedTransitionSystem.h"
+#include "condensed_transition_system.h"
 using namespace std;
 
 using merge_and_shrink::FactoredTransitionSystem;
@@ -27,6 +27,9 @@ public:
                          vector<bool> *hit_states, int state);
 
     vector<Transition> get_transitions(int src, const CondensedTransitionSystem *cts);
+
+    std::vector<std::pair<int, int>>
+    infer_label_mutex_in_condensed_ts(CondensedTransitionSystem cts, int num_labels);
 };
 }
 

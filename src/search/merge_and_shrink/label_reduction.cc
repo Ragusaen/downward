@@ -396,4 +396,17 @@ static PluginTypePlugin<LabelReduction> _type_plugin(
     "This page describes the current single 'option' for label reduction.");
 
 static Plugin<LabelReduction> _plugin("exact", _parse);
+
+
+static shared_ptr<LabelReduction> _none_parse(OptionParser &parser) {
+    parser.document_synopsis(
+            "No label reduction",
+            "This makes sure that no label reduction will take place either before or after merging.");
+
+    Options opts = parser.parse();
+
+    return nullptr;
+}
+
+static Plugin<LabelReduction> _plugin_none("none", _none_parse);
 }

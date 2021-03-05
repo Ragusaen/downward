@@ -1,4 +1,4 @@
-#include "CondensedTransitionSystem.h"
+#include "condensed_transition_system.h"
 
 #include <utility>
 #include <algorithm>
@@ -7,7 +7,7 @@
 #include "../utils/logging.h"
 
 std::string to_string(Transition t) {
-    return "(" + std::to_string(t.src) + ", " + std::to_string(t.target) + ")";
+    return std::to_string(t.src) + " -" + (t.label != -1? std::to_string(t.label): "") + "> " + std::to_string(t.target);
 }
 
 bool finishing_time_pair_comparison(std::pair<int,int> a, std::pair<int,int> b) {
@@ -137,4 +137,8 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
             tdfs_visit(target, current_scc, ts, has_visited);
         }
     }
+}
+
+Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::iterator t) {
+    return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
 }

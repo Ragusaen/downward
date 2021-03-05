@@ -23,8 +23,10 @@ struct Transition {
     int src;
     int target;
 
-    Transition(int src, int target)
-        : src(src), target(target) {
+    int label;
+
+    Transition(int src, int target, int label = -1)
+        : src(src), target(target), label(label) {
     }
 
     bool operator==(const Transition &other) const {
@@ -181,6 +183,8 @@ public:
         return transitions_by_group_id;
     }
 
+    std::shared_ptr<LabelEquivalenceRelation> get_label_equivalence_relation();
+
     TSConstIterator begin() const {
         return TSConstIterator(*label_equivalence_relation,
                                transitions_by_group_id,
@@ -233,6 +237,8 @@ public:
     int get_num_states() {
         return num_states;
     }
+
+
 };
 }
 

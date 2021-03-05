@@ -243,4 +243,8 @@ bool FactoredTransitionSystem::is_active(int index) const {
     assert_index_valid(index);
     return transition_systems[index] != nullptr;
 }
+
+    shared_ptr<Labels> FactoredTransitionSystem::get_labels_fixed() {
+        return std::move(labels);
+    }
 }
