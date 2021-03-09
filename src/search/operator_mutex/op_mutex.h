@@ -20,22 +20,13 @@ public:
 
     void state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach);
 
-    std::vector<std::pair<int, int>>
-    infer_label_mutex_in_condensed_ts(CondensedTransitionSystem cts, int num_labels);
-
-    void reach_neighbors(const CondensedTransitionSystem &cts, vector<int> &reach, int state);
-
-    void reachability(const CondensedTransitionSystem &cts, vector<int> &reach);
-
+    void reachability(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
     void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
-
-    FactoredTransitionSystem *run(FactoredTransitionSystem *fts, TaskProxy &tp);
 
     std::vector<std::pair<int, int>>
     infer_label_mutex_in_condensed_ts(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler);
 };
 
-static vector<Transition> get_transitions(int src, const CondensedTransitionSystem &cts);
 }
 
 #endif

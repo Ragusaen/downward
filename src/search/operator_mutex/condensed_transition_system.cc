@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../utils/logging.h"
+using namespace std;
 
 std::string to_string(Transition t) {
     return std::to_string(t.src) + " -" + (t.label_group != -1? std::to_string(t.label_group): "") + "> " + std::to_string(t.target);
@@ -143,4 +144,16 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
 
 Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::iterator t) {
     return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
+}
+
+bool CondensedTransitionSystem::transition_comparison(Transition a, int b) {
+    return a.src < b;
+}
+
+pair<std::vector<Transition>::iterator, std::vector<Transition>::iterator>
+CondensedTransitionSystem::get_abstract_transitions_from_state(int src) const {
+    auto lower = lower_bound(abstract_transitions.begin(), abstract_transitions.end(), src, transition_comparison) - abstract_transitions.begin();
+
+
+    return lower;
 }

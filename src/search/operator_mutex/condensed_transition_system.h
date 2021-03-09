@@ -31,6 +31,9 @@ public:
 
     Transition lookup_concrete(std::vector<Transition>::iterator t);
 
+    std::pair<std::vector<Transition>::iterator, std::vector<Transition>::iterator>
+    get_abstract_transitions_from_state(int src) const;
+
 private:
 
     void discover_sccs();
@@ -43,6 +46,8 @@ private:
     void transpose_depth_first_search(std::vector<std::pair<int, int>> finishing_times);
 
     void tdfs_visit(int s, int *current_scc, const std::vector<Transition> &ts, std::vector<bool> *has_visited);
+
+    static bool transition_comparison(Transition a, int b);
 };
 
 
