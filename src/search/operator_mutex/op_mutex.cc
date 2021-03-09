@@ -35,6 +35,9 @@ namespace op_mutex_pruning {
 OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts)
 {}
 
+bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
+bool transition_comparison(Transition a, int b) { return a.src < b; }
+
 FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* fts) {
     utils::g_log << "Operator mutex running" << endl;
 
@@ -81,11 +84,12 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
         }
     }
 
+
     shared_ptr<Labels> labels = fts->get_labels_fixed();
     auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, ler);
 
     utils::g_log << "Found " << label_mutexes.size() << " operator mutexes!" << std::endl;
-    if (label_mutexes.size() < 50) {
+    if (label_mutexes.size() < 250) {
         for (auto mutex : label_mutexes) {
             utils::g_log << mutex.first << " is operator mutex with " << mutex.second << "\t opnames: " << labels->get_name(mutex.first) << ", " << labels->get_name(mutex.second) << std::endl;
         }
@@ -95,7 +99,6 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     return fts;
 }
 
-bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
 #define REACH_XY(x, y) (x * cts.num_abstract_states + y)
 #define TRANS_IDX(idx) (cts.concrete_transitions[idx])
 #define C2A(state) (cts.concrete_to_abstract_state[state])
@@ -117,11 +120,11 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
 
     int current_outer_label = 0;
     size_t to_end = 0;
-    while (current_outer_label < ler->get_size()- 1) { // Do not consider last label
+    while (current_outer_label < ler->get_size() - 1) { // Do not consider last label
         int to_start = to_end; // End is exclusive
 
         // Search for the next label, could be binary search, but not really worth it
-        for (; TRANS_IDX(to_end).label_group == current_outer_label && to_end < cts.concrete_transitions.size(); to_end++);
+        for (; TRANS_IDX(to_end).label_group <= current_outer_label && to_end < cts.concrete_transitions.size(); to_end++);
 
         // Start looking from the next label group up, we only need to check half of the combinations because label
         // mutexes are symmetric
@@ -148,6 +151,7 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
                     || REACH_XY(C2A(TRANS_IDX(ti).target), C2A(TRANS_IDX(to).src)))
                 {
                     is_label_mutex = false;
+                    break;
                 }
             }
         }
@@ -192,13 +196,13 @@ void OpMutexPruningMethod::state_reachability(int int_state, int src_state, cons
 void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
     // recursively call reachability on all neighbors, if it has not previously been visited
     if (!reach[REACH_XY(state, state)]) { // Check whether the state has been checked before
-        auto outgoing_transition_range = cts.get_abstract_transitions_from_state(state); // Get outgoing_transitions by outgoing transitions
+        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state); // Get outgoing_transitions by outgoing transitions
 
         reach[REACH_XY(state, state)] = 1; // Flag the current state as reached
-        for (auto t = outgoing_transition_range.first; t <= outgoing_transition_range.second; ++t) {
-            reachability(cts, reach, t->target); // Recursively call reachability on target states of outgoing transitions
+        for (auto t : outgoing_transitions) {
+            reachability(cts, reach, t.target); // Recursively call reachability on target states of outgoing transitions
             for (int j = 0; j < cts.num_abstract_states; ++j) { // Copy reachability of the target states to the current state
-                reach[REACH_XY(state, j)] += reach[REACH_XY(t->target, j)];
+                reach[REACH_XY(state, j)] += reach[REACH_XY(t.target, j)];
             }
         }
     }

@@ -146,14 +146,14 @@ Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::i
     return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
 }
 
-bool CondensedTransitionSystem::transition_comparison(Transition a, int b) {
-    return a.src < b;
-}
+std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) const {
+    std::vector<Transition> ret = std::vector<Transition>();
 
-pair<std::vector<Transition>::iterator, std::vector<Transition>::iterator>
-CondensedTransitionSystem::get_abstract_transitions_from_state(int src) const {
-    auto lower = lower_bound(abstract_transitions.begin(), abstract_transitions.end(), src, transition_comparison) - abstract_transitions.begin();
+    auto l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), 5,
+                              [](Transition t, int s) { return t.src < s; });
 
+    for (; l->src == source; l++)
+        ret.emplace_back(*l);
 
-    return lower;
+    return ret;
 }
