@@ -7,7 +7,7 @@
 #include "../utils/logging.h"
 
 std::string to_string(Transition t) {
-    return std::to_string(t.src) + " -" + (t.label != -1? std::to_string(t.label): "") + "> " + std::to_string(t.target);
+    return std::to_string(t.src) + " -" + (t.label_group != -1? std::to_string(t.label_group): "") + "> " + std::to_string(t.target);
 }
 
 bool finishing_time_pair_comparison(std::pair<int,int> a, std::pair<int,int> b) {

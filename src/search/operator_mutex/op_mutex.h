@@ -12,18 +12,16 @@ using merge_and_shrink::Transition;
 namespace op_mutex_pruning {
 class OpMutexPruningMethod {
 private:
-    std::vector<std::pair<Transition, Transition>>
-    infer_transition_mutex_in_condensed_ts(CondensedTransitionSystem cts);
+
 public:
     explicit OpMutexPruningMethod(const options::Options &opts);
     FactoredTransitionSystem* run(FactoredTransitionSystem* fts);
 
-    void state_reachability();
-
-    void state_reachability(int int_state, int src_state, CondensedTransitionSystem &cts, std::vector<bool> &reach);
+    void
+    state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach);
 
     std::vector<std::pair<int, int>>
-    infer_label_mutex_in_condensed_ts(CondensedTransitionSystem cts, int num_labels);
+    infer_label_mutex_in_condensed_ts(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler);
 };
 }
 

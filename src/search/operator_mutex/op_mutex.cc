@@ -41,18 +41,15 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     utils::g_log << "Operator mutex running" << endl;
 
     TransitionSystem ts = fts->get_transition_system(fts->get_size() - 1);
+    int initial_state= ts.get_init_state();
 
     shared_ptr<LabelEquivalenceRelation> ler = ts.get_label_equivalence_relation();
     vector<vector<Transition>> tbg = ts.get_transitions();
-    vector<Transition> labeled_transitions = std::vector<Transition>();
+    vector<Transition> grouped_transitions = std::vector<Transition>();
 
     for (int group = 0; group < ler->get_size(); group++) {
-        auto labels = ler->get_group(group);
-
-        for (int label : labels) {
-            for (Transition t : tbg[group]) {
-                labeled_transitions.emplace_back(Transition(t.src, t.target, label));
-            }
+        for (Transition t : tbg[group]) {
+            grouped_transitions.emplace_back(Transition(t.src, t.target, group));
         }
     }
 
@@ -68,7 +65,7 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     k_ts.push_back(Transition(4, 3));
      */
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(labeled_transitions, ts.get_num_states());
+    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states());
 
     utils::g_log << "Abstract transitions" << std::endl;
     if (cts.abstract_transitions.size() > 50) {
@@ -80,8 +77,7 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     }
 
     shared_ptr<Labels> labels = fts->get_labels_fixed();
-    auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, labels->get_size());
-
+    auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, ler);
 
     utils::g_log << "Found " << label_mutexes.size() << " operator mutexes!" << std::endl;
     if (label_mutexes.size() < 50) {
@@ -94,11 +90,14 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     return fts;
 }
 
-bool transition_label_comparison(Transition t, int l) { return t.label < l; }
+bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
 
 #define REACH_XY(x, y) (x * cts.num_abstract_states + y)
+#define TRANS_IDX(idx) (cts.concrete_transitions[idx])
+#define C2A(state) (cts.concrete_to_abstract_state[state])
 std::vector<std::pair<int, int>>
-OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(CondensedTransitionSystem cts, int num_labels) {
+OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
+        CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler) {
     // Compute reachability between states
     std::vector<bool> reach = std::vector<bool>(cts.num_abstract_states * cts.num_abstract_states);
 
@@ -107,48 +106,72 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(CondensedTransitionSyste
         state_reachability(state, state, cts, reach);
     }
 
-    // Sort transitions on label
+    // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
-              [](Transition a, Transition b){ return a.label < b.label;});
+              [](Transition a, Transition b){ return a.label_group < b.label_group; });
 
-    // Find label mutexes
-    std::vector<std::pair<int,int>> label_mutexes = std::vector<std::pair<int,int>>();
-    for (int label_a = 0; label_a < num_labels; label_a++) {
-        // Find first transition with label_a
-        int a_t_index = lower_bound(cts.concrete_transitions.begin(), cts.concrete_transitions.end(), label_a,
-                             transition_label_comparison) - cts.concrete_transitions.begin();
+    // Find label_group mutexes
+    vector<pair<int,int>> label_group_mutexes = vector<pair<int,int>>();
 
-        for (int label_b = label_a + 1; label_b < num_labels; label_b++) {
-            // To check if these labels are operator mutexes, we look through all of their transitions, iff
-            // all of them are transition mutexes, they are label mutexes.
-            auto at = cts.concrete_transitions.begin() + a_t_index;
-            while (at->label == label_a) {
-                auto bt = lower_bound(cts.concrete_transitions.begin(), cts.concrete_transitions.end(), label_b,
-                                      transition_label_comparison);
-                while (bt->label == label_b) {
-                    // Lookup their corresponding abstract transitions
-                    Transition a_at = cts.lookup_concrete(at);
-                    Transition a_bt = cts.lookup_concrete(bt);
+    int current_outer_label = 0;
+    size_t to_end = 0;
+    while (current_outer_label < ler->get_size()- 1) { // Do not consider last label
+        int to_start = to_end; // End is exclusive
 
-                    // If target and src states CAN reach each other, these labels ARE NOT label mutexes
-                    if (reach[REACH_XY(a_at.target, a_bt.src)] || reach[REACH_XY(a_bt.target, a_at.src)]) {
-                        goto not_label_mutex;
-                    }
-                    bt++;
+        // Search for the next label, could be binary search, but not really worth it
+        for (; TRANS_IDX(to_end).label_group == current_outer_label && to_end < cts.concrete_transitions.size(); to_end++);
+
+        // Start looking from the next label group up, we only need to check half of the combinations because label
+        // mutexes are symmetric
+        int current_inner_label = current_outer_label + 1;
+
+        size_t ti = to_end;
+
+        bool is_label_mutex = true;
+        for (; ti < cts.concrete_transitions.size(); ti++) {
+            if (TRANS_IDX(ti).label_group > current_inner_label) {
+                if (is_label_mutex) {
+                    // Add only one of the two symmetric mutexes (we will add the other later)
+                    label_group_mutexes.emplace_back(pair<int,int>(current_outer_label, current_inner_label));
                 }
-                at++;
+
+                // Start with next label
+                current_inner_label = TRANS_IDX(ti).label_group;
+                is_label_mutex = true;
             }
-            label_mutexes.emplace_back(std::pair<int,int>(label_a, label_b));
 
-            not_label_mutex:
-            ;
+            for (size_t to = to_start; to < to_end; to++) {
+                // If these two transitions are not mutex, the labels also aren't
+                if (REACH_XY(C2A(TRANS_IDX(to).target), C2A(TRANS_IDX(ti).src))
+                    || REACH_XY(C2A(TRANS_IDX(ti).target), C2A(TRANS_IDX(to).src)))
+                {
+                    is_label_mutex = false;
+                }
+            }
         }
-
+        if (to_end >= cts.concrete_transitions.size())
+            break;
+        current_outer_label = TRANS_IDX(to_end).label_group;
     }
+
+    // Expand label groups into concrete labels
+    vector<pair<int,int>> label_mutexes = vector<pair<int,int>>();
+    for (auto gm : label_group_mutexes) {
+        LabelGroup groupA = ler->get_group(gm.first);
+        LabelGroup groupB = ler->get_group(gm.second);
+
+        for (int la : groupA) {
+            for (int lb : groupB) {
+                label_mutexes.emplace_back(pair<int,int>(la, lb));
+                label_mutexes.emplace_back(pair<int,int>(lb, la));
+            }
+        }
+    }
+
     return label_mutexes;
 }
 
-void OpMutexPruningMethod::state_reachability(int int_state, int src_state, CondensedTransitionSystem &cts, std::vector<bool> &reach) {
+void OpMutexPruningMethod::state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach) {
     for (int state_j = 0; state_j < cts.num_abstract_states; state_j++) {
         if (!reach[REACH_XY(src_state, state_j)]) {
             size_t i;
