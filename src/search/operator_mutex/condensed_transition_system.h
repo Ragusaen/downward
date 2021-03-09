@@ -28,6 +28,8 @@ public:
 
     Transition lookup_concrete(std::vector<Transition>::iterator t);
 
+    std::vector<Transition> get_abstract_transitions_from_state(int source);
+
 private:
 
     void discover_sccs();
@@ -40,6 +42,7 @@ private:
     void transpose_depth_first_search(std::vector<std::pair<int, int>> finishing_times);
 
     void tdfs_visit(int s, int *current_scc, const std::vector<Transition> &ts, std::vector<bool> *has_visited);
+
 };
 
 

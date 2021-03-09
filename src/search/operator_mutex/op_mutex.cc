@@ -36,6 +36,8 @@ OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts)
 {}
 
 
+bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
+bool transition_comparison(Transition a, int b) { return a.src < b; }
 
 FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* fts) {
     utils::g_log << "Operator mutex running" << endl;
@@ -67,6 +69,8 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
 
     CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states());
 
+    cts.get_abstract_transitions_from_state(0);
+
     utils::g_log << "Abstract transitions" << std::endl;
     if (cts.abstract_transitions.size() > 50) {
         utils::g_log << "Found " << cts.abstract_transitions.size() << "!" << std::endl;
@@ -76,11 +80,12 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
         }
     }
 
+
     shared_ptr<Labels> labels = fts->get_labels_fixed();
     auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, ler);
 
     utils::g_log << "Found " << label_mutexes.size() << " operator mutexes!" << std::endl;
-    if (label_mutexes.size() < 50) {
+    if (label_mutexes.size() < 250) {
         for (auto mutex : label_mutexes) {
             utils::g_log << mutex.first << " is operator mutex with " << mutex.second << "\t opnames: " << labels->get_name(mutex.first) << ", " << labels->get_name(mutex.second) << std::endl;
         }
@@ -91,7 +96,6 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
 }
 
 
-bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
 #define REACH2_XY(x, y) (x * cts->num_abstract_states + y)
 #define REACH_XY(x, y) (x * cts.num_abstract_states + y)
 #define TRANS_IDX(idx) (cts.concrete_transitions[idx])
@@ -119,11 +123,11 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
 
     int current_outer_label = 0;
     size_t to_end = 0;
-    while (current_outer_label < ler->get_size()- 1) { // Do not consider last label
+    while (current_outer_label < ler->get_size() - 1) { // Do not consider last label
         int to_start = to_end; // End is exclusive
 
         // Search for the next label, could be binary search, but not really worth it
-        for (; TRANS_IDX(to_end).label_group == current_outer_label && to_end < cts.concrete_transitions.size(); to_end++);
+        for (; TRANS_IDX(to_end).label_group <= current_outer_label && to_end < cts.concrete_transitions.size(); to_end++);
 
         // Start looking from the next label group up, we only need to check half of the combinations because label
         // mutexes are symmetric
@@ -150,6 +154,7 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
                     || REACH_XY(C2A(TRANS_IDX(ti).target), C2A(TRANS_IDX(to).src)))
                 {
                     is_label_mutex = false;
+                    break;
                 }
             }
         }

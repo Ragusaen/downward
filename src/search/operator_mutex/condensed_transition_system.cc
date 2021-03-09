@@ -142,3 +142,17 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
 Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::iterator t) {
     return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
 }
+
+std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) {
+    std::vector<Transition> ret = std::vector<Transition>();
+
+    auto l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), 5,
+                              [](Transition t, int s) { return t.src < s; });
+
+    for (; l->src == source; l++)
+        ret.emplace_back(*l);
+
+    return ret;
+}
+
+
