@@ -69,7 +69,6 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
 
     CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states());
 
-    cts.get_abstract_transitions_from_state(0);
 
     utils::g_log << "Abstract transitions" << std::endl;
     if (cts.abstract_transitions.size() > 50) {
