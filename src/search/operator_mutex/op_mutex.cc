@@ -69,7 +69,7 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     */
 
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states());
+    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(), initial_state);
 
     utils::g_log << "Abstract transitions" << std::endl;
     if (cts.abstract_transitions.size() > 50) {
@@ -189,15 +189,11 @@ void OpMutexPruningMethod::state_reachability(int int_state, int src_state, cons
 }
 
 void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach) {
-    vector<int> path = vector<int>();
-    vector<bool> visited = vector<bool>(cts.num_abstract_states);
-
     // current states keeps track of the current path
-    auto first = cts.abstract_transitions[0];
-    path.push_back(first.src);
+    auto first = cts.initial_abstract_state;
 
     // call reach_neighbors with first transitions source as starting state
-    reach_neighbors(cts, reach, first.src);
+    reach_neighbors(cts, first);
 }
 
 void OpMutexPruningMethod::reach_neighbors(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
