@@ -23,10 +23,10 @@ struct Transition {
     int src;
     int target;
 
-    int label;
+    int label_group;
 
-    Transition(int src, int target, int label = -1)
-        : src(src), target(target), label(label) {
+    Transition(int src, int target, int label_group = -1)
+        : src(src), target(target), label_group(label_group) {
     }
 
     bool operator==(const Transition &other) const {
