@@ -24,7 +24,7 @@ bool transition_comparison(Transition a, Transition b) {
 }
 
 CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> concrete_transitions,
-                                                     int num_concrete_states):
+                                                     int num_concrete_states, int initial_concrete_state):
     concrete_transitions(std::move(concrete_transitions)),
     num_abstract_states(0),
     num_concrete_states(num_concrete_states)
@@ -34,6 +34,8 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> con
     concrete_to_abstract_transitions = std::vector<int>();
 
     discover_sccs();
+
+    initial_abstract_state = concrete_to_abstract_state[initial_concrete_state];
 }
 
 std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search() {

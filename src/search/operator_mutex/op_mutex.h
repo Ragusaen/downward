@@ -21,16 +21,19 @@ public:
 
     void state_reachability(int int_state, int src_state, CondensedTransitionSystem &cts, std::vector<bool> &reach);
 
-    void odums_algorithm(const CondensedTransitionSystem *cts, vector<bool> *reach);
-
-    void reach_neighbors(const CondensedTransitionSystem *cts, vector<bool> *reach, vector<int> *current_states,
-                         vector<bool> *hit_states, int state);
-
-    vector<Transition> get_transitions(int src, const CondensedTransitionSystem *cts);
-
     std::vector<std::pair<int, int>>
     infer_label_mutex_in_condensed_ts(CondensedTransitionSystem cts, int num_labels);
+
+    void reach_neighbors(const CondensedTransitionSystem &cts, vector<int> &reach, int state);
+
+    void reachability(const CondensedTransitionSystem &cts, vector<int> &reach);
+
+    void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
+
+    FactoredTransitionSystem *run(FactoredTransitionSystem *fts, TaskProxy &tp);
 };
+
+static vector<Transition> get_transitions(int src, const CondensedTransitionSystem &cts);
 }
 
 #endif
