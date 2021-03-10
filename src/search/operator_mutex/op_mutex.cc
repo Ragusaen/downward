@@ -108,7 +108,7 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
         CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler) {
     // Compute reachability between states
     vector<int> reach = vector<int>(cts.num_abstract_states * cts.num_abstract_states);
-
+    // Start from the initial state of planning problem
     reachability(cts, reach, cts.initial_abstract_state);
 
     // Sort transitions on label group
@@ -193,17 +193,20 @@ void OpMutexPruningMethod::state_reachability(int int_state, int src_state, cons
     }
 }
 
-// Recursively call reachability on all neighbors, if it has not previously been visited
+/*
+ * This function computes the reach between abstract states in the CondensedTransitionSystem. It does so by recursively
+ * calling itself on its neighbours, and each state then inherits its neighbours reachable states. The cts is assumed to
+ * to be a DAG.
+ */
 void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
-    // Check whether the state has been checked before
+    // Check whether this state has been visited before, states can always reach themselves
     if (!REACH_XY(state, state)) {
-        // Get outgoing_transitions by outgoing transitions
-        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
-
-        // Flag the current state as reached
+        // Flag that the current state can reach itself
         REACH_XY(state, state) = 1;
 
-        // Recursively call reachability on all neighboring states
+        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+
+        // Compute reachability of all neighboring states
         for (auto t : outgoing_transitions) {
             reachability(cts, reach, t.target);
 

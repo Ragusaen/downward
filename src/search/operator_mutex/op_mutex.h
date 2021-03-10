@@ -21,7 +21,7 @@ public:
     void state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach);
 
     void reachability(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
-    void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
+    static void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
 
     std::vector<std::pair<int, int>>
     infer_label_mutex_in_condensed_ts(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler);
