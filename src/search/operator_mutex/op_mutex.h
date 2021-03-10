@@ -18,20 +18,15 @@ public:
     explicit OpMutexPruningMethod(const options::Options &opts);
     FactoredTransitionSystem* run(FactoredTransitionSystem* fts);
 
-
-
     void state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach);
 
-    void odums_algorithm(const CondensedTransitionSystem *cts, vector<bool> *reach);
-
-    void reach_neighbors(const CondensedTransitionSystem *cts, vector<bool> *reach, vector<int> *current_states,
-                         vector<bool> *hit_states, int state);
-
-    vector<Transition> get_transitions(int src, const CondensedTransitionSystem *cts);
+    void reachability(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
+    void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
 
     std::vector<std::pair<int, int>>
     infer_label_mutex_in_condensed_ts(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler);
 };
+
 }
 
 #endif
