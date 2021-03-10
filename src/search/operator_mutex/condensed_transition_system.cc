@@ -3,6 +3,7 @@
 #include <utility>
 #include <algorithm>
 #include <string>
+#include <cassert>
 
 #include "../utils/logging.h"
 using namespace std;
@@ -146,10 +147,17 @@ Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::i
     return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
 }
 
+/*
+ * Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on
+ * source state.
+ */
 std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) const {
     std::vector<Transition> ret = std::vector<Transition>();
 
-    int l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
+    assert(std::is_sorted(abstract_transitions.begin(), abstract_transitions.end(), [](Transition t1, Transition t2) { return t1.src < t2.src; }));
+
+    // Use binary search to find the first index with the src = source
+    size_t l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
                               [](Transition t, int s) { return t.src < s; }) - abstract_transitions.begin();
 
     for (; abstract_transitions[l].src == source && l < abstract_transitions.size(); l++)
