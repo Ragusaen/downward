@@ -40,46 +40,6 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> con
     initial_abstract_state = concrete_to_abstract_state[initial_concrete_state];
 }
 
-std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search() {
-    std::vector<std::pair<int,int>> finishing_times = std::vector<std::pair<int,int>>(num_concrete_states);
-    std::vector<bool> has_visited = std::vector<bool>(num_concrete_states, false);
-
-    std::sort(concrete_transitions.begin(), concrete_transitions.end(), transition_comparison);
-
-    int time = 0;
-    for (int s = 0; s < num_concrete_states; s++) {
-        if (!has_visited[s])
-            dfs_visit(s, &time, concrete_transitions, &finishing_times, &has_visited);
-    }
-
-    return finishing_times;
-}
-
-
-
-void CondensedTransitionSystem::transpose_depth_first_search(std::vector<std::pair<int,int>> finishing_times) {
-    std::vector<Transition> transpose_transitions = std::vector<Transition>();
-    for (size_t i = 0; i < concrete_transitions.size(); i++) {
-        Transition t = concrete_transitions[i];
-        transpose_transitions.push_back(Transition(t.target, t.src));
-    }
-    std::sort(transpose_transitions.begin(), transpose_transitions.end(), transition_comparison);
-
-    std::sort(finishing_times.begin(), finishing_times.end(), finishing_time_pair_comparison);
-
-    std::vector<bool> has_visited = std::vector<bool>(num_concrete_states, false);
-    int current_scc = 0;
-
-    for (std::pair<int,int> v: finishing_times) {
-        if (!has_visited[v.first]) {
-            tdfs_visit(v.first, &current_scc, transpose_transitions, &has_visited);
-            current_scc++;
-            num_abstract_states++;
-        }
-
-    }
-}
-
 void CondensedTransitionSystem::discover_sccs() {
     // Depth first search to generate finishing times of each state
     std::vector<std::pair<int,int>> finishing_times = depth_first_search();
@@ -122,29 +82,88 @@ void CondensedTransitionSystem::discover_sccs() {
     }
 }
 
+// Performs depth_first_search to find finishing times for each node
+std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search() {
+    // Store a vector of pairs (state, finishing_time). A pair is needed because this vector is sorted later on
+    std::vector<std::pair<int,int>> finishing_times = std::vector<std::pair<int,int>>(num_concrete_states);
+    // Store if a state has been visited or not
+    std::vector<bool> has_visited = std::vector<bool>(num_concrete_states, false);
+
+    // Sort concrete transitions by source then by target
+    std::sort(concrete_transitions.begin(), concrete_transitions.end(), transition_comparison);
+
+    // Visit every state in turn unless it has already been visited
+    int time = 0;
+    for (int s = 0; s < num_concrete_states; s++) {
+        if (!has_visited[s])
+            dfs_visit(s, &time, concrete_transitions, &finishing_times, &has_visited);
+    }
+
+    return finishing_times;
+}
+
 void CondensedTransitionSystem::dfs_visit(int s, int* time, const std::vector<Transition>& ts, std::vector<std::pair<int, int>> *finishing_times, std::vector<bool>* has_visited) {
+    // Increase timer and set current state to visited
     (*time)++;
     has_visited->at(s) = true;
 
-    size_t i;
-    for (i = 0; ts[i].src != s && i < ts.size(); i++);
+    // Find the first index i in the vector ts where the source = s
+    size_t i = lower_bound(ts.begin(), ts.end(), s, [](Transition t, int s) { return t.src < s; }) - ts.begin();
+
+    // Iterate through transitions while source = s
+    // For each transition, visit the target if it has not already been visited
     for (; ts[i].src == s && i < ts.size(); i++) {
         int target = ts[i].target;
         if (!has_visited->at(target))
             dfs_visit(target, time, ts, finishing_times, has_visited);
     }
 
+    // Increase timer and update the finishing time for the current state
     (*time)++;
     finishing_times->at(s) = std::pair<int,int>(s,*time);
 }
 
+// Generate a mapping from concrete to abstract states by performing depth first search in the order of decreasing finishing time
+void CondensedTransitionSystem::transpose_depth_first_search(std::vector<std::pair<int,int>> finishing_times) {
+    // Create a vector with concrete transitions that are "flipped"
+    std::vector<Transition> transpose_transitions = std::vector<Transition>();
+    for (auto t : concrete_transitions) {
+        transpose_transitions.push_back(Transition(t.target, t.src));
+    }
+
+    // Sort the transposed transitions by source then by target
+    std::sort(transpose_transitions.begin(), transpose_transitions.end(), transition_comparison);
+
+    // Sort vector by decreasing finishing time
+    std::sort(finishing_times.begin(), finishing_times.end(), finishing_time_pair_comparison);
+
+    // Vector to keep track off whether a state has been visited or not
+    std::vector<bool> has_visited = std::vector<bool>(num_concrete_states, false);
+    int current_scc = 0;
+
+    // Visit every state in turn unless it has already been visited
+    // Each tree increases the scc counter
+    for (std::pair<int,int> v: finishing_times) {
+        if (!has_visited[v.first]) {
+            tdfs_visit(v.first, &current_scc, transpose_transitions, &has_visited);
+            current_scc++;
+            num_abstract_states++;
+        }
+    }
+}
+
 void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::vector<Transition>& ts, std::vector<bool>* has_visited) {
+    // Set current state to visited
     has_visited->at(s) = true;
 
+    // Add mapping from current state to current scc
     concrete_to_abstract_state[s] = *current_scc;
 
-    size_t i;
-    for (i = 0; ts[i].src != s && i < ts.size(); i++);
+    // Find the first index i in the vector ts where the source = s
+    size_t i = lower_bound(ts.begin(), ts.end(), s, [](Transition t, int s) { return t.src < s; }) - ts.begin();
+
+    // Iterate through transitions while source = s
+    // For each transition, visit the target if it has not already been visited
     for (; ts[i].src == s && i < ts.size(); i++) {
         int target = ts[i].target;
         if (!has_visited->at(target)) {
@@ -153,14 +172,7 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
     }
 }
 
-Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::iterator t) {
-    return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
-}
-
-/*
- * Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on
- * source state.
- */
+//Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on source state.
 std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) const {
     std::vector<Transition> ret = std::vector<Transition>();
 
