@@ -1,1 +1,1 @@
-../../../../../../../benchmarks/grid/domain.pddl
+../../../../../../../../../../downward-projects/benchmarks/grid/domain.pddl

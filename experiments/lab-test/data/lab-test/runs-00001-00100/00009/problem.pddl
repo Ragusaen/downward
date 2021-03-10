@@ -1,1 +1,1 @@
-../../../../../../../benchmarks/gripper/prob01.pddl
+../../../../../../../../../../downward-projects/benchmarks/gripper/prob01.pddl

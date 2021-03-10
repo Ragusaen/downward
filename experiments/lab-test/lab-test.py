@@ -7,12 +7,12 @@ import project
 
 REPO = project.get_repo_base()
 BENCHMARKS_DIR = os.environ["DOWNWARD_BENCHMARKS"]
-if project.REMOTE:
-    SUITE = project.SUITE_SATISFICING
-    ENV = project.BaselSlurmEnvironment(email="my.name@unibas.ch")
-else:
-    SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
-    ENV = project.LocalEnvironment(processes=2)
+# if project.REMOTE:
+#     SUITE = project.SUITE_SATISFICING
+#     ENV = project.BaselSlurmEnvironment(email="my.name@unibas.ch")
+# else:
+SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
+ENV = project.LocalEnvironment(processes=2)
 
 CONFIGS = [
     (f"{index:02d}-{h_nick}", ["--search", f"eager_greedy([{h}])"])

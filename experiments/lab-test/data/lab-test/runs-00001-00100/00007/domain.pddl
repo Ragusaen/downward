@@ -1,1 +1,1 @@
-../../../../../../../benchmarks/depot/domain.pddl
+../../../../../../../../../../downward-projects/benchmarks/depot/domain.pddl

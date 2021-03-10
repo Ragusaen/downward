@@ -1,1 +1,1 @@
-../../../../../../../benchmarks/grid/prob01.pddl
+../../../../../../../../../../downward-projects/benchmarks/grid/prob01.pddl
