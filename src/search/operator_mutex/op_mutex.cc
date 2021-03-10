@@ -193,15 +193,22 @@ void OpMutexPruningMethod::state_reachability(int int_state, int src_state, cons
     }
 }
 
+// Recursively call reachability on all neighbors, if it has not previously been visited
 void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
-    // recursively call reachability on all neighbors, if it has not previously been visited
-    if (!REACH_XY(state, state)) { // Check whether the state has been checked before
-        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state); // Get outgoing_transitions by outgoing transitions
+    // Check whether the state has been checked before
+    if (!REACH_XY(state, state)) {
+        // Get outgoing_transitions by outgoing transitions
+        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
-        REACH_XY(state, state) = 1; // Flag the current state as reached
+        // Flag the current state as reached
+        REACH_XY(state, state) = 1;
+
+        // Recursively call reachability on all neighboring states
         for (auto t : outgoing_transitions) {
-            reachability(cts, reach, t.target); // Recursively call reachability on target states of outgoing transitions
-            for (int j = 0; j < cts.num_abstract_states; ++j) { // Copy reachability of the target states to the current state
+            reachability(cts, reach, t.target);
+
+            // Copy reachability of the target states to the current state
+            for (int j = 0; j < cts.num_abstract_states; ++j) {
                 REACH_XY(state, j) += REACH_XY(t.target, j);
             }
         }
