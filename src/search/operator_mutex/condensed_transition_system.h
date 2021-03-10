@@ -16,7 +16,8 @@ std::string to_string(Transition);
 class CondensedTransitionSystem {
 
 public:
-    CondensedTransitionSystem(std::vector<Transition> concrete_transitions, int num_concrete_states);
+    CondensedTransitionSystem(std::vector<Transition> concrete_transitions, int num_concrete_states,
+                              int initial_concrete_state);
 
     std::vector<Transition> abstract_transitions;
     std::vector<Transition> concrete_transitions;
@@ -26,9 +27,11 @@ public:
     int num_concrete_states;
     std::vector<int> concrete_to_abstract_state;
 
+    int initial_abstract_state;
+
     Transition lookup_concrete(std::vector<Transition>::iterator t);
 
-    std::vector<Transition> get_abstract_transitions_from_state(int source);
+    std::vector<Transition> get_abstract_transitions_from_state(int source) const;
 
 private:
 
@@ -42,7 +45,6 @@ private:
     void transpose_depth_first_search(std::vector<std::pair<int, int>> finishing_times);
 
     void tdfs_visit(int s, int *current_scc, const std::vector<Transition> &ts, std::vector<bool> *has_visited);
-
 };
 
 

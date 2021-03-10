@@ -35,7 +35,6 @@ namespace op_mutex_pruning {
 OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts)
 {}
 
-
 bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
 bool transition_comparison(Transition a, int b) { return a.src < b; }
 
@@ -55,25 +54,31 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
         }
     }
 
-    /*
+
     std::vector<Transition> k_ts = std::vector<Transition>();
+    /*
     k_ts.push_back(Transition(0, 1));
-    k_ts.push_back(Transition(1, 0));
-    k_ts.push_back(Transition(0, 3));
-    k_ts.push_back(Transition(2, 1));
-    k_ts.push_back(Transition(3, 5));
-    k_ts.push_back(Transition(2, 5));
-    k_ts.push_back(Transition(5, 4));
-    k_ts.push_back(Transition(4, 3));
-     */
+    k_ts.push_back(Transition(0, 4));
+    k_ts.push_back(Transition(1, 2));
+    k_ts.push_back(Transition(2, 3));
+    k_ts.push_back(Transition(4, 5));
+    k_ts.push_back(Transition(4, 9));
+    k_ts.push_back(Transition(5, 6));
+    k_ts.push_back(Transition(6, 2));
+    k_ts.push_back(Transition(6, 7));
+    k_ts.push_back(Transition(7, 8));
+    k_ts.push_back(Transition(9, 10));
+    k_ts.push_back(Transition(10, 11));
+    */
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states());
 
+    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(), initial_state);
 
-    utils::g_log << "Abstract transitions" << std::endl;
+    // Print the abstract transitions, if there are few, list them.
     if (cts.abstract_transitions.size() > 50) {
-        utils::g_log << "Found " << cts.abstract_transitions.size() << "!" << std::endl;
+        utils::g_log << "Found abstract transitions" << cts.abstract_transitions.size() << "!" << std::endl;
     } else {
+        utils::g_log << "Abstract transitions:" << std::endl;
         for (Transition at : cts.abstract_transitions) {
             utils::g_log << to_string(at) << std::endl;
         }
@@ -94,24 +99,17 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     return fts;
 }
 
-
-#define REACH2_XY(x, y) (x * cts->num_abstract_states + y)
-#define REACH_XY(x, y) (x * cts.num_abstract_states + y)
+#define REACH_XY(x, y) (reach[x * cts.num_abstract_states + y])
 #define TRANS_IDX(idx) (cts.concrete_transitions[idx])
 #define C2A(state) (cts.concrete_to_abstract_state[state])
+
 std::vector<std::pair<int, int>>
 OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
         CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler) {
     // Compute reachability between states
-    std::vector<bool> reach = std::vector<bool>(cts.num_abstract_states * cts.num_abstract_states);
-    // Compute reachability between states
+    vector<int> reach = vector<int>(cts.num_abstract_states * cts.num_abstract_states);
 
-//    for (int state = 0; state < cts.num_abstract_states; state++) {
-//        reach[REACH_XY(state, state)] = true;
-//        state_reachability(state, state, cts, reach);
-//    }
-
-    odums_algorithm(&cts, &reach);
+    reachability(cts, reach, cts.initial_abstract_state);
 
     // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
@@ -181,12 +179,12 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
 
 void OpMutexPruningMethod::state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach) {
     for (int state_j = 0; state_j < cts.num_abstract_states; state_j++) {
-        if (!reach[REACH_XY(src_state, state_j)]) {
+        if (!REACH_XY(src_state, state_j)) {
             size_t i;
             for (i = 0; cts.abstract_transitions[i].src != int_state && i < cts.abstract_transitions.size(); ++i);
             for (; cts.abstract_transitions[i].src == int_state && i < cts.abstract_transitions.size(); ++i) {
                 if (cts.abstract_transitions[i].target == state_j) {
-                    reach[REACH_XY(src_state, state_j)] = true;
+                    REACH_XY(src_state, state_j) = true;
                     state_reachability(state_j, src_state, cts, reach);
                     break;
                 }
@@ -195,65 +193,38 @@ void OpMutexPruningMethod::state_reachability(int int_state, int src_state, cons
     }
 }
 
-void OpMutexPruningMethod::odums_algorithm(const CondensedTransitionSystem *cts, std::vector<bool> *reach) {
-    utils::g_log << "Odums algorithm running" << endl;
-    vector<int> path = vector<int>();
-    vector<bool> visited = vector<bool>((*cts).num_abstract_states);
+void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
+    // recursively call reachability on all neighbors, if it has not previously been visited
+    if (!REACH_XY(state, state)) { // Check whether the state has been checked before
+        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state); // Get outgoing_transitions by outgoing transitions
 
-    // current states keeps track of the current path
-    auto first = (*cts).abstract_transitions[0];
-    path.push_back(first.src);
-
-    // call reach_neighbors with first transitions source as starting state
-    reach_neighbors(cts, reach, &path, &visited, first.src);
-    utils::g_log << "Odums algorithm finished" << endl;
-}
-
-void OpMutexPruningMethod::reach_neighbors(const CondensedTransitionSystem *cts, std::vector<bool> *reach, vector<int> *current_states, vector<bool> *hit_states, const int state) {
-    vector<Transition> neighbors = get_transitions(state, cts);
-    (*hit_states)[state] = true;
-
-    // recursively call reach_neighbors on all neighbors, if it has not previously been visited
-    for (auto t : neighbors) {
-        // If the state has been hit from another path, copy reachability from that node to all nodes in current_states.
-        if ((*hit_states)[t.target]) {
-            for (int i = 0; i < (*cts).num_abstract_states; ++i) {
-                if ((*reach)[REACH2_XY(t.target, i)]) {
-                    (*reach)[REACH2_XY(state, i)] = true;
-
-                    for (int path_state : (*current_states)) {
-                        (*reach)[REACH2_XY(path_state, i)] = true;
-                    }
-                }
+        REACH_XY(state, state) = 1; // Flag the current state as reached
+        for (auto t : outgoing_transitions) {
+            reachability(cts, reach, t.target); // Recursively call reachability on target states of outgoing transitions
+            for (int j = 0; j < cts.num_abstract_states; ++j) { // Copy reachability of the target states to the current state
+                REACH_XY(state, j) += REACH_XY(t.target, j);
             }
         }
-        else {
-            (*current_states).push_back(t.target);
-            reach_neighbors(cts, reach, current_states, hit_states, t.target);
+    }
+}
+
+void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach) {
+    utils::g_log << " ";
+    for (int i = 0; i < cts.num_abstract_states; ++i) {
+        utils::g_log << " " << i;
+    }
+    utils::g_log << endl;
+    for (int i = 0; i < cts.num_abstract_states; ++i) {
+        utils::g_log << i;
+        for (int j = 0; j < cts.num_abstract_states; ++j) {
+            utils::g_log << " " << REACH_XY(i,j);
         }
+        utils::g_log << endl;
     }
-
-    // when exiting state, copy reachability of this state to all states in current_states.
-    for (int cs : (*current_states)) {
-        (*reach)[REACH2_XY(cs, state)] = true;
-    }
-
-    // clear state from current_states because it is finished.
-    (*current_states).pop_back();
 }
 
-vector<Transition> OpMutexPruningMethod::get_transitions(const int src, const CondensedTransitionSystem *cts) {
-    // TODO: Implement binary search
-    vector<Transition> res = vector<Transition>();
 
-    for (auto t : (*cts).abstract_transitions)
-        if (t.src == src)
-            res.push_back(t);
-
-    return res;
-}
-
-    static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {
+static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {
     parser.document_synopsis(
             "Operator Mutex Pruning",
             "Operator Mutex Pruning");
@@ -269,7 +240,7 @@ vector<Transition> OpMutexPruningMethod::get_transitions(const int src, const Co
 static Plugin<OpMutexPruningMethod> _plugin("op_mutex", _parse);
 
 static options::PluginTypePlugin<OpMutexPruningMethod> _type_plugin(
-        "op_mutex",
-        "Operator mutex type plugin.");
+    "op_mutex",
+    "Operator mutex type plugin.");
 }
 

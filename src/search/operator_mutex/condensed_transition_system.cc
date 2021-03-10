@@ -5,6 +5,7 @@
 #include <string>
 
 #include "../utils/logging.h"
+using namespace std;
 
 std::string to_string(Transition t) {
     return std::to_string(t.src) + " -" + (t.label_group != -1? std::to_string(t.label_group): "") + "> " + std::to_string(t.target);
@@ -24,7 +25,7 @@ bool transition_comparison(Transition a, Transition b) {
 }
 
 CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> concrete_transitions,
-                                                     int num_concrete_states):
+                                                     int num_concrete_states, int initial_concrete_state):
     concrete_transitions(std::move(concrete_transitions)),
     num_abstract_states(0),
     num_concrete_states(num_concrete_states)
@@ -34,6 +35,8 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> con
     concrete_to_abstract_transitions = std::vector<int>();
 
     discover_sccs();
+
+    initial_abstract_state = concrete_to_abstract_state[initial_concrete_state];
 }
 
 std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search() {
@@ -143,16 +146,14 @@ Transition CondensedTransitionSystem::lookup_concrete(std::vector<Transition>::i
     return abstract_transitions[concrete_to_abstract_transitions[t - concrete_transitions.begin()]];
 }
 
-std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) {
+std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) const {
     std::vector<Transition> ret = std::vector<Transition>();
 
-    auto l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), 5,
-                              [](Transition t, int s) { return t.src < s; });
+    int l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
+                              [](Transition t, int s) { return t.src < s; }) - abstract_transitions.begin();
 
-    for (; l->src == source; l++)
-        ret.emplace_back(*l);
+    for (; abstract_transitions[l].src == source && l < abstract_transitions.size(); l++)
+        ret.emplace_back(abstract_transitions[l]);
 
     return ret;
 }
-
-
