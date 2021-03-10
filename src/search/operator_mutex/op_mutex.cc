@@ -71,25 +71,25 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     k_ts.push_back(Transition(10, 11));
     */
 
-
+    utils::g_log << "Generating condensed transition system" << endl;
     CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(), initial_state);
 
     // Print the abstract transitions, if there are few, list them.
     if (cts.abstract_transitions.size() > 50) {
-        utils::g_log << "Found abstract transitions" << cts.abstract_transitions.size() << "!" << std::endl;
+        utils::g_log << "Found abstract transitions: " << cts.abstract_transitions.size() << endl;
     } else {
-        utils::g_log << "Abstract transitions:" << std::endl;
+        utils::g_log << "Abstract transitions: " << endl;
         for (Transition at : cts.abstract_transitions) {
-            utils::g_log << to_string(at) << std::endl;
+            utils::g_log << to_string(at) << endl;
         }
     }
 
-
+    utils::g_log << "Inferring operator mutexes" << endl;
     shared_ptr<Labels> labels = fts->get_labels_fixed();
     auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, ler);
 
-    utils::g_log << "Found " << label_mutexes.size() << " operator mutexes!" << std::endl;
-    if (label_mutexes.size() < 250) {
+    utils::g_log << "Operator mutexes: " << label_mutexes.size() << endl;
+    if (label_mutexes.size() < 10) {
         for (auto mutex : label_mutexes) {
             utils::g_log << mutex.first << " is operator mutex with " << mutex.second << "\t opnames: " << labels->get_name(mutex.first) << ", " << labels->get_name(mutex.second) << std::endl;
         }
