@@ -71,25 +71,25 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
     k_ts.push_back(Transition(10, 11));
     */
 
-
+    utils::g_log << "Generating condensed transition system" << endl;
     CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(), initial_state);
 
     // Print the abstract transitions, if there are few, list them.
     if (cts.abstract_transitions.size() > 50) {
-        utils::g_log << "Found abstract transitions" << cts.abstract_transitions.size() << "!" << std::endl;
+        utils::g_log << "Found abstract transitions: " << cts.abstract_transitions.size() << endl;
     } else {
-        utils::g_log << "Abstract transitions:" << std::endl;
+        utils::g_log << "Abstract transitions: " << endl;
         for (Transition at : cts.abstract_transitions) {
-            utils::g_log << to_string(at) << std::endl;
+            utils::g_log << to_string(at) << endl;
         }
     }
 
-
+    utils::g_log << "Inferring operator mutexes" << endl;
     shared_ptr<Labels> labels = fts->get_labels_fixed();
     auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, ler);
 
-    utils::g_log << "Found " << label_mutexes.size() << " operator mutexes!" << std::endl;
-    if (label_mutexes.size() < 250) {
+    utils::g_log << "Operator mutexes: " << label_mutexes.size() << endl;
+    if (label_mutexes.size() < 10) {
         for (auto mutex : label_mutexes) {
             utils::g_log << mutex.first << " is operator mutex with " << mutex.second << "\t opnames: " << labels->get_name(mutex.first) << ", " << labels->get_name(mutex.second) << std::endl;
         }
@@ -103,6 +103,11 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
 #define TRANS_IDX(idx) (cts.concrete_transitions[idx])
 #define C2A(state) (cts.concrete_to_abstract_state[state])
 
+/*
+ * This function computes label mutexes, by checking for a pair of label groups (g1, g2) that all the transitions belonging
+ * to g1 are transition-mutex with all transitions belonging to g2. Two transitions s_1 -l1> s_2, s_1' -l2> s_2' are transition-
+ * mutex iff there is no path from s_2' to s_1 and from s_2 to s_1'. This check is done using a reachability matrix.
+ */
 std::vector<std::pair<int, int>>
 OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
         CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler) {
@@ -120,6 +125,17 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
 
     int current_outer_label = 0;
     size_t to_end = 0;
+
+    /*
+     * The general idea of this loop is to iterate through all the transitions, but consider them within their label group.
+     * The current_outer_label is the label that the outer loop is currently at, there are variable to_start and to_end
+     * (to_end is exclusive) that correspond to the outer labels first and last transition in the vector. Then, for each
+     * transition, starting from to_end as we only consider one of the two symmetric label pairs, we check if this
+     * transition is transition mutex with all of the [to_start, to_end) transitions. When ti points to a new label, we
+     * see if there were any non-transition-mutexes for the inner label, and if not we add it to the label mutex vector.
+     * We skip all labels with 0 transitions, as these are trivially op-mutex with all other labels, and there is no need
+     * to store all of them.
+     */
     while (current_outer_label < ler->get_size() - 1) { // Do not consider last label
         int to_start = to_end; // End is exclusive
 

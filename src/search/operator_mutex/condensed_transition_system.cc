@@ -81,25 +81,36 @@ void CondensedTransitionSystem::transpose_depth_first_search(std::vector<std::pa
 }
 
 void CondensedTransitionSystem::discover_sccs() {
+    // Depth first search to generate finishing times of each state
     std::vector<std::pair<int,int>> finishing_times = depth_first_search();
 
+    // Mapping concrete states to abstract states
     transpose_depth_first_search(finishing_times);
 
+    // Generate abstract transitions
     for (Transition & ct : concrete_transitions) {
         Transition at = Transition(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target]);
         abstract_transitions.push_back(at);
     }
 
+    // Sort abstract transitions by source, if equal then by target.
     std::sort(abstract_transitions.begin(), abstract_transitions.end(), transition_comparison);
 
-    for (size_t i = 1; i < abstract_transitions.size(); ++i) {
-        if (abstract_transitions[i].src == abstract_transitions[i - 1].src
-                && abstract_transitions[i].target == abstract_transitions[i - 1].target) {
-            abstract_transitions.erase(abstract_transitions.begin() + i);
-            i--;
+    // Remove duplicates by copying transitions into a new vector and skipping duplicates
+    vector<Transition> abstract_transitions_no_dup = vector<Transition>();
+    if (!abstract_transitions.empty()) {
+        Transition last = abstract_transitions[0];
+        abstract_transitions_no_dup.push_back(last);
+        for (size_t i = 1; i < abstract_transitions.size(); ++i) {
+            if (abstract_transitions[i] != last) {
+                abstract_transitions_no_dup.push_back(abstract_transitions[i]);
+                last = abstract_transitions[i];
+            }
         }
     }
+    abstract_transitions = abstract_transitions_no_dup;
 
+    // Generate mapping of concrete to abstract transitions
     for (Transition & ct : concrete_transitions) {
         auto at = Transition(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target]);
         for (size_t j = 0; j < abstract_transitions.size(); ++j) {
@@ -109,7 +120,6 @@ void CondensedTransitionSystem::discover_sccs() {
             }
         }
     }
-
 }
 
 void CondensedTransitionSystem::dfs_visit(int s, int* time, const std::vector<Transition>& ts, std::vector<std::pair<int, int>> *finishing_times, std::vector<bool>* has_visited) {
@@ -160,6 +170,7 @@ std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from
     size_t l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
                               [](Transition t, int s) { return t.src < s; }) - abstract_transitions.begin();
 
+    // Add transitions where src node is equal to parameter 'source'
     for (; abstract_transitions[l].src == source && l < abstract_transitions.size(); l++)
         ret.emplace_back(abstract_transitions[l]);
 
