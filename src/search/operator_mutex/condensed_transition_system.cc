@@ -37,10 +37,13 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> con
     concrete_to_abstract_state = std::vector<int>(num_concrete_states, -1);
     concrete_to_abstract_transitions = std::vector<int>();
 
+    // Discover strongly connected components
     discover_sccs();
 
+    // Create initial states for the abstract transition system
     initial_abstract_state = concrete_to_abstract_state[initial_concrete_state];
 
+    // Create goal states for the abstract transition system
     for (const int goal_state : goal_states) {
         abstract_goal_states.insert(concrete_to_abstract_state[goal_state]);
     }
@@ -108,6 +111,7 @@ std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search()
     return finishing_times;
 }
 
+// 'Depth first search visit' The functionality regarding visiting a state during depth first search
 void CondensedTransitionSystem::dfs_visit(int s, int* time, const std::vector<Transition>& ts, std::vector<std::pair<int, int>> *finishing_times, std::vector<bool>* has_visited) {
     // Increase timer and set current state to visited
     (*time)++;
@@ -133,8 +137,10 @@ void CondensedTransitionSystem::dfs_visit(int s, int* time, const std::vector<Tr
 void CondensedTransitionSystem::transpose_depth_first_search(std::vector<std::pair<int,int>> finishing_times) {
     // Create a vector with concrete transitions that are "flipped"
     std::vector<Transition> transpose_transitions = std::vector<Transition>();
+
+    // emplace_back creates a 'Transition' and pushes it to the vector without making any intermediate object, thus it is an optimisation
     for (auto t : concrete_transitions) {
-        transpose_transitions.push_back(Transition(t.target, t.src));
+        transpose_transitions.emplace_back(t.target, t.src);
     }
 
     // Sort the transposed transitions by source then by target
