@@ -56,6 +56,7 @@ public:
     void infer_label_group_mutex_in_ts(TransitionSystem &ts);
 
     bool reachability_non_goal(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
+    double runtime = 0.0;
 };
 
 }

@@ -245,7 +245,6 @@ bool FactoredTransitionSystem::is_active(int index) const {
 }
 
     shared_ptr<Labels> FactoredTransitionSystem::get_labels_fixed() {
-        utils::g_log << (labels == nullptr) << endl;
         return std::move(labels);
     }
 }
