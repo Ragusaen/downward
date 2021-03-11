@@ -17,7 +17,7 @@ exp = FastDownwardExperiment(environment=env)
 exp.add_step("build", exp.build)
 exp.add_step("start", exp.start_runs)
 
-exp.add_algorithm("cg-test", REPO, REV, ["--search", "eager_greedy([cg(transform=adapt_costs(one))])"], build_options = [], driver_options = [])
+exp.add_algorithm("test", REPO, REV, ["--search", "astar(merge_and_shrink(label_reduction=none,op_mutex=op_mutex()))"], build_options = [], driver_options = [])
 
 exp.add_suite(BENCHMARKS_DIR, SUITE)
 
