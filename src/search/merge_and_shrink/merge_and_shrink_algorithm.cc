@@ -437,7 +437,7 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
         "See detailed documentation for labels. There is currently only "
         "one 'option' to use label_reduction, which is {{{label_reduction=exact}}} "
         "Also note the interaction with shrink strategies.",
-        "label_reduction=none");
+        "label_reduction=no_label_reduction");
 
     // Pruning options.
     parser.add_option<bool>(

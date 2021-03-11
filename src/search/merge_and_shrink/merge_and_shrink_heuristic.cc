@@ -226,7 +226,8 @@ static shared_ptr<Heuristic> _parse(options::OptionParser &parser) {
     // operator mutex
     parser.add_option<shared_ptr<op_mutex_pruning::OpMutexPruningMethod>>(
             "op_mutex",
-            "Operator mutex pruning."
+            "Operator mutex pruning.",
+            "no_operator_mutex"
     );
 
     options::Options opts = parser.parse();
