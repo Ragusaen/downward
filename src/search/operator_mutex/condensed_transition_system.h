@@ -7,6 +7,7 @@
 
 
 #include <vector>
+#include <unordered_set>
 #include "../merge_and_shrink/transition_system.h"
 
 using namespace merge_and_shrink;
@@ -17,7 +18,7 @@ class CondensedTransitionSystem {
 
 public:
     CondensedTransitionSystem(std::vector<Transition> concrete_transitions, int num_concrete_states,
-                              int initial_concrete_state);
+                              int initial_concrete_state, const std::unordered_set<int>& goal_states);
 
     std::vector<Transition> abstract_transitions;
     std::vector<Transition> concrete_transitions;
@@ -28,6 +29,7 @@ public:
     std::vector<int> concrete_to_abstract_state;
 
     int initial_abstract_state;
+    std::unordered_set<int> abstract_goal_states;
 
     Transition lookup_concrete(std::vector<Transition>::iterator t);
 

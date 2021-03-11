@@ -61,6 +61,7 @@ void Labels::dump_labels() const {
 }
 
     std::string Labels::get_name(int label_no) const {
+        utils::g_log << this->get_size() << endl;
         return labels[label_no]->name;
     }
 }

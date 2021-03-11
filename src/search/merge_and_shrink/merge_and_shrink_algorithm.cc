@@ -312,6 +312,10 @@ void MergeAndShrinkAlgorithm::main_loop(
             utils::g_log << endl;
         }
 
+        if (operator_mutex_pruning) {
+            operator_mutex_pruning->run(fts);
+        }
+
         ++iteration_counter;
     }
 
@@ -396,6 +400,11 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
     report_peak_memory_delta(final);
     utils::g_log << "Merge-and-shrink algorithm runtime: " << timer << endl;
     utils::g_log << endl;
+
+    if (operator_mutex_pruning) {
+        operator_mutex_pruning->finalize(fts);
+    }
+
     return fts;
 }
 
