@@ -39,6 +39,7 @@ bool transition_label_comparison(Transition t, int l) { return t.label_group < l
 bool transition_comparison(Transition a, int b) { return a.src < b; }
 
 void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
+    double start_time = utils::g_timer();
     utils::g_log << "Operator mutex running" << endl;
 
     // Iterate over all active indices in the fts
@@ -53,6 +54,7 @@ void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
     }
 
     utils::g_log << "Operator mutex round done" << endl << endl;
+    runtime += utils::g_timer() - start_time;
 }
 
 void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
@@ -245,6 +247,7 @@ void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     }
 
     utils::g_log << "Found a total of " << label_mutexes.size() << " operator mutexes" << endl;
+    utils::g_log << "Operator Mutex total time: " << utils::Duration(runtime) << endl;
     if (label_mutexes.size() < 200) {
         for (OpMutex om : label_mutexes) {
             utils::g_log << om.label1 << ", " << om.label2 << " : " << labels->get_name(om.label1) << ", " << labels->get_name(om.label2) << endl;
