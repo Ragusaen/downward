@@ -408,5 +408,5 @@ static shared_ptr<LabelReduction> _none_parse(OptionParser &parser) {
     return nullptr;
 }
 
-static Plugin<LabelReduction> _plugin_none("none", _none_parse);
+static Plugin<LabelReduction> _plugin_none("no_label_reduction", _none_parse);
 }

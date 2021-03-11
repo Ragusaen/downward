@@ -45,12 +45,8 @@ void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
         TransitionSystem ts = fts.get_transition_system(fts_i);
-        utils::g_log << "States: " << ts.get_num_states() << ", transitions: " << ts.get_size();
         if (ts.get_num_states() < 5000)
             infer_label_group_mutex_in_ts(ts);
-        else
-            utils::g_log << "...Skipped";
-        utils::g_log << endl;
     }
 
     utils::g_log << "Operator mutex round done" << endl << endl;
@@ -208,6 +204,36 @@ bool OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, st
     return can_reach_goal;
 }
 
+
+    bool OpMutexPruningMethod::reachability_non_goal(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
+        bool can_reach_goal = cts.abstract_goal_states.count(state) == 1;
+
+        // Check whether this state has been visited before, states can always reach themselves
+        if (!REACH_XY(state, state)) {
+            // Flag that the current state can reach itself
+            REACH_XY(state, state) = 1;
+
+            auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+
+            // Compute reachability of all neighboring states
+            for (auto t : outgoing_transitions) {
+                bool target_reach_goal = reachability_non_goal(cts, reach, t.target);
+
+                // We only care about states that can reach a goal state
+                if (target_reach_goal) {
+                    can_reach_goal = true;
+
+                    // Copy reachability of the target states to the current state
+                    for (int j = 0; j < cts.num_abstract_states; ++j) {
+                        REACH_XY(state, j) += REACH_XY(t.target, j);
+                    }
+                }
+
+            }
+        }
+        return can_reach_goal;
+    }
+
 void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach) {
     utils::g_log << " ";
     for (int i = 0; i < cts.num_abstract_states; ++i) {
@@ -253,6 +279,17 @@ static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {
 }
 
 static Plugin<OpMutexPruningMethod> _plugin("op_mutex", _parse);
+
+    static shared_ptr<OpMutexPruningMethod> _none_parse(OptionParser &parser) {
+        parser.document_synopsis(
+                "No Operator Mutex Pruning",
+                "This will do NO operator mutex pruning");
+
+        options::Options opts = parser.parse();
+        return nullptr;
+    }
+
+static Plugin<OpMutexPruningMethod> _plugin_none("no_operator_mutex", _none_parse);
 
 static options::PluginTypePlugin<OpMutexPruningMethod> _type_plugin(
     "op_mutex",
