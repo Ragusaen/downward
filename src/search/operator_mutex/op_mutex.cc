@@ -252,7 +252,6 @@ void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     }
 }
 
-
 static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {
     parser.document_synopsis(
             "Operator Mutex Pruning",
