@@ -39,17 +39,17 @@ bool transition_label_comparison(Transition t, int l) { return t.label_group < l
 bool transition_comparison(Transition a, int b) { return a.src < b; }
 
 void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
-    if (fts.get_num_active_entries() > 10)
-        return;
-
     utils::g_log << "Operator mutex running" << endl;
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
         TransitionSystem ts = fts.get_transition_system(fts_i);
-        utils::g_log << "States: " << ts.get_num_states() << ", transitions: " << ts.get_size() << endl;
-        if (ts.get_num_states() < 250)
+        utils::g_log << "States: " << ts.get_num_states() << ", transitions: " << ts.get_size();
+        if (ts.get_num_states() < 5000)
             infer_label_group_mutex_in_ts(ts);
+        else
+            utils::g_log << "...Skipped";
+        utils::g_log << endl;
     }
 
     utils::g_log << "Operator mutex round done" << endl << endl;
@@ -92,7 +92,7 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 }
 
 // These macros are used as shorthands for looking up reach, transitions and converting from abstract to concrete transitions
-#define REACH_XY(x, y) (reach[x * cts.num_abstract_states + y])
+#define REACH_XY(x, y) (reach[(x) * cts.num_abstract_states + (y)])
 #define TRANS_IDX(idx) (cts.concrete_transitions[idx])
 #define C2A(state) (cts.concrete_to_abstract_state[state])
 /*
@@ -239,6 +239,10 @@ void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, con
 
 void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     auto labels = fts.get_labels_fixed();
+
+    for (OpMutex m : label_mutexes) {
+        label_mutexes.emplace(m.label2, m.label1);
+    }
 
     utils::g_log << "Found a total of " << label_mutexes.size() << " operator mutexes" << endl;
     if (label_mutexes.size() < 200) {
