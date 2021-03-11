@@ -33,6 +33,10 @@ struct Transition {
         return src == other.src && target == other.target;
     }
 
+    bool operator!=(const Transition &other) const {
+        return src != other.src || target != other.target;
+    }
+
     bool operator<(const Transition &other) const {
         return src < other.src || (src == other.src && target < other.target);
     }
