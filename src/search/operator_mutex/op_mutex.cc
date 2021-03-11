@@ -38,11 +38,31 @@ OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts)
 bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
 bool transition_comparison(Transition a, int b) { return a.src < b; }
 
-FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* fts) {
+void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
+    if (fts.get_num_active_entries() > 10)
+        return;
+
     utils::g_log << "Operator mutex running" << endl;
 
-    TransitionSystem ts = fts->get_transition_system(fts->get_size() - 1);
+    // Iterate over all active indices in the fts
+    for (int fts_i : fts) {
+        TransitionSystem ts = fts.get_transition_system(fts_i);
+        utils::g_log << "States: " << ts.get_num_states() << ", transitions: " << ts.get_size() << endl;
+        if (ts.get_num_states() < 250)
+            infer_label_group_mutex_in_ts(ts);
+    }
+
+    utils::g_log << "Operator mutex round done" << endl << endl;
+}
+
+void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
     int initial_state= ts.get_init_state();
+    unordered_set<int> goal_states;
+
+    for (int s = 0; s < ts.get_num_states(); s++) {
+        if (ts.is_goal_state(s))
+            goal_states.insert(s);
+    }
 
     shared_ptr<LabelEquivalenceRelation> ler = ts.get_label_equivalence_relation();
     vector<vector<Transition>> tbg = ts.get_transitions();
@@ -54,63 +74,35 @@ FactoredTransitionSystem* OpMutexPruningMethod::run(FactoredTransitionSystem* ft
         }
     }
 
+    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(), initial_state, goal_states);
 
-    std::vector<Transition> k_ts = std::vector<Transition>();
-    /*
-    k_ts.push_back(Transition(0, 1));
-    k_ts.push_back(Transition(0, 4));
-    k_ts.push_back(Transition(1, 2));
-    k_ts.push_back(Transition(2, 3));
-    k_ts.push_back(Transition(4, 5));
-    k_ts.push_back(Transition(4, 9));
-    k_ts.push_back(Transition(5, 6));
-    k_ts.push_back(Transition(6, 2));
-    k_ts.push_back(Transition(6, 7));
-    k_ts.push_back(Transition(7, 8));
-    k_ts.push_back(Transition(9, 10));
-    k_ts.push_back(Transition(10, 11));
-    */
+    vector<pair<int,int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts);
 
+    // Expand label groups into concrete labels
+    for (auto gm : label_group_mutexes) {
+        LabelGroup groupA = ler->get_group(gm.first);
+        LabelGroup groupB = ler->get_group(gm.second);
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(), initial_state);
-
-    // Print the abstract transitions, if there are few, list them.
-    if (cts.abstract_transitions.size() > 50) {
-        utils::g_log << "Found abstract transitions" << cts.abstract_transitions.size() << "!" << std::endl;
-    } else {
-        utils::g_log << "Abstract transitions:" << std::endl;
-        for (Transition at : cts.abstract_transitions) {
-            utils::g_log << to_string(at) << std::endl;
+        for (int la : groupA) {
+            for (int lb : groupB) {
+                label_mutexes.insert(OpMutex(la, lb));
+            }
         }
     }
-
-
-    shared_ptr<Labels> labels = fts->get_labels_fixed();
-    auto label_mutexes = infer_label_mutex_in_condensed_ts(cts, ler);
-
-    utils::g_log << "Found " << label_mutexes.size() << " operator mutexes!" << std::endl;
-    if (label_mutexes.size() < 250) {
-        for (auto mutex : label_mutexes) {
-            utils::g_log << mutex.first << " is operator mutex with " << mutex.second << "\t opnames: " << labels->get_name(mutex.first) << ", " << labels->get_name(mutex.second) << std::endl;
-        }
-    }
-
-    utils::g_log << "Operator mutex done" << endl << endl;
-    return fts;
 }
 
+// These macros are used as shorthands for looking up reach, transitions and converting from abstract to concrete transitions
 #define REACH_XY(x, y) (reach[x * cts.num_abstract_states + y])
 #define TRANS_IDX(idx) (cts.concrete_transitions[idx])
 #define C2A(state) (cts.concrete_to_abstract_state[state])
-
 /*
  * This function computes label mutexes, by checking for a pair of label groups (g1, g2) that all the transitions belonging
  * to g1 are transition-mutex with all transitions belonging to g2. Two transitions s_1 -l1> s_2, s_1' -l2> s_2' are transition-
  * mutex iff there is no path from s_2' to s_1 and from s_2 to s_1'. This check is done using a reachability matrix.
  */
 std::vector<std::pair<int, int>>
-OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
-        CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler) {
+OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(
+        CondensedTransitionSystem &cts) {
     // Compute reachability between states
     vector<int> reach = vector<int>(cts.num_abstract_states * cts.num_abstract_states);
     // Start from the initial state of planning problem
@@ -136,7 +128,8 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
      * We skip all labels with 0 transitions, as these are trivially op-mutex with all other labels, and there is no need
      * to store all of them.
      */
-    while (current_outer_label < ler->get_size() - 1) { // Do not consider last label
+    int last_label_group = cts.concrete_transitions.back().label_group;
+    while (current_outer_label < last_label_group) { // Do not consider last label
         int to_start = to_end; // End is exclusive
 
         // Search for the next label, could be binary search, but not really worth it
@@ -176,21 +169,7 @@ OpMutexPruningMethod::infer_label_mutex_in_condensed_ts(
         current_outer_label = TRANS_IDX(to_end).label_group;
     }
 
-    // Expand label groups into concrete labels
-    vector<pair<int,int>> label_mutexes = vector<pair<int,int>>();
-    for (auto gm : label_group_mutexes) {
-        LabelGroup groupA = ler->get_group(gm.first);
-        LabelGroup groupB = ler->get_group(gm.second);
-
-        for (int la : groupA) {
-            for (int lb : groupB) {
-                label_mutexes.emplace_back(pair<int,int>(la, lb));
-                label_mutexes.emplace_back(pair<int,int>(lb, la));
-            }
-        }
-    }
-
-    return label_mutexes;
+    return label_group_mutexes;
 }
 
 void OpMutexPruningMethod::state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach) {
@@ -214,7 +193,9 @@ void OpMutexPruningMethod::state_reachability(int int_state, int src_state, cons
  * calling itself on its neighbours, and each state then inherits its neighbours reachable states. The cts is assumed to
  * to be a DAG.
  */
-void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
+bool OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
+    bool can_reach_goal = cts.abstract_goal_states.count(state) == 1;
+
     // Check whether this state has been visited before, states can always reach themselves
     if (!REACH_XY(state, state)) {
         // Flag that the current state can reach itself
@@ -224,14 +205,21 @@ void OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, st
 
         // Compute reachability of all neighboring states
         for (auto t : outgoing_transitions) {
-            reachability(cts, reach, t.target);
+            bool target_reach_goal = reachability(cts, reach, t.target);
 
-            // Copy reachability of the target states to the current state
-            for (int j = 0; j < cts.num_abstract_states; ++j) {
-                REACH_XY(state, j) += REACH_XY(t.target, j);
+            // We only care about states that can reach a goal state
+            if (target_reach_goal) {
+                can_reach_goal = true;
+
+                // Copy reachability of the target states to the current state
+                for (int j = 0; j < cts.num_abstract_states; ++j) {
+                    REACH_XY(state, j) += REACH_XY(t.target, j);
+                }
             }
+
         }
     }
+    return can_reach_goal;
 }
 
 void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach) {
@@ -246,6 +234,17 @@ void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, con
             utils::g_log << " " << REACH_XY(i,j);
         }
         utils::g_log << endl;
+    }
+}
+
+void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
+    auto labels = fts.get_labels_fixed();
+
+    utils::g_log << "Found a total of " << label_mutexes.size() << " operator mutexes" << endl;
+    if (label_mutexes.size() < 200) {
+        for (OpMutex om : label_mutexes) {
+            utils::g_log << om.label1 << ", " << om.label2 << " : " << labels->get_name(om.label1) << ", " << labels->get_name(om.label2) << endl;
+        }
     }
 }
 
