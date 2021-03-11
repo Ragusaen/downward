@@ -1,11 +1,16 @@
 #! /usr/bin/env python
 
 import os
-from lab import tools
+
+from pathlib import Path
+
 from project import get_repo_base
+
+from lab import tools
 from lab.environments import LocalEnvironment
 from downward.experiment import FastDownwardExperiment
 
+DIR = Path(__file__).resolve().parent
 REPO = get_repo_base()
 REV = "release-20.06.0"
 SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
@@ -22,10 +27,12 @@ exp.add_algorithm("test", REPO, REV, ["--search", "astar(merge_and_shrink(label_
 exp.add_suite(BENCHMARKS_DIR, SUITE)
 
 exp.add_fetcher(name="fetch")
+
 exp.add_parser(exp.EXITCODE_PARSER)
 exp.add_parser(exp.TRANSLATOR_PARSER)
 exp.add_parser(exp.SINGLE_SEARCH_PARSER)
 exp.add_parser(exp.PLANNER_PARSER)
+exp.add_parser(DIR / "parser.py")
 
 exp.run_steps()
 
