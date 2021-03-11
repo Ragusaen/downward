@@ -174,22 +174,6 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(
     return label_group_mutexes;
 }
 
-void OpMutexPruningMethod::state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach) {
-    for (int state_j = 0; state_j < cts.num_abstract_states; state_j++) {
-        if (!REACH_XY(src_state, state_j)) {
-            size_t i;
-            for (i = 0; cts.abstract_transitions[i].src != int_state && i < cts.abstract_transitions.size(); ++i);
-            for (; cts.abstract_transitions[i].src == int_state && i < cts.abstract_transitions.size(); ++i) {
-                if (cts.abstract_transitions[i].target == state_j) {
-                    REACH_XY(src_state, state_j) = true;
-                    state_reachability(state_j, src_state, cts, reach);
-                    break;
-                }
-            }
-        }
-    }
-}
-
 /*
  * This function computes the reach between abstract states in the CondensedTransitionSystem. It does so by recursively
  * calling itself on its neighbours, and each state then inherits its neighbours reachable states. The cts is assumed to
