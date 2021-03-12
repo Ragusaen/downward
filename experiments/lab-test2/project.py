@@ -169,8 +169,10 @@ def add_absolute_report(exp, *, name=None, outfile=None, **kwargs):
         outfile = Path(exp.eval_dir) / outfile
 
     exp.add_report(report, name=name, outfile=outfile)
-    if not REMOTE:
-        exp.add_step(f"open-{name}", subprocess.call, ["xdg-open", outfile])
+    
+    #if not REMOTE:
+    
+    exp.add_step(f"open-{name}", subprocess.call, ["xdg-open", outfile])
     exp.add_step(f"publish-{name}", subprocess.call, ["publish", outfile])
 
 

@@ -15,7 +15,7 @@ SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
 ENV = project.LocalEnvironment(processes=2)
 
 CONFIGS = [
-    (f"{index:02d}-{h_nick}", ["--search", f"eager_greedy([{h}])"])
+    (f"{index:02d}-{h_nick}", ["--search", f"astar({h})"])
     for index, (h_nick, h) in enumerate(
         [
             ("cg", "cg(transform=adapt_costs(one))"),

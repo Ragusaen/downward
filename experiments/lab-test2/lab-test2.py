@@ -4,29 +4,76 @@ import os
 
 from pathlib import Path
 
-from project import get_repo_base
+import project
 
 from lab import tools
 from lab.environments import LocalEnvironment
 from downward.experiment import FastDownwardExperiment
+from downward.reports.absolute import AbsoluteReport
+from downward.reports.scatter import ScatterPlotReport
 
-DIR = Path(__file__).resolve().parent
-REPO = get_repo_base()
-REV = "release-20.06.0"
-SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
-BENCHMARKS_DIR = os.environ["DOWNWARD_BENCHMARKS"]
 
 env = LocalEnvironment(processes=2)
 exp = FastDownwardExperiment(environment=env)
 
+# Build
+
 exp.add_step("build", exp.build)
+
+# Run
+
 exp.add_step("start", exp.start_runs)
 
-exp.add_algorithm("test", REPO, REV, ["--search", "astar(merge_and_shrink(label_reduction=none,op_mutex=op_mutex()))"], build_options = [], driver_options = [])
+# Search algorithms
 
-exp.add_suite(BENCHMARKS_DIR, SUITE)
+REPO = project.get_repo_base()
+REV = "lab-test"
+
+CONFIGS = [
+    (f"{index:02d}-{h_nick}", ["--search", f"astar({h})"])
+    for index, (h_nick, h) in enumerate(
+        [
+            ("cg", "cg(transform=adapt_costs(one))"),
+            ("mas", "merge_and_shrink(merge_strategy=merge_stateless(merge_selector=score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order(atomic_ts_order=reverse_level,product_ts_order=new_to_old,atomic_before_product=true)])),shrink_strategy=shrink_bisimulation(greedy=false),label_reduction=exact(before_shrinking=true,before_merging=false),max_states=50000,threshold_before_merge=1)"),
+            ("mas with op-mutex shizzle", "merge_and_shrink(op_mutex=op_mutex())"),
+        ],
+        start=1,
+    )
+]
+
+BUILD_OPTIONS = []
+DRIVER_OPTIONS = []
+
+for config_nick, config in CONFIGS:
+    exp.add_algorithm(
+        config_nick,
+        REPO,
+        REV,
+        config,
+        build_options=BUILD_OPTIONS,
+        driver_options=DRIVER_OPTIONS,
+    )
+
+#Domains and problems. must use environment variables or have benchmarks and downward REPO in same folder
+
+SUITE = ["airport"]
+exp.add_suite("../../../benchmarks", SUITE)
+
+
+# If using environment variables
+
+# BENCHMARKS_DIR = os.environ["DOWNWARD_BENCHMARKS"]
+# exp.add_suite(BENCHMARKS_DIR, SUITE)
+
+
+
+# Output fetching
 
 exp.add_fetcher(name="fetch")
+
+# Parsers for fetching
+
+DIR = Path(__file__).resolve().parent
 
 exp.add_parser(exp.EXITCODE_PARSER)
 exp.add_parser(exp.TRANSLATOR_PARSER)
@@ -34,99 +81,33 @@ exp.add_parser(exp.SINGLE_SEARCH_PARSER)
 exp.add_parser(exp.PLANNER_PARSER)
 exp.add_parser(DIR / "parser.py")
 
-exp.run_steps()
+# Absolute HTML Report
 
-print("hello world")
+ATTRIBUTES = [
+    "error",
+    "run_dir",
+    "search_start_time",
+    "search_start_memory",
+    "total_time",
+    "initial_h_value",
+    "h_values",
+    "coverage",
+    "expansions",
+    "memory",
+    project.EVALUATIONS_PER_TIME,
+]
 
+report = AbsoluteReport(attributes=ATTRIBUTES, filter=[project.add_evaluations_per_time])
 
+name = "test-abs"
+outfile = f"{name}.{report.output_format}"
 
+exp.add_report(report, name=name, outfile=outfile)
 
+# ScatterPlot Report
 
+# report = ScatterPlotReport(attributes = "foo")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# import os
-
-# import project
-
-
-# REPO = project.get_repo_base()
-# BENCHMARKS_DIR = os.environ["DOWNWARD_BENCHMARKS"]
-# # if project.REMOTE:
-# #     SUITE = project.SUITE_SATISFICING
-# #     ENV = project.BaselSlurmEnvironment(email="my.name@unibas.ch")
-# # else:
-# SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
-# ENV = project.LocalEnvironment(processes=2)
-
-# CONFIGS = [
-#     (f"{index:02d}-{h_nick}", ["--search", f"eager_greedy([{h}])"])
-#     for index, (h_nick, h) in enumerate(
-#         [
-#             ("cg", "cg(transform=adapt_costs(one))"),
-#             ("ff", "ff(transform=adapt_costs(one))"),
-#             ("test", "merge_and_shrink(label_reduction=none,op_mutex=op_mutex())"),
-#         ],
-#         start=1,
-#     )
-# ]
-# BUILD_OPTIONS = []
-# DRIVER_OPTIONS = ["--overall-time-limit", "5m"]
-# REVS = [
-#     ("release-20.06.0", "20.06"),
-# ]
-# ATTRIBUTES = [
-#     "error",
-#     "run_dir",
-#     "search_start_time",
-#     "search_start_memory",
-#     "total_time",
-#     "initial_h_value",
-#     "h_values",
-#     "coverage",
-#     "expansions",
-#     "memory",
-#     project.EVALUATIONS_PER_TIME,
-# ]
-
-# exp = project.CommonExperiment(environment=ENV)
-# for config_nick, config in CONFIGS:
-#     for rev, rev_nick in REVS:
-#         algo_name = f"{rev_nick}:{config_nick}" if rev_nick else config_nick
-#         exp.add_algorithm(
-#             algo_name,
-#             REPO,
-#             rev,
-#             config,
-#             build_options=BUILD_OPTIONS,
-#             driver_options=DRIVER_OPTIONS,
-#         )
-# exp.add_suite(BENCHMARKS_DIR, SUITE)
-
-# project.add_absolute_report(
-#     exp, attributes=ATTRIBUTES, filter=[project.add_evaluations_per_time]
-# )
-
-# attributes = ["expansions"]
-# pairs = [
-#     ("20.06:01-cg", "20.06:02-ff"),
-# ]
 # suffix = "-rel" if project.RELATIVE else ""
 # for algo1, algo2 in pairs:
 #     for attr in attributes:
@@ -142,4 +123,4 @@ print("hello world")
 #             name=f"{exp.name}-{algo1}-vs-{algo2}-{attr}{suffix}",
 #         )
 
-# exp.run_steps()
+exp.run_steps()
