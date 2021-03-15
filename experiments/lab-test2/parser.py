@@ -49,6 +49,16 @@ def main():
         r"f = (\d+) \[1 evaluated, 0 expanded, t=.+s, \d+ KB\]",
         type=int,
     )
+    parser.add_pattern(
+        "operator_mutexes_num",
+        r"Total number of operator mutexes: (\d+)\n",
+        type=int,
+    )
+    parser.add_pattern(
+        "operator_mutex_time",
+        r"Operator Mutex total time: (.+)s\n",
+        type=float,
+    )
     parser.add_repeated_pattern(
         "h_values",
         r"New best heuristic value for .+: (\d+)\n",
