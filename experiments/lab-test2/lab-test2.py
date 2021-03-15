@@ -33,7 +33,6 @@ CONFIGS = [
     (f"{index:02d}-{h_nick}", ["--search", f"astar({h})"])
     for index, (h_nick, h) in enumerate(
         [
-            ("cg", "cg(transform=adapt_costs(one))"),
             ("mas", "merge_and_shrink(merge_strategy=merge_stateless(merge_selector=score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order(atomic_ts_order=reverse_level,product_ts_order=new_to_old,atomic_before_product=true)])),shrink_strategy=shrink_bisimulation(greedy=false),label_reduction=exact(before_shrinking=true,before_merging=false),max_states=50000,threshold_before_merge=1)"),
             ("mas with op-mutex shizzle", "merge_and_shrink(op_mutex=op_mutex())"),
         ],
@@ -56,7 +55,7 @@ for config_nick, config in CONFIGS:
 
 #Domains and problems. must use environment variables or have benchmarks and downward REPO in same folder
 
-SUITE = ["airport"]
+SUITE = ["depot:p01.pddl", "grid:prob01.pddl", "gripper:prob01.pddl"]
 exp.add_suite("../../../benchmarks", SUITE)
 
 
