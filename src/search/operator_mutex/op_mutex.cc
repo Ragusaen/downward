@@ -256,7 +256,7 @@ void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
         label_mutexes.emplace(m.label2, m.label1);
     }
 
-    utils::g_log << "Found a total of " << label_mutexes.size() << " operator mutexes" << endl;
+    utils::g_log << "Total number of operator mutexes: " << label_mutexes.size() << endl;
     utils::g_log << "Operator Mutex total time: " << utils::Duration(runtime) << endl;
     if (label_mutexes.size() < 200) {
         for (OpMutex om : label_mutexes) {
