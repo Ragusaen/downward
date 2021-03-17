@@ -22,10 +22,6 @@ namespace op_mutex_pruning {
         return a.label1 == b.label1 && a.label2 == b.label2;
     }
 
-    enum class AlgoOption {
-        MAIN_ALGO,
-        TEST_ALGO
-    };
 }
 
 namespace std {
@@ -40,6 +36,10 @@ namespace std {
 
 namespace op_mutex_pruning {
 
+    enum class AlgoOption {
+        MAIN_ALGO,
+        TEST_ALGO
+    };
 
 class OpMutexPruningMethod {
     AlgoOption algo_option;
@@ -63,7 +63,6 @@ public:
     void infer_label_group_mutex_in_ts(TransitionSystem &ts);
 
     double runtime = 0.0;
-
 
 };
 
