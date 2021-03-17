@@ -17,9 +17,15 @@ namespace op_mutex_pruning {
 
         OpMutex(int l1, int l2) : label1(l1), label2(l2) {}
     };
+
     static inline bool operator==(const OpMutex a, const OpMutex b) {
         return a.label1 == b.label1 && a.label2 == b.label2;
     }
+
+    enum class AlgoOption {
+        MAIN_ALGO,
+        TEST_ALGO
+    };
 }
 
 namespace std {
@@ -36,15 +42,16 @@ namespace op_mutex_pruning {
 
 
 class OpMutexPruningMethod {
+    AlgoOption algo_option;
 private:
     unordered_set<OpMutex> label_mutexes;
 
 public:
     explicit OpMutexPruningMethod(const options::Options &opts);
 
-    void state_reachability(int int_state, int src_state, const CondensedTransitionSystem &cts, std::vector<bool> &reach);
-
     bool reachability(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
+    void reachability_non_goal(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
+
     static void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
 
     void run(FactoredTransitionSystem &fts);
@@ -55,8 +62,9 @@ public:
 
     void infer_label_group_mutex_in_ts(TransitionSystem &ts);
 
-    bool reachability_non_goal(const CondensedTransitionSystem &cts, vector<int> &reach, const int state);
     double runtime = 0.0;
+
+
 };
 
 }

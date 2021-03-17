@@ -184,7 +184,7 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
     }
 }
 
-//Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on source state.
+// Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on source state.
 std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) const {
     std::vector<Transition> ret = std::vector<Transition>();
 
