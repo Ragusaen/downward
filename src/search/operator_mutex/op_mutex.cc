@@ -9,6 +9,7 @@
 #include "../merge_and_shrink/label_equivalence_relation.h"
 #include "../merge_and_shrink/labels.h"
 #include "condensed_transition_system.h"
+#include "../algorithms/dynamic_bitset.h"
 #include <iostream>
 #include <string>
 #include <utility>
@@ -20,6 +21,7 @@ using options::OptionParser;
 using options::Options;
 using utils::ExitCode;
 using namespace merge_and_shrink;
+using namespace dynamic_bitset;
 
 template<typename T>
 std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
@@ -54,7 +56,7 @@ void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
         TransitionSystem ts = fts.get_transition_system(fts_i);
-        if (ts.get_num_states() < 5000)
+        if (ts.get_num_states() < 5000 && ts.get_num_states() > 2)
             infer_label_group_mutex_in_ts(ts);
     }
 
@@ -84,7 +86,10 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
     CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);
 
-    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts);
+    // Compute unreachable states based on already known op-mutexes
+    unordered_set<int> unreachable_states;// = find_unreachable_states_by_op_mutexes(cts, ler);
+
+    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_states);
 
     // Expand label groups into concrete labels
     for (auto gm : label_group_mutexes) {
@@ -110,12 +115,12 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 * mutex iff there is no path from s_2' to s_1 and from s_2 to s_1'. This check is done using a reachability matrix.
 */
 std::vector<std::pair<int, int>>
-OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts) {
+OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts, unordered_set<int> &unreachable_states) {
     // Compute reachability between states
     vector<int> reach = vector<int>(cts.num_abstract_states * cts.num_abstract_states);
 
     // Start from the initial state of planning problem
-    reachability_strategy->run(cts, reach);
+    reachability_strategy->run(cts, reach, unreachable_states);
     //reachability(cts, reach, cts.initial_abstract_state);
 
     // Sort transitions on label group
@@ -148,9 +153,9 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
 
         // Start looking from the next label group up, we only need to check half of the combinations because label
         // mutexes are symmetric
-        int current_inner_label = current_outer_label + 1;
+        int current_inner_label = current_outer_label;
 
-        size_t ti = to_end;
+        size_t ti = to_start;
 
         bool is_label_mutex = true;
         for (; ti < cts.concrete_transitions.size(); ti++) {
@@ -181,6 +186,95 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
 
     return label_group_mutexes;
 }
+
+unordered_set<int> OpMutexPruningMethod::find_unreachable_states_by_op_mutexes(
+        const CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler)
+{
+    std::vector<int> remaining_parents(cts.num_abstract_states);
+    CountParents(cts, remaining_parents, cts.initial_abstract_state);
+
+
+    std::unordered_set<int> ready_states;
+
+    assert(remaining_parents[cts.initial_abstract_state] == 0);
+    ready_states.insert(cts.initial_abstract_state);
+
+    size_t num_label_groups = ler->get_size();
+    vector<DynamicBitset<>> state_labels = vector<DynamicBitset<>>(cts.num_abstract_states, DynamicBitset<>(num_label_groups));
+    std::vector<bool> has_visited(cts.num_abstract_states, false);
+
+    utils::g_log << "Num abstract states: " << cts.num_abstract_states << endl;
+
+    while (!ready_states.empty()) {
+        int state = *ready_states.begin();
+        ready_states.erase(state);
+
+        std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+        for (Transition t  : outgoing_transitions) {
+            if (t.target == state)
+                continue;
+
+            remaining_parents[t.target]--;
+            if (remaining_parents[t.target] == 0)
+                ready_states.insert(t.target);
+
+            if (!has_visited[t.target]) {
+                state_labels[t.target] |= state_labels[state];
+                state_labels[t.target].set(t.label_group);
+                has_visited[t.target] = true;
+            } else {
+                utils::g_log << t.label_group << endl;
+                auto temp = DynamicBitset<>(num_label_groups);
+                temp.set(t.label_group);
+                temp |= state_labels[state];
+                state_labels[t.target] &= temp;
+            }
+        }
+    }
+
+    unordered_set<int> unreachable_states;
+
+    for (int state = 0; state < cts.num_abstract_states; state++) {
+        auto bitset = state_labels[state];
+        vector<int> labels;
+        for (size_t i = 0; i < num_label_groups; i++) {
+            if (bitset[i]) {
+                // If this label group has more than 1 label, they can both be used and none of them are therefore necessary
+                if (ler->get_group(i).size() == 1) {
+                    labels.emplace_back(*ler->get_group(i).begin());
+                }
+            }
+        }
+
+        for (size_t l1 = 0; l1 < labels.size(); l1++) {
+            for (size_t l2 = l1 + 1; l2 < labels.size(); l2++) {
+                if (label_mutexes.count(OpMutex(labels[l1], labels[l2]))) {
+                    unreachable_states.insert(state);
+                    goto state_done;
+                }
+            }
+        }
+        state_done:;
+    }
+
+    return unreachable_states;
+}
+
+void OpMutexPruningMethod::CountParents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state) {
+    std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+
+    for (Transition t : outgoing_transitions) {
+        if (t.target == state)
+            continue;
+
+        if (parents[t.target] == 0) {
+            CountParents(cts, parents, t.target);
+        }
+
+        parents[t.target]++;
+    }
+}
+
 
 void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach) {
     utils::g_log << " ";

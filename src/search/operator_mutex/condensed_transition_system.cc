@@ -58,26 +58,12 @@ void CondensedTransitionSystem::discover_sccs() {
 
     // Generate abstract transitions
     for (Transition & ct : concrete_transitions) {
-        Transition at = Transition(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target]);
-        abstract_transitions.push_back(at);
+        if (concrete_to_abstract_state[ct.src] != concrete_to_abstract_state[ct.target])
+            abstract_transitions.emplace_back(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group);
     }
 
     // Sort abstract transitions by source, if equal then by target.
     std::sort(abstract_transitions.begin(), abstract_transitions.end(), transition_comparison);
-
-    // Remove duplicates by copying transitions into a new vector and skipping duplicates
-    vector<Transition> abstract_transitions_no_dup = vector<Transition>();
-    if (!abstract_transitions.empty()) {
-        Transition last = abstract_transitions[0];
-        abstract_transitions_no_dup.push_back(last);
-        for (size_t i = 1; i < abstract_transitions.size(); ++i) {
-            if (abstract_transitions[i] != last) {
-                abstract_transitions_no_dup.push_back(abstract_transitions[i]);
-                last = abstract_transitions[i];
-            }
-        }
-    }
-    abstract_transitions = abstract_transitions_no_dup;
 
     // Generate mapping of concrete to abstract transitions
     for (Transition & ct : concrete_transitions) {

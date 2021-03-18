@@ -58,12 +58,18 @@ public:
 
     void finalize(FactoredTransitionSystem &fts);
 
-    vector<pair<int, int>> infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts);
-
     void infer_label_group_mutex_in_ts(TransitionSystem &ts);
 
     double runtime = 0.0;
 
+    void CountParents(const CondensedTransitionSystem &cts, vector<int> &parents, int state);
+
+    unordered_set<int>
+    find_unreachable_states_by_op_mutexes(const CondensedTransitionSystem &cts,
+                                          shared_ptr<LabelEquivalenceRelation> ler);
+
+    vector<pair<int, int>>
+    infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts, unordered_set<int> &unreachable_states);
 };
 
 }
