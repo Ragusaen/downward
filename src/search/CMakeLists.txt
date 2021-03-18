@@ -27,7 +27,7 @@ fast_downward_set_linker_flags()
 
 # Collect source files needed for the active plugins.
 include("${CMAKE_CURRENT_SOURCE_DIR}/DownwardFiles.cmake")
-add_executable(downward ${PLANNER_SOURCES})
+add_executable(downward ${PLANNER_SOURCES} operator_mutex/reachability_strategy.cc operator_mutex/reachability_strategy.h)
 
 ## == Includes ==
 

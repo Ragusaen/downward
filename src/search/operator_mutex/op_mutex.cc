@@ -29,9 +29,19 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
     return ret;
 }
 
+
 namespace op_mutex_pruning {
-OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts)
-        : algo_option(opts.get<AlgoOption>("algo_option")) {}
+OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts){
+    auto reachability_option = opts.get<ReachabilityOption>("reachability_strategy");
+    switch(reachability_option){
+        case ReachabilityOption::GOAL_REACHABILITY:
+            reachability_strategy = unique_ptr<ReachabilityStrategy>(new GoalReachability());
+            break;
+        case ReachabilityOption::NO_GOAL_REACHABILITY:
+            reachability_strategy = unique_ptr<ReachabilityStrategy>(new NoGoalReachability());
+            break;
+    }
+}
 
 bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
 
@@ -105,7 +115,8 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     vector<int> reach = vector<int>(cts.num_abstract_states * cts.num_abstract_states);
 
     // Start from the initial state of planning problem
-    reachability(cts, reach, cts.initial_abstract_state);
+    reachability_strategy->run(cts, reach);
+    //reachability(cts, reach, cts.initial_abstract_state);
 
     // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
@@ -131,12 +142,12 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     while (current_outer_label < last_label_group) { // Do not consider last label
         int to_start = to_end; // End is exclusive
 
-    // Search for the next label, could be binary search, but not really worth it
+        // Search for the next label, could be binary search, but not really worth it
         for (; TRANS_IDX(to_end).label_group <= current_outer_label &&
                to_end < cts.concrete_transitions.size(); to_end++);
 
-    // Start looking from the next label group up, we only need to check half of the combinations because label
-    // mutexes are symmetric
+        // Start looking from the next label group up, we only need to check half of the combinations because label
+        // mutexes are symmetric
         int current_inner_label = current_outer_label + 1;
 
         size_t ti = to_end;
@@ -169,60 +180,6 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     }
 
     return label_group_mutexes;
-}
-
-/*
-* This function computes the reach between abstract states in the CondensedTransitionSystem. It does so by recursively
-* calling itself on its neighbours, and each state then inherits its neighbours reachable states. The cts is assumed to
-* to be a DAG.
-*/
-bool OpMutexPruningMethod::reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
-    bool can_reach_goal = cts.abstract_goal_states.count(state) == 1;
-
-    // Check whether this state has been visited before, states can always reach themselves
-    if (!REACH_XY(state, state)) {
-    // Flag that the current state can reach itself
-        REACH_XY(state, state) = 1;
-
-        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
-
-    // Compute reachability of all neighboring states
-        for (auto t : outgoing_transitions) {
-            bool target_reach_goal = reachability(cts, reach, t.target);
-
-            // We only care about states that can reach a goal state
-            if (target_reach_goal) {
-                can_reach_goal = true;
-
-                // Copy reachability of the target states to the current state
-                for (int j = 0; j < cts.num_abstract_states; ++j) {
-                    REACH_XY(state, j) += REACH_XY(t.target, j);
-                }
-            }
-
-        }
-    }
-    return can_reach_goal;
-}
-
-void OpMutexPruningMethod::reachability_non_goal(const CondensedTransitionSystem &cts, std::vector<int> &reach, const int state) {
-    // Check whether this state has been visited before, states can always reach themselves
-    if (!REACH_XY(state, state)) {
-        // Flag that the current state can reach itself
-        REACH_XY(state, state) = 1;
-
-        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
-
-        // Compute reachability of all neighboring states
-        for (auto t : outgoing_transitions) {
-            reachability_non_goal(cts, reach, t.target);
-
-            // Copy reachability of the target states to the current state
-            for (int j = 0; j < cts.num_abstract_states; ++j) {
-                REACH_XY(state, j) += REACH_XY(t.target, j);
-            }
-        }
-    }
 }
 
 void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach) {
@@ -258,14 +215,15 @@ void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
 }
 
 void add_algo_options_to_parser(OptionParser &parser) {
-    vector<string> algo_options;
-    algo_options.emplace_back("main_algo");
-    algo_options.emplace_back("test_algo");
-    parser.add_enum_option<AlgoOption>(
-            "algo_option",
-            algo_options,
-            "This option is user as a test example for different parser options!",
-            "main_algo"
+    vector<string> reachability_options;
+    reachability_options.emplace_back("goal");
+    reachability_options.emplace_back("no_goal");
+    parser.add_enum_option<ReachabilityOption>(
+            "reachability_strategy",
+            reachability_options,
+            "This option is used for determining the strategy used for computing which states are reachable. "
+            "The default strategy is 'goal'. Other strategies are 'no_goal'.",
+            "goal"
     );
 }
 
