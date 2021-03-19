@@ -48,6 +48,7 @@ class OpMutexPruningMethod {
 
 private:
     unordered_set<OpMutex> label_mutexes;
+    bool use_previous_ops;
 
 public:
     explicit OpMutexPruningMethod(const options::Options &opts);

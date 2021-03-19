@@ -43,6 +43,7 @@ OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts){
             reachability_strategy = unique_ptr<ReachabilityStrategy>(new NoGoalReachability());
             break;
     }
+    use_previous_ops = opts.get<bool>("use_previous_ops");
 }
 
 bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
@@ -87,8 +88,11 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
                                                               initial_state, goal_states);
 
     // Compute unreachable states based on already known op-mutexes
-    unordered_set<int> unreachable_state = find_unreachable_states_by_op_mutexes(cts, ler);
-    utils::g_log << "Found " << unreachable_state.size() << " unreachable states" << endl;
+    unordered_set<int> unreachable_state;
+    if(use_previous_ops){
+        unreachable_state = find_unreachable_states_by_op_mutexes(cts, ler);
+        utils::g_log << "Found " << unreachable_state.size() << " unreachable states" << endl;
+    }
 
     vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_state);
 
@@ -239,10 +243,6 @@ unordered_set<int> OpMutexPruningMethod::find_unreachable_states_by_op_mutexes(
 
     unordered_set<int> unreachable_states;
 
-    for (const auto &bitset : state_labels) {
-        utils::g_log << bitset.count() << endl;
-    }
-
     for (int state = 0; state < cts.num_abstract_states; state++) {
         auto bitset = state_labels[state];
         vector<int> labels;
@@ -327,8 +327,12 @@ void add_algo_options_to_parser(OptionParser &parser) {
             reachability_options,
             "This option is used for determining the strategy used for computing which states are reachable. "
             "The default strategy is 'goal'. Other strategies are 'no_goal'.",
-            "goal"
-    );
+            "goal");
+
+    parser.add_option<bool>(
+            "use_previous_ops",
+            "Use previous operator mutexes to find unreachable states.",
+            "true");
 }
 
 static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {
