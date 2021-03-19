@@ -87,9 +87,10 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
                                                               initial_state, goal_states);
 
     // Compute unreachable states based on already known op-mutexes
-    unordered_set<int> unreachable_states;// = find_unreachable_states_by_op_mutexes(cts, ler);
+    unordered_set<int> unreachable_state = find_unreachable_states_by_op_mutexes(cts, ler);
+    utils::g_log << "Found " << unreachable_state.size() << " unreachable states" << endl;
 
-    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_states);
+    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_state);
 
     // Expand label groups into concrete labels
     for (auto gm : label_group_mutexes) {
@@ -203,16 +204,20 @@ unordered_set<int> OpMutexPruningMethod::find_unreachable_states_by_op_mutexes(
     vector<DynamicBitset<>> state_labels = vector<DynamicBitset<>>(cts.num_abstract_states, DynamicBitset<>(num_label_groups));
     std::vector<bool> has_visited(cts.num_abstract_states, false);
 
-    utils::g_log << "Num abstract states: " << cts.num_abstract_states << endl;
+    //utils::g_log << "Num abstract states: " << cts.num_abstract_states << endl;
 
     while (!ready_states.empty()) {
         int state = *ready_states.begin();
         ready_states.erase(state);
 
+        //utils::g_log << "Current state " << state << endl;
+
         std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
         for (Transition t  : outgoing_transitions) {
             if (t.target == state)
                 continue;
+
+            //utils::g_log << "Current target " << t.target << endl;
 
             remaining_parents[t.target]--;
             if (remaining_parents[t.target] == 0)
@@ -223,7 +228,7 @@ unordered_set<int> OpMutexPruningMethod::find_unreachable_states_by_op_mutexes(
                 state_labels[t.target].set(t.label_group);
                 has_visited[t.target] = true;
             } else {
-                utils::g_log << t.label_group << endl;
+                //utils::g_log << "Current label group" << t.label_group << endl;
                 auto temp = DynamicBitset<>(num_label_groups);
                 temp.set(t.label_group);
                 temp |= state_labels[state];
@@ -233,6 +238,10 @@ unordered_set<int> OpMutexPruningMethod::find_unreachable_states_by_op_mutexes(
     }
 
     unordered_set<int> unreachable_states;
+
+    for (const auto &bitset : state_labels) {
+        utils::g_log << bitset.count() << endl;
+    }
 
     for (int state = 0; state < cts.num_abstract_states; state++) {
         auto bitset = state_labels[state];

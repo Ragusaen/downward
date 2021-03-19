@@ -58,8 +58,7 @@ void CondensedTransitionSystem::discover_sccs() {
 
     // Generate abstract transitions
     for (Transition & ct : concrete_transitions) {
-        if (concrete_to_abstract_state[ct.src] != concrete_to_abstract_state[ct.target])
-            abstract_transitions.emplace_back(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group);
+        abstract_transitions.emplace_back(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group);
     }
 
     // Sort abstract transitions by source, if equal then by target.
@@ -108,7 +107,7 @@ void CondensedTransitionSystem::dfs_visit(int s, int* time, const std::vector<Tr
 
     // Iterate through transitions while source = s
     // For each transition, visit the target if it has not already been visited
-    for (; ts[i].src == s && i < ts.size(); i++) {
+    for (; i < ts.size() && ts[i].src == s; i++) {
         int target = ts[i].target;
         if (!has_visited->at(target))
             dfs_visit(target, time, ts, finishing_times, has_visited);
@@ -162,7 +161,7 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
 
     // Iterate through transitions while source = s
     // For each transition, visit the target if it has not already been visited
-    for (; ts[i].src == s && i < ts.size(); i++) {
+    for (; i < ts.size() && ts[i].src == s; i++) {
         int target = ts[i].target;
         if (!has_visited->at(target)) {
             tdfs_visit(target, current_scc, ts, has_visited);
@@ -181,7 +180,7 @@ std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from
                               [](Transition t, int s) { return t.src < s; }) - abstract_transitions.begin();
 
     // Add transitions where src node is equal to parameter 'source'
-    for (; abstract_transitions[l].src == source && l < abstract_transitions.size(); l++)
+    for (; l < abstract_transitions.size() && abstract_transitions[l].src == source; l++)
         ret.emplace_back(abstract_transitions[l]);
 
     return ret;
