@@ -303,7 +303,8 @@ void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, con
 void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     auto labels = fts.get_labels_fixed();
 
-    for (OpMutex m : label_mutexes) {
+    unordered_set<OpMutex> dup = unordered_set<OpMutex>(label_mutexes);
+    for (auto m : dup) {
         label_mutexes.emplace(m.label2, m.label1);
     }
 
