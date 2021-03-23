@@ -33,7 +33,7 @@ bool GoalReachability::reachability(const CondensedTransitionSystem &cts, vector
         // Flag that the current state can reach itself
         REACH_XY(state, state) = true;
 
-        auto outgoing_transitions = cts.get_abstract_transitions_from_state_no_dups(state);
+        auto outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
         // Compute reachability of all neighboring states
         for (auto t : outgoing_transitions) {
