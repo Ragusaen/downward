@@ -34,6 +34,7 @@ public:
     Transition lookup_concrete(std::vector<Transition>::iterator t);
 
     std::vector<Transition> get_abstract_transitions_from_state(int source) const;
+    std::vector<Transition> get_abstract_transitions_from_state_no_dups(int source) const;
 
 private:
 

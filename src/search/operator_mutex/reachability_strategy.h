@@ -18,22 +18,22 @@ void reach_compare(const CondensedTransitionSystem &cts, const std::unordered_se
 class ReachabilityStrategy {
 
 public:
-    virtual std::vector<int> run(const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable_states) = 0;
+    virtual std::vector<bool> run(const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable_states) = 0;
 };
 
 class GoalReachability : public ReachabilityStrategy {
 public:
-    std::vector<int> run(const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable_states) override;
+    std::vector<bool> run(const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable_states) override;
 private:
-    bool reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, int state, const std::unordered_set<int> &unreachable_states);
+    bool reachability(const CondensedTransitionSystem &cts, std::vector<bool> &reach, int state, const std::unordered_set<int> &unreachable_states);
 
 };
 
 class NoGoalReachability : public ReachabilityStrategy {
 public:
-    std::vector<int> run(const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable_states) override;
+    std::vector<bool> run(const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable_states) override;
 private:
-    void reachability(const CondensedTransitionSystem &cts, std::vector<int> &reach, int state, const std::unordered_set<int> &unreachable_states);
+    void reachability(const CondensedTransitionSystem &cts, std::vector<bool> &reach, int state, const std::unordered_set<int> &unreachable_states);
 
 };
 }
