@@ -185,3 +185,27 @@ std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from
 
     return ret;
 }
+
+// Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on source state. Removes duplicates.
+std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state_no_dups(int source) const {
+    std::vector<Transition> ret = std::vector<Transition>();
+
+    assert(std::is_sorted(abstract_transitions.begin(), abstract_transitions.end(), [](Transition t1, Transition t2) { return t1.src < t2.src; }));
+
+    // Use binary search to find the first index with the src = source
+    size_t l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
+                                [](Transition t, int s) { return t.src < s; }) - abstract_transitions.begin();
+
+
+    int last_source = -1;
+    int last_target = -1;
+    // Add transitions where src node is equal to parameter 'source'
+    for (; l < abstract_transitions.size() && abstract_transitions[l].src == source; l++){
+        if(last_source != abstract_transitions[l].src || last_target != abstract_transitions[l].target)
+            ret.emplace_back(abstract_transitions[l]);
+        last_source = abstract_transitions[l].src;
+        last_target = abstract_transitions[l].target;
+    }
+
+    return ret;
+}

@@ -123,7 +123,7 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 std::vector<std::pair<int, int>>
 OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts, unordered_set<int> &unreachable_states) {
     // Start from the initial state of planning problem
-    vector<int> reach = reachability_strategy->run(cts, unreachable_states);
+    vector<bool> reach = reachability_strategy->run(cts, unreachable_states);
 
     // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
