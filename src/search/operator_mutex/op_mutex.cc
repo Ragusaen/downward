@@ -125,15 +125,6 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     // Start from the initial state of planning problem
     vector<int> reach = reachability_strategy->run(cts, unreachable_states);
 
-//    if (unreachable_states.size() > 0) {
-//        for (int s : unreachable_states) {
-//            utils::g_log << s << endl;
-//        }
-//        utils::g_log << "BREAK" << endl;
-//    }
-//
-//    reach_compare_prev(cts, unreachable_states, unique_ptr<reachability::GoalReachability>(new reachability::GoalReachability));
-
     // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
               [](Transition a, Transition b) { return a.label_group < b.label_group; });

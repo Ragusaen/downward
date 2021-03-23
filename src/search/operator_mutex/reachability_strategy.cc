@@ -52,7 +52,9 @@ bool GoalReachability::reachability(const CondensedTransitionSystem &cts, vector
 
                 // Copy reachability of the target states to the current state
                 for (int j = 0; j < cts.num_abstract_states; ++j) {
-                    REACH_XY(state, j) += REACH_XY(t.target, j);
+                    //REACH_XY(state, j) += REACH_XY(t.target, j);
+                    if(REACH_XY(state, j) == 0 && REACH_XY(t.target, j) != 0)
+                        REACH_XY(state, j) = 1;
                 }
             }
 
@@ -90,7 +92,9 @@ void NoGoalReachability::reachability(const CondensedTransitionSystem &cts, std:
 
             // Copy reachability of the target states to the current state
             for (int j = 0; j < cts.num_abstract_states; ++j) {
-                REACH_XY(state, j) += REACH_XY(t.target, j);
+                //REACH_XY(state, j) += REACH_XY(t.target, j);
+                if(REACH_XY(state, j) == 0 && REACH_XY(t.target, j) != 0)
+                    REACH_XY(state, j) = 1;
             }
         }
     }
