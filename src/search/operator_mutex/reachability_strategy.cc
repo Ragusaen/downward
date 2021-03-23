@@ -61,7 +61,7 @@ bool GoalReachability::reachability(const CondensedTransitionSystem &cts, vector
         }
 
         if (can_reach_goal) {
-            REACH_XY(state, state) = 1;
+            REACH_XY(state, state) = true;
         }
     }
 
@@ -144,8 +144,7 @@ void reach_compare_prev(
     for (int i = 0; i < cts.num_abstract_states; i++) {
         for (int j = 0; j < cts.num_abstract_states; j++) {
             std::size_t idx = i * cts.num_abstract_states + j;
-            if (reach_prev[idx] == 0
-                && reach_no_prev[idx] != 0)
+            if (!reach_prev[idx] && reach_no_prev[idx])
             {
                 utils::g_log << "Prev can reach " << i << "->" << j << " but no prev cannot" << endl;
             }
