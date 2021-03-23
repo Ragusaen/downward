@@ -126,7 +126,7 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     vector<int> reach = reachability_strategy->run(cts, unreachable_states);
 
     // Print out the comparison of no_goal and goal
-    reach_compare(cts, unreachable_states);
+    //reach_compare(cts, unreachable_states);
 
     // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
