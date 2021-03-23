@@ -10,6 +10,7 @@
 #include "../merge_and_shrink/labels.h"
 #include "condensed_transition_system.h"
 #include "../algorithms/dynamic_bitset.h"
+#include "reachability_strategy.h"
 #include <iostream>
 #include <string>
 #include <utility>
@@ -121,12 +122,11 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 */
 std::vector<std::pair<int, int>>
 OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts, unordered_set<int> &unreachable_states) {
-    // Compute reachability between states
-    vector<int> reach = vector<int>(cts.num_abstract_states * cts.num_abstract_states);
-
     // Start from the initial state of planning problem
-    reachability_strategy->run(cts, reach, unreachable_states);
-    //reachability(cts, reach, cts.initial_abstract_state);
+    vector<int> reach = reachability_strategy->run(cts, unreachable_states);
+
+    // Print out the comparison of no_goal and goal
+    reach_compare(cts, unreachable_states);
 
     // Sort transitions on label group
     std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
@@ -284,21 +284,6 @@ void OpMutexPruningMethod::CountParents(const CondensedTransitionSystem &cts, st
     }
 }
 
-
-void OpMutexPruningMethod::reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach) {
-    utils::g_log << " ";
-    for (int i = 0; i < cts.num_abstract_states; ++i) {
-        utils::g_log << " " << i;
-    }
-    utils::g_log << endl;
-    for (int i = 0; i < cts.num_abstract_states; ++i) {
-        utils::g_log << i;
-        for (int j = 0; j < cts.num_abstract_states; ++j) {
-            utils::g_log << " " << REACH_XY(i, j);
-        }
-        utils::g_log << endl;
-    }
-}
 
 void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     auto labels = fts.get_labels_fixed();

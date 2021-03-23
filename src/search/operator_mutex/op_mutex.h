@@ -53,8 +53,6 @@ private:
 public:
     explicit OpMutexPruningMethod(const options::Options &opts);
 
-    static void reach_print(const CondensedTransitionSystem &cts, const vector<int> &reach);
-
     void run(FactoredTransitionSystem &fts);
 
     void finalize(FactoredTransitionSystem &fts);
