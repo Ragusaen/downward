@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>test-abs</title>
+<meta name="generator" content="https://txt2tags.org">
+<style type="text/css">
+blockquote{margin: 1em 2em; border-left: 2px solid #999;
+  font-style: oblique; padding-left: 1em;}
+blockquote:first-letter{margin: .2em .1em .1em 0; font-size: 160%; font-weight: bold;}
+blockquote:first-line{font-weight: bold;}
+body{font-family: sans-serif;}
+hr{background-color:#000;border:0;color:#000;}
+hr.heavy{height:2px;}
+hr.light{height:1px;}
+img{border:0;display:block;}
+img.right{margin:0 0 0 auto;}
+img.center{border:0;margin:0 auto;}
+table{border-collapse: collapse;}
+table th,table td{padding: 3px 7px 2px 7px;}
+table th{background-color: lightgrey;}
+table.center{margin-left:auto; margin-right:auto;}
+.center{text-align:center;}
+.right{text-align:right;}
+.left{text-align:left;}
+.tableborder,.tableborder td,.tableborder th{border:1px solid #000;}
+.underline{text-decoration:underline;}
+</style>
+<style type="text/css">
+    body {
+        font-family: Ubuntu, Helvetica, Arial, sans-serif;
+    }
+    table {
+        border-collapse: collapse;
+    }
+    table th {
+        text-align: left;
+        padding-top: 5px;
+        padding-bottom: 4px;
+        background-color: #aaa;
+        color: #ffffff;
+    }
+</style>
+<script type="text/javascript">
+function toggle_element(element) {
+    if (element.style.display == "none") {
+        element.style.display = "";
+    } else {
+        element.style.display = "none";
+    }
+}
+
+function find_next(element, classname) {
+    element = element.nextSibling;
+    while(element.nodeName != classname)
+        element = element.nextSibling;
+    return element;
+}
+
+function toggle_table(toggle_button) {
+    var table = find_next(toggle_button, "TABLE");
+    toggle_element(table);
+    if (toggle_button.innerHTML == "Show table") {
+        toggle_button.innerHTML = "Hide table";
+    } else {
+        toggle_button.innerHTML = "Show table";
+    }
+}
+
+function show_table(section) {
+    heading = section.children[0];
+    var toggle_button = find_next(heading, "BUTTON");
+    var table = find_next(toggle_button, "TABLE");
+    table.style.display = "";
+    toggle_button.innerHTML = "Hide table";
+}
+
+function show_main_tables() {
+    var names = ["unexplained-errors", "info", "summary"];
+    for (var i = 0; i < names.length; i++) {
+        var section = document.getElementById(names[i]);
+        try {
+            show_table(section);
+        } catch (e) {
+            console.log("No table found for " + names[i]);
+        }
+    }
+
+    // If there is only one table, show it and hide the button.
+    var buttons = document.getElementsByTagName('button');
+    var tables = document.getElementsByTagName('table');
+    if (buttons.length == 1 && tables.length == 1) {
+        tables[0].style.display = "";
+        buttons[0].style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", show_main_tables);
+</script>
+</head>
+<body>
+<header>
+<hgroup>
+<h1>test-abs</h1>
+<h3>2021-03-20</h3>
+</hgroup>
+</header>
+<article>
+
+<div class="body" id="body">
+
+<ul>
+<li><strong><a href="#info" onclick="show_table(document.getElementById('info'));">Info</a></strong>
+</li>
+<li><strong><a href="#summary" onclick="show_table(document.getElementById('summary'));">Summary</a></strong>
+</li>
+<li><strong><a href="#operator_mutex_time" onclick="show_table(document.getElementById('operator_mutex_time'));">operator_mutex_time</a></strong>
+  <ul>
+  <li><a href="#operator_mutex_time-cavediving-14-adl" onclick="show_table(document.getElementById('operator_mutex_time-cavediving-14-adl'));">cavediving-14-adl</a> <a href="#operator_mutex_time-petri-net-alignment-opt18-strips" onclick="show_table(document.getElementById('operator_mutex_time-petri-net-alignment-opt18-strips'));">petri-net-alignment-opt18-strips</a>
+  </li>
+  </ul>
+</li>
+<li><strong><a href="#operator_mutexes_num" onclick="show_table(document.getElementById('operator_mutexes_num'));">operator_mutexes_num</a></strong>
+  <ul>
+  <li><a href="#operator_mutexes_num-cavediving-14-adl" onclick="show_table(document.getElementById('operator_mutexes_num-cavediving-14-adl'));">cavediving-14-adl</a> <a href="#operator_mutexes_num-petri-net-alignment-opt18-strips" onclick="show_table(document.getElementById('operator_mutexes_num-petri-net-alignment-opt18-strips'));">petri-net-alignment-opt18-strips</a>
+  </li>
+  </ul>
+</li>
+</ul>
+
+<section id="info">
+<h1>info</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>algorithm</th>
+<th>local_<wbr>revision</th>
+<th>global_<wbr>revision</th>
+<th>driver_<wbr>options</th>
+<th>component_<wbr>options</th>
+</tr>
+<tr>
+<td>01-op-mutex_no-goal_no-prev</td>
+<td>main</td>
+<td>bde5a2a81d666ddd57cc90483027859f6299fb34</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=false, reachability_strategy=no_goal)))']</td>
+</tr>
+<tr>
+<td>02-op-mutex_goal_no-prev</td>
+<td>main</td>
+<td>bde5a2a81d666ddd57cc90483027859f6299fb34</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=false, reachability_strategy=goal)))']</td>
+</tr>
+<tr>
+<td>03-op-mutex_no-goal_prev</td>
+<td>main</td>
+<td>bde5a2a81d666ddd57cc90483027859f6299fb34</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=true, reachability_strategy=no_goal)))']</td>
+</tr>
+<tr>
+<td>04-op-mutex_goal_prev</td>
+<td>main</td>
+<td>bde5a2a81d666ddd57cc90483027859f6299fb34</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=true, reachability_strategy=goal)))']</td>
+</tr>
+</table>
+
+<p>
+Used nodes: {lasse-G56JK}
+</p>
+
+</section>
+<section id="summary">
+<h1>summary</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>Summary</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time" onclick="show_table(document.getElementById('operator_mutex_time'));">operator_mutex_time - Sum</a></td>
+<td class="right"><span style="color:rgb(0,88,178)">586.47</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">546.21</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">599.73</span></td>
+<td class="right"><span style="color:rgb(0,178,84)">558.95</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num" onclick="show_table(document.getElementById('operator_mutexes_num'));">operator_mutexes_num - Sum</a></td>
+<td class="right"><span style="color:rgb(0,0,178)">5608902</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">765144</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5608902</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">765144</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time">
+<h1>operator_mutex_time</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-cavediving-14-adl" onclick="show_table(document.getElementById('operator_mutex_time-cavediving-14-adl'));">cavediving-14-adl</a> (16)</td>
+<td class="right"><span style="color:rgb(0,178,33)">325.26</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">325.18</span></td>
+<td class="right"><span style="color:rgb(0,178,176)">325.60</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">326.03</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-petri-net-alignment-opt18-strips" onclick="show_table(document.getElementById('operator_mutex_time-petri-net-alignment-opt18-strips'));">petri-net-alignment-opt18-strips</a> (20)</td>
+<td class="right"><span style="color:rgb(0,86,178)">261.21</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">221.03</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">274.13</span></td>
+<td class="right"><span style="color:rgb(0,178,80)">232.93</span></td>
+</tr>
+<tr>
+<td><strong>Sum (36)</strong></td>
+<td class="right"><span style="color:rgb(0,88,178)">586.47</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">546.21</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">599.73</span></td>
+<td class="right"><span style="color:rgb(0,178,84)">558.95</span></td>
+</tr>
+</table>
+
+<p>
+Only instances where all algorithms have a value for "operator_mutex_time" are considered. Each table entry gives the sum of "operator_mutex_time" for that domain. The bottom row reports the sum across all domains.
+</p>
+
+<section id="operator_mutex_time-cavediving-14-adl">
+<h2>cavediving-14-adl</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td>testing01.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">38.95</span></td>
+<td class="right"><span style="color:rgb(0,16,178)">39.37</span></td>
+<td class="right"><span style="color:rgb(0,162,178)">39.19</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">39.39</span></td>
+</tr>
+<tr>
+<td>testing01_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">27.84</span></td>
+<td class="right"><span style="color:rgb(0,178,103)">27.93</span></td>
+<td class="right"><span style="color:rgb(0,178,103)">27.93</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">28.15</span></td>
+</tr>
+<tr>
+<td>testing02_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,38)">27.86</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">27.83</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">28.11</span></td>
+<td class="right"><span style="color:rgb(0,178,102)">27.91</span></td>
+</tr>
+<tr>
+<td>testing03_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,131)">27.88</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">27.81</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">28.00</span></td>
+<td class="right"><span style="color:rgb(0,93,178)">27.95</span></td>
+</tr>
+<tr>
+<td>testing04_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,66,178)">28.05</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">28.08</span></td>
+<td class="right"><span style="color:rgb(0,178,66)">27.95</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">27.92</span></td>
+</tr>
+<tr>
+<td>testing05A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">4.01</span></td>
+<td class="right"><span style="color:rgb(0,178,178)">4.02</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.03</span></td>
+<td class="right"><span style="color:rgb(0,178,178)">4.02</span></td>
+</tr>
+<tr>
+<td>testing06A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,178)">4.03</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">4.01</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.05</span></td>
+<td class="right"><span style="color:rgb(0,89,178)">4.04</span></td>
+</tr>
+<tr>
+<td>testing07_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">4.02</span></td>
+<td class="right"><span style="color:rgb(0,178,119)">4.03</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.05</span></td>
+<td class="right"><span style="color:rgb(0,178,119)">4.03</span></td>
+</tr>
+<tr>
+<td>testing08_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3.99</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.12</span></td>
+<td class="right"><span style="color:rgb(0,178,137)">4.04</span></td>
+<td class="right"><span style="color:rgb(0,178,164)">4.05</span></td>
+</tr>
+<tr>
+<td>testing09_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing10_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing11_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing12_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing13_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">35.61</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">35.44</span></td>
+<td class="right"><span style="color:rgb(0,178,63)">35.47</span></td>
+<td class="right"><span style="color:rgb(0,178,42)">35.46</span></td>
+</tr>
+<tr>
+<td>testing14_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">35.33</span></td>
+<td class="right"><span style="color:rgb(0,178,178)">35.39</span></td>
+<td class="right"><span style="color:rgb(0,89,178)">35.42</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">35.45</span></td>
+</tr>
+<tr>
+<td>testing15_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,71)">32.87</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">32.82</span></td>
+<td class="right"><span style="color:rgb(0,178,128)">32.91</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">33.07</span></td>
+</tr>
+<tr>
+<td>testing16_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">35.88</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">35.39</span></td>
+<td class="right"><span style="color:rgb(0,178,58)">35.47</span></td>
+<td class="right"><span style="color:rgb(0,178,145)">35.59</span></td>
+</tr>
+<tr>
+<td>testing18_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">5.81</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">5.81</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5.82</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5.82</span></td>
+</tr>
+<tr>
+<td>testing18A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,118)">6.58</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">6.57</span></td>
+<td class="right"><span style="color:rgb(0,119,178)">6.59</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6.60</span></td>
+</tr>
+<tr>
+<td>testing20A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">6.53</span></td>
+<td class="right"><span style="color:rgb(0,178,178)">6.55</span></td>
+<td class="right"><span style="color:rgb(0,89,178)">6.56</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6.57</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-petri-net-alignment-opt18-strips">
+<h2>petri-net-alignment-opt18-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td>p01.pddl</td>
+<td class="right"><span style="color:rgb(0,178,85)">4.17</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">4.05</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.55</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.55</span></td>
+</tr>
+<tr>
+<td>p02.pddl</td>
+<td class="right"><span style="color:rgb(0,178,143)">3.64</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3.33</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.10</span></td>
+<td class="right"><span style="color:rgb(0,178,111)">3.57</span></td>
+</tr>
+<tr>
+<td>p03.pddl</td>
+<td class="right"><span style="color:rgb(0,35,178)">49.64</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">43.89</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">50.28</span></td>
+<td class="right"><span style="color:rgb(0,178,39)">44.60</span></td>
+</tr>
+<tr>
+<td>p04.pddl</td>
+<td class="right"><span style="color:rgb(0,178,168)">21.19</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">20.40</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">22.07</span></td>
+<td class="right"><span style="color:rgb(0,166,178)">21.29</span></td>
+</tr>
+<tr>
+<td>p05.pddl</td>
+<td class="right"><span style="color:rgb(0,172,178)">38.89</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">38.29</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">39.45</span></td>
+<td class="right"><span style="color:rgb(0,129,178)">39.03</span></td>
+</tr>
+<tr>
+<td>p06.pddl</td>
+<td class="right"><span style="color:rgb(0,122,178)">8.57</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">7.58</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">9.09</span></td>
+<td class="right"><span style="color:rgb(0,178,139)">8.17</span></td>
+</tr>
+<tr>
+<td>p07.pddl</td>
+<td class="right"><span style="color:rgb(0,178,178)">18.32</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">17.68</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">18.96</span></td>
+<td class="right"><span style="color:rgb(0,178,66)">17.92</span></td>
+</tr>
+<tr>
+<td>p08.pddl</td>
+<td class="right"><span style="color:rgb(0,133,178)">8.23</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">7.19</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">8.85</span></td>
+<td class="right"><span style="color:rgb(0,178,109)">7.70</span></td>
+</tr>
+<tr>
+<td>p09.pddl</td>
+<td class="right"><span style="color:rgb(0,144,178)">4.91</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3.70</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5.73</span></td>
+<td class="right"><span style="color:rgb(0,178,73)">4.12</span></td>
+</tr>
+<tr>
+<td>p10.pddl</td>
+<td class="right"><span style="color:rgb(0,59,178)">4.89</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.90</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5.29</span></td>
+<td class="right"><span style="color:rgb(0,178,43)">3.19</span></td>
+</tr>
+<tr>
+<td>p11.pddl</td>
+<td class="right"><span style="color:rgb(0,121,178)">21.53</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">19.87</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">22.39</span></td>
+<td class="right"><span style="color:rgb(0,178,127)">20.77</span></td>
+</tr>
+<tr>
+<td>p12.pddl</td>
+<td class="right"><span style="color:rgb(0,48,178)">19.22</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">13.17</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">20.16</span></td>
+<td class="right"><span style="color:rgb(0,178,34)">13.85</span></td>
+</tr>
+<tr>
+<td>p13.pddl</td>
+<td class="right"><span style="color:rgb(0,79,178)">4.20</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.61</span></td>
+<td class="right"><span style="color:rgb(0,178,117)">3.38</span></td>
+</tr>
+<tr>
+<td>p14.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3.62</span></td>
+<td class="right"><span style="color:rgb(0,178,5)">3.63</span></td>
+<td class="right"><span style="color:rgb(0,25,178)">4.28</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4.33</span></td>
+</tr>
+<tr>
+<td>p15.pddl</td>
+<td class="right"><span style="color:rgb(0,94,178)">7.47</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">4.91</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">8.39</span></td>
+<td class="right"><span style="color:rgb(0,178,76)">5.66</span></td>
+</tr>
+<tr>
+<td>p16.pddl</td>
+<td class="right"><span style="color:rgb(0,68,178)">5.02</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.48</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5.62</span></td>
+<td class="right"><span style="color:rgb(0,178,60)">3.01</span></td>
+</tr>
+<tr>
+<td>p17.pddl</td>
+<td class="right"><span style="color:rgb(0,53,178)">5.95</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.76</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6.51</span></td>
+<td class="right"><span style="color:rgb(0,178,56)">3.35</span></td>
+</tr>
+<tr>
+<td>p18.pddl</td>
+<td class="right"><span style="color:rgb(0,178,63)">7.39</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">7.27</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">7.94</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">7.94</span></td>
+</tr>
+<tr>
+<td>p19.pddl</td>
+<td class="right"><span style="color:rgb(0,41,178)">17.62</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">12.39</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">18.31</span></td>
+<td class="right"><span style="color:rgb(0,178,37)">13.02</span></td>
+</tr>
+<tr>
+<td>p20.pddl</td>
+<td class="right"><span style="color:rgb(0,57,178)">6.76</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">7.53</span></td>
+<td class="right"><span style="color:rgb(0,178,53)">3.49</span></td>
+</tr>
+</table>
+
+</section>
+</section>
+<section id="operator_mutexes_num">
+<h1>operator_mutexes_num</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-cavediving-14-adl" onclick="show_table(document.getElementById('operator_mutexes_num-cavediving-14-adl'));">cavediving-14-adl</a> (16)</td>
+<td class="right"><span style="color:rgb(0,178,0)">71462</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">740536</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">71462</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">740536</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-petri-net-alignment-opt18-strips" onclick="show_table(document.getElementById('operator_mutexes_num-petri-net-alignment-opt18-strips'));">petri-net-alignment-opt18-strips</a> (20)</td>
+<td class="right"><span style="color:rgb(0,0,178)">5537440</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">24608</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5537440</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">24608</span></td>
+</tr>
+<tr>
+<td><strong>Sum (36)</strong></td>
+<td class="right"><span style="color:rgb(0,0,178)">5608902</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">765144</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5608902</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">765144</span></td>
+</tr>
+</table>
+
+<p>
+Only instances where all algorithms have a value for "operator_mutexes_num" are considered. Each table entry gives the sum of "operator_mutexes_num" for that domain. The bottom row reports the sum across all domains.
+</p>
+
+<section id="operator_mutexes_num-cavediving-14-adl">
+<h2>cavediving-14-adl</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td>testing01.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">36124</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">41350</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">36124</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">41350</span></td>
+</tr>
+<tr>
+<td>testing01_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">66222</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">66222</span></td>
+</tr>
+<tr>
+<td>testing02_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">66222</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">66222</span></td>
+</tr>
+<tr>
+<td>testing03_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5202</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5202</span></td>
+</tr>
+<tr>
+<td>testing04_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">127242</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">127242</span></td>
+</tr>
+<tr>
+<td>testing05A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">790</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4164</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">790</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4164</span></td>
+</tr>
+<tr>
+<td>testing06A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">790</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4164</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">790</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4164</span></td>
+</tr>
+<tr>
+<td>testing07_easy.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">790</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">790</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">790</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">790</span></td>
+</tr>
+<tr>
+<td>testing08_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">790</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4164</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">790</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">4164</span></td>
+</tr>
+<tr>
+<td>testing09_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing10_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing11_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing12_easy.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+<tr>
+<td>testing13_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">186642</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">186642</span></td>
+</tr>
+<tr>
+<td>testing14_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">156402</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">156402</span></td>
+</tr>
+<tr>
+<td>testing15_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5202</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">5202</span></td>
+</tr>
+<tr>
+<td>testing16_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">65682</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">3852</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">65682</span></td>
+</tr>
+<tr>
+<td>testing18_easy.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">454</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">454</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">454</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">454</span></td>
+</tr>
+<tr>
+<td>testing18A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">454</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">552</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">454</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">552</span></td>
+</tr>
+<tr>
+<td>testing20A_easy.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">454</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6082</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">454</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6082</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-petri-net-alignment-opt18-strips">
+<h2>petri-net-alignment-opt18-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-op-mutex_<wbr>no-goal_<wbr>no-prev</th>
+<th>02-op-mutex_<wbr>goal_<wbr>no-prev</th>
+<th>03-op-mutex_<wbr>no-goal_<wbr>prev</th>
+<th>04-op-mutex_<wbr>goal_<wbr>prev</th>
+</tr>
+<tr>
+<td>p01.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">33999</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">503</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">33999</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">503</span></td>
+</tr>
+<tr>
+<td>p02.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">99131</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">763</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">99131</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">763</span></td>
+</tr>
+<tr>
+<td>p03.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">219081</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">979</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">219081</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">979</span></td>
+</tr>
+<tr>
+<td>p04.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">191731</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1011</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">191731</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1011</span></td>
+</tr>
+<tr>
+<td>p05.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">106475</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">723</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">106475</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">723</span></td>
+</tr>
+<tr>
+<td>p06.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">193537</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1019</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">193537</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1019</span></td>
+</tr>
+<tr>
+<td>p07.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">163433</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">947</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">163433</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">947</span></td>
+</tr>
+<tr>
+<td>p08.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">236237</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1715</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">236237</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1715</span></td>
+</tr>
+<tr>
+<td>p09.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">206277</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">983</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">206277</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">983</span></td>
+</tr>
+<tr>
+<td>p10.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">369809</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1355</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">369809</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1355</span></td>
+</tr>
+<tr>
+<td>p11.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">248149</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1135</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">248149</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1135</span></td>
+</tr>
+<tr>
+<td>p12.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">605387</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1617</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">605387</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1617</span></td>
+</tr>
+<tr>
+<td>p13.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">367733</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1351</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">367733</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1351</span></td>
+</tr>
+<tr>
+<td>p14.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">1389</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">1389</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">1389</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">1389</span></td>
+</tr>
+<tr>
+<td>p15.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">394585</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1331</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">394585</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1331</span></td>
+</tr>
+<tr>
+<td>p16.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">465767</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1509</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">465767</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1509</span></td>
+</tr>
+<tr>
+<td>p17.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">513301</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1577</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">513301</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1577</span></td>
+</tr>
+<tr>
+<td>p18.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">1503</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">1503</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">1503</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">1503</span></td>
+</tr>
+<tr>
+<td>p19.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">571695</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1573</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">571695</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1573</span></td>
+</tr>
+<tr>
+<td>p20.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">548221</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1625</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">548221</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1625</span></td>
+</tr>
+</table>
+
+</section>
+</section>
+</div>
+</article></body></html>
