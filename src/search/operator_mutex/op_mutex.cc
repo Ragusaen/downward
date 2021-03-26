@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <fstream>
 
 using namespace std;
 using options::Bounds;
@@ -53,16 +54,21 @@ bool transition_comparison(Transition a, int b) { return a.src < b; }
 
 void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
     double start_time = utils::g_timer();
-    utils::g_log << "Operator mutex running" << endl;
+    utils::g_log << "Operator mutex starting iteration " << iteration << endl;
+    int num_opmutex_before = label_mutexes.size();
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
         TransitionSystem ts = fts.get_transition_system(fts_i);
-        if (ts.get_num_states() < 5000 && ts.get_num_states() > 2)
+        if (ts.get_num_states() < 5000 && ts.get_num_states() > 2) {
+            int before_label_mutexes = label_mutexes.size();
             infer_label_group_mutex_in_ts(ts);
+            utils::g_log << "In ts_" << iteration << "_" << fts_i << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes) << endl;
+        }
     }
 
-    utils::g_log << "Operator mutex round done" << endl << endl;
+    utils::g_log << "Operator mutex finished iteration " << iteration << ". Found an additional " << (label_mutexes.size() - num_opmutex_before) << " operator mutexes" << endl << endl;
+    iteration++;
     runtime += utils::g_timer() - start_time;
 }
 
@@ -89,13 +95,14 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
                                                               initial_state, goal_states);
 
     // Compute unreachable states based on already known op-mutexes
-    unordered_set<int> unreachable_state;
+    unordered_set<int> unreachable_states;
     if(use_previous_ops){
-        unreachable_state = find_unreachable_states_by_op_mutexes(cts, ler);
-        utils::g_log << "Found " << unreachable_state.size() << " unreachable states" << endl;
+        unreachable_states = find_unreachable_states_by_op_mutexes(cts, ler);
+        if (unreachable_states.size() > 0)
+            utils::g_log << "Found " << unreachable_states.size() << " unreachable states" << endl;
     }
 
-    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_state);
+    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_states);
 
     // Expand label groups into concrete labels
     for (auto gm : label_group_mutexes) {
@@ -104,7 +111,7 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 
         for (int la : groupA) {
             for (int lb : groupB) {
-                label_mutexes.insert(OpMutex(la, lb));
+                add_opmutex(la, lb);
             }
         }
     }
@@ -181,6 +188,13 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
                 }
             }
         }
+        // Check if the last label we considered is mutex, this is needed because the above for loop exits before we can
+        // check the last one.
+        if (!cts.concrete_transitions.empty() && is_label_mutex) {
+            // Add only one of the two symmetric mutexes (we will add the other later)
+            label_group_mutexes.emplace_back(pair<int, int>(current_outer_label, current_inner_label));
+        }
+
         if (to_end >= cts.concrete_transitions.size())
             break;
         current_outer_label = TRANS_IDX(to_end).label_group;
@@ -285,19 +299,12 @@ void OpMutexPruningMethod::CountParents(const CondensedTransitionSystem &cts, st
 void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     auto labels = fts.get_labels_fixed();
 
-    unordered_set<OpMutex> dup = unordered_set<OpMutex>(label_mutexes);
-    for (auto m : dup) {
-        label_mutexes.emplace(m.label2, m.label1);
-    }
-
     utils::g_log << "Total number of operator mutexes: " << label_mutexes.size() << endl;
     utils::g_log << "Operator Mutex total time: " << utils::Duration(runtime) << endl;
-    if (label_mutexes.size() < 200) {
-        for (OpMutex om : label_mutexes) {
-            utils::g_log << om.label1 << ", " << om.label2 << " : " << labels->get_name(om.label1) << ", "
-                         << labels->get_name(om.label2) << endl;
-        }
-    }
+//    for (OpMutex om : label_mutexes) {
+//        utils::g_log << om.label1 << ", " << om.label2 << " : " << labels->get_name(om.label1) << ", "
+//                     << labels->get_name(om.label2) << endl;
+//    }
 }
 
 void add_algo_options_to_parser(OptionParser &parser) {

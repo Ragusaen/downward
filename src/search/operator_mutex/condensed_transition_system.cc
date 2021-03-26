@@ -18,12 +18,12 @@ bool finishing_time_pair_comparison(std::pair<int,int> a, std::pair<int,int> b) 
 }
 
 bool transition_comparison(Transition a, Transition b) {
-    if (a.src < b.src)
-        return true;
-    else if (a.src == b.src)
+    if (a.src != b.src)
+        return a.src < b.src;
+    else if (a.target != b.target)
         return a.target < b.target;
     else
-        return false;
+        return a.label_group < b.label_group;
 }
 
 CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> concrete_transitions,
