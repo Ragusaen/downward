@@ -36,7 +36,17 @@ class OpMutexPruningMethod {
     unique_ptr<PreviousOps> previous_ops_strategy;
 
 private:
+    int max_ts_size;
+
+    int iteration = 0;
+
     unordered_set<OpMutex> label_mutexes;
+
+    // This adds both symmetric op-mutexes
+    void add_opmutex(int label1, int label2) {
+        label_mutexes.emplace(label1, label2);
+        label_mutexes.emplace(label2, label1);
+    }
 
 public:
     explicit OpMutexPruningMethod(const options::Options &opts);
