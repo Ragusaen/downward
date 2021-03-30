@@ -46,6 +46,7 @@ OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts){
             break;
     }
     use_previous_ops = opts.get<bool>("use_previous_ops");
+    max_ts_size = opts.get<int>("max_ts_size");
 }
 
 bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
@@ -60,10 +61,10 @@ void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
         TransitionSystem ts = fts.get_transition_system(fts_i);
-        if (ts.get_num_states() < 5000 && ts.get_num_states() > 2) {
+        if (ts.get_num_states() <= max_ts_size) {
             int before_label_mutexes = label_mutexes.size();
             infer_label_group_mutex_in_ts(ts);
-            utils::g_log << "In ts_" << iteration << "_" << fts_i << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes) << endl;
+            utils::g_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes) << endl;
         }
     }
 
@@ -98,7 +99,7 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
     unordered_set<int> unreachable_states;
     if(use_previous_ops){
         unreachable_states = find_unreachable_states_by_op_mutexes(cts, ler);
-        if (unreachable_states.size() > 0)
+        if (!unreachable_states.empty())
             utils::g_log << "Found " << unreachable_states.size() << " unreachable states" << endl;
     }
 
@@ -322,6 +323,12 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "use_previous_ops",
             "Use previous operator mutexes to find unreachable states.",
             "true");
+
+    parser.add_option<int>(
+            "max_ts_size",
+            "Maximum number of states a transition system can have that will be considered",
+            "5000"
+            );
 }
 
 static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {

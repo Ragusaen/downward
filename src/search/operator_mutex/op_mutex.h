@@ -48,6 +48,8 @@ class OpMutexPruningMethod {
 
 private:
     bool use_previous_ops;
+    int max_ts_size;
+
     int iteration = 0;
 
     unordered_set<OpMutex> label_mutexes;
