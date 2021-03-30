@@ -14,8 +14,7 @@ vector<bool> GoalReachability::run(const CondensedTransitionSystem &cts, const u
     return reach;
 }
 
-std::vector<bool>
-NoGoalReachability::run(const CondensedTransitionSystem &cts, const unordered_set<int> &unreachable_states) {
+std::vector<bool> NoGoalReachability::run(const CondensedTransitionSystem &cts, const unordered_set<int> &unreachable_states) {
     std::vector<bool> reach(cts.num_abstract_states * cts.num_abstract_states);
 
     reachability(cts, reach, cts.initial_abstract_state, unreachable_states);

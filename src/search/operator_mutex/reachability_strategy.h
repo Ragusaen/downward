@@ -1,7 +1,3 @@
-//
-// Created by slorup on 3/17/21.
-//
-
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wnon-virtual-dtor"
 #ifndef FAST_DOWNWARD_REACHABILITY_STRATEGY_H

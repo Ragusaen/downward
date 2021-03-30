@@ -20,7 +20,7 @@ class MergeAndShrinkHeuristic : public Heuristic {
     // The final merge-and-shrink representations, storing goal distances.
     std::vector<std::unique_ptr<MergeAndShrinkRepresentation>> mas_representations;
 
-    const std::shared_ptr<op_mutex_pruning::OpMutexPruningMethod> operator_mutex_pruning;
+    const std::shared_ptr<op_mutex::OpMutexPruningMethod> operator_mutex_pruning;
 
     void extract_factor(FactoredTransitionSystem &fts, int index);
     bool extract_unsolvable_factor(FactoredTransitionSystem &fts);

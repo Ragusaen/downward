@@ -10,6 +10,9 @@
 */
 
 namespace dynamic_bitset {
+
+struct DynamicBitsetIterator;
+
 template<typename Block = unsigned int>
 class DynamicBitset {
     static_assert(
@@ -139,6 +142,9 @@ public:
             blocks[i] = 0;
         }
     }
+
+    DynamicBitsetIterator begin();
+
 };
 
 template<typename Block>

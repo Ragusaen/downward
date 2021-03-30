@@ -777,6 +777,8 @@ fast_downward_plugin(
             operator_mutex/condensed_transition_system
             operator_mutex/op_mutex
             operator_mutex/reachability_strategy
+            operator_mutex/previous_ops
+            operator_mutex/op_mutex2
 )
 
 fast_downward_add_plugin_sources(PLANNER_SOURCES)

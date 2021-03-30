@@ -31,7 +31,7 @@ class MergeAndShrinkAlgorithm {
     std::shared_ptr<LabelReduction> label_reduction;
 
     // Operator mutex
-    const std::shared_ptr<op_mutex_pruning::OpMutexPruningMethod> operator_mutex_pruning;
+    const std::shared_ptr<op_mutex::OpMutexPruningMethod> operator_mutex_pruning;
 
     // Options for shrinking
     // Hard limit: the maximum size of a transition system at any point.

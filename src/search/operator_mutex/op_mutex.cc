@@ -9,8 +9,8 @@
 #include "../merge_and_shrink/label_equivalence_relation.h"
 #include "../merge_and_shrink/labels.h"
 #include "condensed_transition_system.h"
-#include "../algorithms/dynamic_bitset.h"
 #include "reachability_strategy.h"
+#include "previous_ops.h"
 #include <iostream>
 #include <string>
 #include <utility>
@@ -33,7 +33,8 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
 }
 
 
-namespace op_mutex_pruning {
+
+namespace op_mutex {
 OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts){
     auto reachability_option = opts.get<ReachabilityOption>("reachability_strategy");
     switch(reachability_option){
@@ -44,7 +45,19 @@ OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts){
             reachability_strategy = unique_ptr<ReachabilityStrategy>(new NoGoalReachability());
             break;
     }
-    use_previous_ops = opts.get<bool>("use_previous_ops");
+
+    auto previous_ops_option = opts.get<PreviousOpsOption>("use_previous_ops");
+    switch (previous_ops_option) {
+        case PreviousOpsOption::NONE:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new NoPreviousOps());
+            break;
+        case PreviousOpsOption::SIMPLE:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new SimplePreviousOps());
+            break;
+        case PreviousOpsOption::ALL:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new AllPreviousOps());
+            break;
+    }
 }
 
 bool transition_label_comparison(Transition t, int l) { return t.label_group < l; }
@@ -89,11 +102,13 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
                                                               initial_state, goal_states);
 
     // Compute unreachable states based on already known op-mutexes
-    unordered_set<int> unreachable_state;
-    if(use_previous_ops){
-        unreachable_state = find_unreachable_states_by_op_mutexes(cts, ler);
-        utils::g_log << "Found " << unreachable_state.size() << " unreachable states" << endl;
-    }
+    unordered_set<int> unreachable_state = previous_ops_strategy->run(cts, ler, label_mutexes);
+
+//    if(use_previous_ops){
+//        //unreachable_state = find_unreachable_states_by_op_mutexes(cts, ler);
+//        unreachable_state = find_all_unreachable_states_by_op_mutexes(cts, ler);
+//        utils::g_log << "Found " << unreachable_state.size() << " unreachable states" << endl;
+//    }
 
     vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_state);
 
@@ -189,99 +204,6 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     return label_group_mutexes;
 }
 
-unordered_set<int> OpMutexPruningMethod::find_unreachable_states_by_op_mutexes(
-        const CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler)
-{
-    std::vector<int> remaining_parents(cts.num_abstract_states);
-    CountParents(cts, remaining_parents, cts.initial_abstract_state);
-
-
-    std::unordered_set<int> ready_states;
-
-    assert(remaining_parents[cts.initial_abstract_state] == 0);
-    ready_states.insert(cts.initial_abstract_state);
-
-    size_t num_label_groups = ler->get_size();
-    vector<DynamicBitset<>> state_labels = vector<DynamicBitset<>>(cts.num_abstract_states, DynamicBitset<>(num_label_groups));
-    std::vector<bool> has_visited(cts.num_abstract_states, false);
-
-    //utils::g_log << "Num abstract states: " << cts.num_abstract_states << endl;
-
-    while (!ready_states.empty()) {
-        int state = *ready_states.begin();
-        ready_states.erase(state);
-
-        //utils::g_log << "Current state " << state << endl;
-
-        std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
-        for (Transition t  : outgoing_transitions) {
-            if (t.target == state)
-                continue;
-
-            //utils::g_log << "Current target " << t.target << endl;
-
-            remaining_parents[t.target]--;
-            if (remaining_parents[t.target] == 0)
-                ready_states.insert(t.target);
-
-            if (!has_visited[t.target]) {
-                state_labels[t.target] |= state_labels[state];
-                state_labels[t.target].set(t.label_group);
-                has_visited[t.target] = true;
-            } else {
-                //utils::g_log << "Current label group" << t.label_group << endl;
-                auto temp = DynamicBitset<>(num_label_groups);
-                temp.set(t.label_group);
-                temp |= state_labels[state];
-                state_labels[t.target] &= temp;
-            }
-        }
-    }
-
-    unordered_set<int> unreachable_states;
-
-    for (int state = 0; state < cts.num_abstract_states; state++) {
-        auto bitset = state_labels[state];
-        vector<int> labels;
-        for (size_t i = 0; i < num_label_groups; i++) {
-            if (bitset[i]) {
-                // If this label group has more than 1 label, they can both be used and none of them are therefore necessary
-                if (ler->get_group(i).size() == 1) {
-                    labels.emplace_back(*ler->get_group(i).begin());
-                }
-            }
-        }
-
-        for (size_t l1 = 0; l1 < labels.size(); l1++) {
-            for (size_t l2 = l1 + 1; l2 < labels.size(); l2++) {
-                if (label_mutexes.count(OpMutex(labels[l1], labels[l2]))) {
-                    unreachable_states.insert(state);
-                    goto state_done;
-                }
-            }
-        }
-        state_done:;
-    }
-
-    return unreachable_states;
-}
-
-void OpMutexPruningMethod::CountParents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state) {
-    std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
-
-    for (Transition t : outgoing_transitions) {
-        if (t.target == state)
-            continue;
-
-        if (parents[t.target] == 0) {
-            CountParents(cts, parents, t.target);
-        }
-
-        parents[t.target]++;
-    }
-}
-
-
 void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     auto labels = fts.get_labels_fixed();
 
@@ -289,6 +211,8 @@ void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     for (auto m : dup) {
         label_mutexes.emplace(m.label2, m.label1);
     }
+
+    utils::g_log << labels->get_size() << endl;
 
     utils::g_log << "Total number of operator mutexes: " << label_mutexes.size() << endl;
     utils::g_log << "Operator Mutex total time: " << utils::Duration(runtime) << endl;
@@ -311,10 +235,16 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "The default strategy is 'goal'. Other strategies are 'no_goal'.",
             "goal");
 
-    parser.add_option<bool>(
+    vector<string> previous_ops_options;
+    previous_ops_options.emplace_back("none");
+    previous_ops_options.emplace_back("simple");
+    previous_ops_options.emplace_back("all");
+    parser.add_enum_option<PreviousOpsOption>(
             "use_previous_ops",
-            "Use previous operator mutexes to find unreachable states.",
-            "true");
+            previous_ops_options,
+            "Use previous operator mutexes to find unreachable states. "
+            "The default strategy is 'none'. Other strategies are 'simple' and 'all'. ",
+            "none");
 }
 
 static shared_ptr<OpMutexPruningMethod> _parse(OptionParser &parser) {
