@@ -5,6 +5,8 @@
 #include "../merge_and_shrink/labels.h"
 #include "condensed_transition_system.h"
 #include "reachability_strategy.h"
+#include "ts_to_dot.h"
+#include "op_mutex2.h"
 #include <iostream>
 #include <vector>
 
@@ -107,7 +109,7 @@ void SimplePreviousOps::count_parents(const CondensedTransitionSystem &cts, std:
 unordered_set<int> AllPreviousOps::run(const CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes){
     unordered_set<OpMutex> label_group_mutexes;
 
-
+    //utils::g_log << cts_to_dot(cts) << endl;
 
     for (int i = 0; i < ler->get_size(); i++) {
         for (int j = i + 1; j < ler->get_size(); j++) {
@@ -127,6 +129,7 @@ unordered_set<int> AllPreviousOps::run(const CondensedTransitionSystem &cts, sha
             not_label_group_mutex:;
         }
     }
+
     DynamicBitset<> path(ler->get_size());
     DynamicBitset<> fully_reachable(cts.num_abstract_states);
 
@@ -147,7 +150,8 @@ void AllPreviousOps::unreachable_states_dfs(
         const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path, DynamicBitset<> &fully_reachable,
         const unordered_set<OpMutex> &label_group_mutexes)
 {
-    bool full_reachable_targets = true;
+    if (cts.abstract_goal_states.count(state))
+        fully_reachable.set(state);
 
     vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
@@ -155,24 +159,24 @@ void AllPreviousOps::unreachable_states_dfs(
         if(t.target == state)
             continue;
 
+        // Check that this path is valid (i.e. it contains no two operators that are op-mutex)
         DynamicBitset<> labels_in_path(path.size());
         labels_in_path |= path;
         labels_in_path.set(t.label_group);
 
+        bool is_label_group_mutex = false;
         for(size_t path_label_group = 0; path_label_group < path.size(); path_label_group++){
             // Skip this label if it is not in path
             if (!path[path_label_group])
                 continue;
 
             if(label_group_mutexes.count(OpMutex(t.label_group, path_label_group))){
-                goto not_label_group_mutex;
+                is_label_group_mutex = true;
             }
         }
-
-        full_reachable_targets = false;
-        continue; // Do not consider this path away from this state because the state is unreachable
-
-        not_label_group_mutex:;
+        // Do not consider this path to target state if the it is unreachable
+        if (is_label_group_mutex)
+            continue;
 
         bool prev_bit = path[t.label_group];
         path.set(t.label_group);
@@ -181,10 +185,11 @@ void AllPreviousOps::unreachable_states_dfs(
         // Only reset this bit if it was not set before
         if(!prev_bit)
             path.reset(t.label_group);
-    }
 
-    if(full_reachable_targets)
-        fully_reachable.set(state);
+        if (fully_reachable[t.target]) {
+            fully_reachable.set(state);
+        }
+    }
 }
 
 }

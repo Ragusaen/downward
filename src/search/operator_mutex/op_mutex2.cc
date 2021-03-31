@@ -3,3 +3,5 @@
 //
 
 #include "op_mutex2.h"
+
+using namespace op_mutex2;
