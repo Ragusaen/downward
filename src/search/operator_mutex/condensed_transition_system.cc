@@ -17,15 +17,6 @@ bool finishing_time_pair_comparison(std::pair<int,int> a, std::pair<int,int> b) 
     return a.second > b.second;
 }
 
-bool transition_comparison(Transition a, Transition b) {
-    if (a.src != b.src)
-        return a.src < b.src;
-    else if (a.target != b.target)
-        return a.target < b.target;
-    else
-        return a.label_group < b.label_group;
-}
-
 CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> concrete_transitions,
                                                      int num_concrete_states, int initial_concrete_state,
                                                      const unordered_set<int>& goal_states):
@@ -35,7 +26,7 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<Transition> con
 {
     abstract_transitions = std::vector<Transition>();
     concrete_to_abstract_state = std::vector<int>(num_concrete_states, -1);
-    concrete_to_abstract_transitions = std::vector<int>();
+//    concrete_to_abstract_transitions = std::vector<int>();
 
     // Discover strongly connected components
     discover_sccs();
@@ -56,24 +47,18 @@ void CondensedTransitionSystem::discover_sccs() {
     // Mapping concrete states to abstract states
     transpose_depth_first_search(finishing_times);
 
+    unordered_set<Transition> temp_abstract_transitions;
     // Generate abstract transitions
     for (Transition & ct : concrete_transitions) {
-        abstract_transitions.emplace_back(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group);
+        temp_abstract_transitions.emplace(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group);
+    }
+
+    for (const Transition &t : temp_abstract_transitions) {
+        abstract_transitions.push_back(t);
     }
 
     // Sort abstract transitions by source, if equal then by target.
-    std::sort(abstract_transitions.begin(), abstract_transitions.end(), transition_comparison);
-
-    // Generate mapping of concrete to abstract transitions
-    for (Transition & ct : concrete_transitions) {
-        auto at = Transition(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target]);
-        for (size_t j = 0; j < abstract_transitions.size(); ++j) {
-            if (at.src == abstract_transitions[j].src && at.target == abstract_transitions[j].target) {
-                concrete_to_abstract_transitions.push_back(j);
-                break;
-            }
-        }
-    }
+    std::sort(abstract_transitions.begin(), abstract_transitions.end(), Transition::transition_comparison);
 }
 
 // Performs depth_first_search to find finishing times for each node
@@ -84,7 +69,7 @@ std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search()
     std::vector<bool> has_visited = std::vector<bool>(num_concrete_states, false);
 
     // Sort concrete transitions by source then by target
-    std::sort(concrete_transitions.begin(), concrete_transitions.end(), transition_comparison);
+    std::sort(concrete_transitions.begin(), concrete_transitions.end(), Transition::transition_comparison);
 
     // Visit every state in turn unless it has already been visited
     int time = 0;
@@ -129,7 +114,7 @@ void CondensedTransitionSystem::transpose_depth_first_search(std::vector<std::pa
     }
 
     // Sort the transposed transitions by source then by target
-    std::sort(transpose_transitions.begin(), transpose_transitions.end(), transition_comparison);
+    std::sort(transpose_transitions.begin(), transpose_transitions.end(), Transition::transition_comparison);
 
     // Sort vector by decreasing finishing time
     std::sort(finishing_times.begin(), finishing_times.end(), finishing_time_pair_comparison);
@@ -182,30 +167,6 @@ std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from
     // Add transitions where src node is equal to parameter 'source'
     for (; l < abstract_transitions.size() && abstract_transitions[l].src == source; l++)
         ret.emplace_back(abstract_transitions[l]);
-
-    return ret;
-}
-
-// Find all abstract transitions with a given source. It is required that the cts' abstract transitions are sorted on source state. Removes duplicates.
-std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state_no_dups(int source) const {
-    std::vector<Transition> ret = std::vector<Transition>();
-
-    assert(std::is_sorted(abstract_transitions.begin(), abstract_transitions.end(), [](Transition t1, Transition t2) { return t1.src < t2.src; }));
-
-    // Use binary search to find the first index with the src = source
-    size_t l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
-                                [](Transition t, int s) { return t.src < s; }) - abstract_transitions.begin();
-
-
-    int last_source = -1;
-    int last_target = -1;
-    // Add transitions where src node is equal to parameter 'source'
-    for (; l < abstract_transitions.size() && abstract_transitions[l].src == source; l++){
-        if(last_source != abstract_transitions[l].src || last_target != abstract_transitions[l].target)
-            ret.emplace_back(abstract_transitions[l]);
-        last_source = abstract_transitions[l].src;
-        last_target = abstract_transitions[l].target;
-    }
 
     return ret;
 }

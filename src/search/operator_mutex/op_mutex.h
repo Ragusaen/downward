@@ -26,9 +26,10 @@ enum class ReachabilityOption {
 };
 
 enum class PreviousOpsOption{
-    NONE,
-    SIMPLE,
-    ALL
+    NoPO,
+    NaSUSPO,
+    NaSUTPO,
+    NeLUSPO
 };
 
 class OpMutexPruningMethod {
@@ -59,8 +60,7 @@ public:
 
     double runtime = 0.0;
 
-        vector<pair<int, int>>
-    infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts, unordered_set<int> &unreachable_states);
+    vector<pair<int, int>> infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts);
 };
 
 }

@@ -143,7 +143,15 @@ public:
         }
     }
 
-    DynamicBitsetIterator begin();
+    DynamicBitset<> operator~() {
+        DynamicBitset<> ret(this->size());
+
+        for (std::size_t i = 0; i < blocks.size(); i++) {
+            ret.blocks[i] = ~blocks[i];
+        }
+
+        return ret;
+    }
 
 };
 

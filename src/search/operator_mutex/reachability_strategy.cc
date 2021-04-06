@@ -6,18 +6,18 @@ using namespace std;
 namespace reachability {
 #define REACH_XY(x, y) (reach[(x) * cts.num_abstract_states + (y)])
 
-vector<bool> GoalReachability::run(const CondensedTransitionSystem &cts, const unordered_set<int> &unreachable_states) {
+vector<bool> GoalReachability::run(const CondensedTransitionSystem &cts) {
     vector<bool> reach(cts.num_abstract_states * cts.num_abstract_states);
     std::vector<bool> has_visited(cts.num_abstract_states);
-    reachability(cts, reach, has_visited, cts.initial_abstract_state, unreachable_states);
+    reachability(cts, reach, has_visited, cts.initial_abstract_state);
 
     return reach;
 }
 
-std::vector<bool> NoGoalReachability::run(const CondensedTransitionSystem &cts, const unordered_set<int> &unreachable_states) {
+std::vector<bool> NoGoalReachability::run(const CondensedTransitionSystem &cts) {
     std::vector<bool> reach(cts.num_abstract_states * cts.num_abstract_states);
 
-    reachability(cts, reach, cts.initial_abstract_state, unreachable_states);
+    reachability(cts, reach, cts.initial_abstract_state);
 
     return reach;
 }
@@ -28,7 +28,7 @@ std::vector<bool> NoGoalReachability::run(const CondensedTransitionSystem &cts, 
 * to be a DAG.
 */
 bool GoalReachability::reachability(const CondensedTransitionSystem &cts, vector<bool> &reach, vector<bool> &has_visited,
-                                    int state, const std::unordered_set<int> &unreachable_states) {
+                                    int state) {
     // A state can trivially reach the goal, if it is a goal state or if it can reach itself. Because Any state that has
     // ANY reachability can reach the goal, and all states that can reach the goal can reach themselves.
     bool can_reach_goal = cts.abstract_goal_states.count(state) || REACH_XY(state, state);
@@ -41,10 +41,10 @@ bool GoalReachability::reachability(const CondensedTransitionSystem &cts, vector
 
         // Compute reachability of all neighboring states
         for (auto t : outgoing_transitions) {
-            if (t.target == state || unreachable_states.count(t.target))
+            if (t.target == state)
                 continue;
 
-            bool target_reach_goal = reachability(cts, reach, has_visited, t.target, unreachable_states);
+            bool target_reach_goal = reachability(cts, reach, has_visited, t.target);
 
             // We only care about states that can reach a goal state
             if (target_reach_goal) {
@@ -72,8 +72,7 @@ bool GoalReachability::reachability(const CondensedTransitionSystem &cts, vector
 * calling itself on its neighbours, and each state then inherits its neighbours reachable states. The cts is assumed to
 * to be a DAG. This version does not check if the goal is reachable for each state.
 */
-void NoGoalReachability::reachability(const CondensedTransitionSystem &cts, std::vector<bool> &reach, int state,
-                                      const std::unordered_set<int> &unreachable_states) {
+void NoGoalReachability::reachability(const CondensedTransitionSystem &cts, std::vector<bool> &reach, int state) {
     // Check whether this state has been visited before, states can always reach themselves
     if (!REACH_XY(state, state)) {
         // Flag that the current state can reach itself
@@ -84,10 +83,10 @@ void NoGoalReachability::reachability(const CondensedTransitionSystem &cts, std:
 
         // Compute reachability of all neighboring states
         for (auto t : outgoing_transitions) {
-            if (t.target == state || unreachable_states.count(t.target))
+            if (t.target == state)
                 continue;
 
-            reachability(cts, reach, t.target, unreachable_states);
+            reachability(cts, reach, t.target);
 
             // Copy reachability of the target states to the current state
             for (int j = 0; j < cts.num_abstract_states; ++j) {
@@ -113,13 +112,12 @@ void reach_print(const CondensedTransitionSystem &cts, const std::vector<bool> &
     }
 }
 
-void reach_compare(const CondensedTransitionSystem &cts,
-                                 const std::unordered_set<int> &unreachable = std::unordered_set<int>()) {
+void reach_compare(const CondensedTransitionSystem &cts) {
     NoGoalReachability no_goal_r;
     GoalReachability goal_r;
 
-    std::vector<bool> no_goal = no_goal_r.run(cts, unreachable);
-    std::vector<bool> goal = goal_r.run(cts, unreachable);
+    std::vector<bool> no_goal = no_goal_r.run(cts);
+    std::vector<bool> goal = goal_r.run(cts);
 
     utils::g_log << "No goal reach:" << std::endl;
     reach_print(cts, no_goal);
@@ -128,12 +126,9 @@ void reach_compare(const CondensedTransitionSystem &cts,
     reach_print(cts, goal);
 }
 
-void reach_compare_prev(
-        const CondensedTransitionSystem &cts, const std::unordered_set<int> &unreachable,
-        unique_ptr<ReachabilityStrategy> reachStrat) {
-
-    vector<bool> reach_prev = reachStrat->run(cts, unreachable);
-    vector<bool> reach_no_prev = reachStrat->run(cts, unordered_set<int>());
+void reach_compare_prev(const CondensedTransitionSystem &cts, unique_ptr<ReachabilityStrategy> reachStrat) {
+    vector<bool> reach_prev = reachStrat->run(cts);
+    vector<bool> reach_no_prev = reachStrat->run(cts);
 
 //    utils::g_log << "Reach with previous op-mutexes considered" << endl;
 //    reach_print(cts, reach_prev);
@@ -151,6 +146,5 @@ void reach_compare_prev(
     }
 
 }
-
 
 }

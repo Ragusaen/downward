@@ -49,15 +49,17 @@ OpMutexPruningMethod::OpMutexPruningMethod(const Options &opts){
 
     auto previous_ops_option = opts.get<PreviousOpsOption>("use_previous_ops");
     switch (previous_ops_option) {
-        case PreviousOpsOption::NONE:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new NoPreviousOps());
+        case PreviousOpsOption::NoPO:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new NoPO());
             break;
-        case PreviousOpsOption::SIMPLE:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new SimplePreviousOps());
+        case PreviousOpsOption::NeLUSPO:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUSPO());
             break;
-        case PreviousOpsOption::ALL:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new AllPreviousOps());
+        case PreviousOpsOption::NaSUSPO:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUSPO());
             break;
+        case PreviousOpsOption::NaSUTPO:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
     }
 
     max_ts_size = opts.get<int>("max_ts_size");
@@ -110,9 +112,9 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
                                                               initial_state, goal_states);
 
     // Compute unreachable states based on already known op-mutexes
-    unordered_set<int> unreachable_states = previous_ops_strategy->run(cts, ler, label_mutexes);
+    previous_ops_strategy->run(cts, ler, label_mutexes);
 
-    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts, unreachable_states);
+    vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts);
 
     // Expand label groups into concrete labels
     for (auto gm : label_group_mutexes) {
@@ -129,8 +131,7 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 
 // These macros are used as shorthands for looking up reach, transitions and converting from abstract to concrete transitions
 #define REACH_XY(x, y) (reach[(x) * cts.num_abstract_states + (y)])
-#define TRANS_IDX(idx) (cts.concrete_transitions[idx])
-#define C2A(state) (cts.concrete_to_abstract_state[state])
+#define TRANS_IDX(idx) (cts.abstract_transitions[idx])
 
 /*
 * This function computes label mutexes, by checking for a pair of label groups (g1, g2) that all the transitions belonging
@@ -138,12 +139,12 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
 * mutex iff there is no path from s_2' to s_1 and from s_2 to s_1'. This check is done using a reachability matrix.
 */
 std::vector<std::pair<int, int>>
-OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts, unordered_set<int> &unreachable_states) {
+OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts) {
     // Start from the initial state of planning problem
-    vector<bool> reach = reachability_strategy->run(cts, unreachable_states);
+    vector<bool> reach = reachability_strategy->run(cts);
 
     // Sort transitions on label group
-    std::sort(cts.concrete_transitions.begin(), cts.concrete_transitions.end(),
+    std::sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end(),
               [](Transition a, Transition b) { return a.label_group < b.label_group; });
 
     // Find label_group mutexes
@@ -162,13 +163,13 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     * We skip all labels with 0 transitions, as these are trivially op-mutex with all other labels, and there is no need
     * to store all of them.
     */
-    int last_label_group = cts.concrete_transitions.back().label_group;
+    int last_label_group = cts.abstract_transitions.back().label_group;
     while (current_outer_label < last_label_group) { // Do not consider last label
         int to_start = to_end; // End is exclusive
 
         // Search for the next label, could be binary search, but not really worth it
         for (; TRANS_IDX(to_end).label_group <= current_outer_label &&
-               to_end < cts.concrete_transitions.size(); to_end++);
+               to_end < cts.abstract_transitions.size(); to_end++);
 
         // Start looking from the next label group up, we only need to check half of the combinations because label
         // mutexes are symmetric
@@ -177,7 +178,7 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
         size_t ti = to_start;
 
         bool is_label_mutex = true;
-        for (; ti < cts.concrete_transitions.size(); ti++) {
+        for (; ti < cts.abstract_transitions.size(); ti++) {
             if (TRANS_IDX(ti).label_group > current_inner_label) {
                 if (is_label_mutex) {
                     // Add only one of the two symmetric mutexes (we will add the other later)
@@ -191,8 +192,8 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
 
             for (size_t to = to_start; to < to_end; to++) {
                 // If these two transitions are not mutex, the labels also aren't
-                if (REACH_XY(C2A(TRANS_IDX(to).target), C2A(TRANS_IDX(ti).src))
-                    || REACH_XY(C2A(TRANS_IDX(ti).target), C2A(TRANS_IDX(to).src))) {
+                if (REACH_XY(TRANS_IDX(to).target, TRANS_IDX(ti).src)
+                    || REACH_XY(TRANS_IDX(ti).target, TRANS_IDX(to).src)) {
                     is_label_mutex = false;
                     break;
                 }
@@ -200,12 +201,12 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
         }
         // Check if the last label we considered is mutex, this is needed because the above for loop exits before we can
         // check the last one.
-        if (!cts.concrete_transitions.empty() && is_label_mutex) {
+        if (!cts.abstract_transitions.empty() && is_label_mutex) {
             // Add only one of the two symmetric mutexes (we will add the other later)
             label_group_mutexes.emplace_back(pair<int, int>(current_outer_label, current_inner_label));
         }
 
-        if (to_end >= cts.concrete_transitions.size())
+        if (to_end >= cts.abstract_transitions.size())
             break;
         current_outer_label = TRANS_IDX(to_end).label_group;
     }
@@ -216,7 +217,7 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
 void OpMutexPruningMethod::finalize(FactoredTransitionSystem &fts) {
     auto labels = fts.get_labels_fixed();
 
-    utils::g_log << labels->get_size() << endl;
+    utils::g_log << "Number of labels: " << labels->get_size() << endl;
     utils::g_log << "Total number of operator mutexes: " << label_mutexes.size() << endl;
     utils::g_log << "Operator Mutex total time: " << utils::Duration(runtime) << endl;
 //    for (OpMutex om : label_mutexes) {
@@ -237,15 +238,16 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "goal");
 
     vector<string> previous_ops_options;
-    previous_ops_options.emplace_back("none");
-    previous_ops_options.emplace_back("simple");
-    previous_ops_options.emplace_back("all");
+    previous_ops_options.emplace_back("NoPO");
+    previous_ops_options.emplace_back("NaSUSPO");
+    previous_ops_options.emplace_back("NaSUTPO");
+    previous_ops_options.emplace_back("NeLUSPO");
     parser.add_enum_option<PreviousOpsOption>(
             "use_previous_ops",
             previous_ops_options,
             "Use previous operator mutexes to find unreachable states. "
-            "The default strategy is 'none'. Other strategies are 'simple' and 'all'. ",
-            "none");
+            "The default strategy is 'NoPO'. Other strategies are 'NaSUSPO', 'NaSUTPO' and 'NeLUSPO'. ",
+            "NoPO");
 
     parser.add_option<int>(
             "max_ts_size",

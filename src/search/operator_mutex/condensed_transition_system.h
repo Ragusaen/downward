@@ -22,7 +22,6 @@ public:
 
     std::vector<Transition> abstract_transitions;
     std::vector<Transition> concrete_transitions;
-    std::vector<int> concrete_to_abstract_transitions;
 
     int num_abstract_states;
     int num_concrete_states;

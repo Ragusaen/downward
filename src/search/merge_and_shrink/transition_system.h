@@ -45,7 +45,17 @@ struct Transition {
     bool operator>=(const Transition &other) const {
         return !(*this < other);
     }
+
+    static bool transition_comparison(Transition a, Transition b) {
+        if (a.src != b.src)
+            return a.src < b.src;
+        else if (a.target != b.target)
+            return a.target < b.target;
+        else
+            return a.label_group < b.label_group;
+    }
 };
+
 
 struct GroupAndTransitions {
     const LabelGroup &label_group;
@@ -243,6 +253,15 @@ public:
     }
 
 
+};
+}
+
+namespace std {
+template<>
+struct hash<merge_and_shrink::Transition> {
+    std::size_t operator()(const merge_and_shrink::Transition &t) const noexcept {
+        return t.src << 16 ^ t.target << 8 ^ t.label_group; // Bitshift to create least overlap between transitions
+    }
 };
 }
 
