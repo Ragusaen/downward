@@ -46,16 +46,12 @@ void CondensedTransitionSystem::discover_sccs() {
     unordered_set<LabeledTransition> temp_abstract_transitions;
     // Generate abstract transitions
     for (LabeledTransition &ct : concrete_transitions) {
-        utils::g_log << "(" << to_string(ct) << ") >>> (" << to_string(
-                LabeledTransition(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target],
-                                  ct.label_group)) << ")" << endl;
         temp_abstract_transitions.emplace(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target],
                                           ct.label_group);
     }
 
     for (const LabeledTransition &t : temp_abstract_transitions) {
         abstract_transitions.push_back(t);
-        utils::g_log << "(" << to_string(t) << ")" << endl;
     }
 
     // Sort abstract transitions by source, if equal then by target.
