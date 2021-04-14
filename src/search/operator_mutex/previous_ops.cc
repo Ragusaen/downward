@@ -214,9 +214,9 @@ void UnreachableTransitionsPreviousOps::run(CondensedTransitionSystem &cts, shar
                 utils::g_log << to_string(t) << endl;
             }
         }
-    }
 
-    cts.abstract_transitions = useable_transitions;
+        cts.abstract_transitions = useable_transitions;
+    }
 }
 
 vector<Transition> NaSUTPO::find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) {

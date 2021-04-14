@@ -56,7 +56,7 @@ public:
 
     void finalize(FactoredTransitionSystem &fts);
 
-    void infer_label_group_mutex_in_ts(TransitionSystem &ts);
+    void infer_label_group_mutex_in_ts(FactoredTransitionSystem &fts, int fts_index);
 
     double runtime = 0.0;
 

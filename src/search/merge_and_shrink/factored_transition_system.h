@@ -2,6 +2,7 @@
 #define MERGE_AND_SHRINK_FACTORED_TRANSITION_SYSTEM_H
 
 #include "types.h"
+#include "transition_system.h"
 
 #include <memory>
 #include <vector>
@@ -145,6 +146,10 @@ public:
 
     const TransitionSystem &get_transition_system(int index) const {
         return *transition_systems[index];
+    }
+
+    void set_transitions(int index, std::vector<std::vector<Transition>> new_transitions) {
+        transition_systems[index]->set_transitions(new_transitions);
     }
 
     const Distances &get_distances(int index) const {

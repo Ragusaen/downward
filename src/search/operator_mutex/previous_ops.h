@@ -17,7 +17,9 @@ class PreviousOps {
 
 public:
     virtual void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) = 0;
-
+    virtual bool will_prune() {
+        return false;
+    }
 protected:
     static unordered_set<OpMutex> get_label_group_mutexes(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
 };
@@ -29,7 +31,9 @@ public:
 
 class UnreachableTransitionsPreviousOps : public PreviousOps {
     void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) override;
-
+    bool will_prune() override {
+        return true;
+    }
 protected:
     virtual vector<Transition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) = 0;
 };
@@ -46,6 +50,9 @@ private:
 
 class UnreachableStatesPreviousOps : public PreviousOps {
     void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) override;
+    bool will_prune() override {
+        return true;
+    }
 protected:
     virtual DynamicBitset<> find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) = 0;
 };

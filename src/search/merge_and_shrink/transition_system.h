@@ -23,10 +23,8 @@ struct Transition {
     int src;
     int target;
 
-    int label_group;
-
-    Transition(int src, int target, int label_group = -1)
-        : src(src), target(target), label_group(label_group) {
+    Transition(int src, int target)
+        : src(src), target(target) {
     }
 
     bool operator==(const Transition &other) const {
@@ -44,15 +42,6 @@ struct Transition {
     // Required for "is_sorted_unique" in utilities
     bool operator>=(const Transition &other) const {
         return !(*this < other);
-    }
-
-    static bool transition_comparison(Transition a, Transition b) {
-        if (a.src != b.src)
-            return a.src < b.src;
-        else if (a.target != b.target)
-            return a.target < b.target;
-        else
-            return a.label_group < b.label_group;
     }
 };
 
@@ -252,7 +241,9 @@ public:
         return num_states;
     }
 
-
+    void set_transitions(std::vector<std::vector<Transition>> new_transitions) {
+        transitions_by_group_id = new_transitions;
+    }
 };
 }
 
@@ -260,7 +251,7 @@ namespace std {
 template<>
 struct hash<merge_and_shrink::Transition> {
     std::size_t operator()(const merge_and_shrink::Transition &t) const noexcept {
-        return t.src << 16 ^ t.target << 8 ^ t.label_group; // Bitshift to create least overlap between transitions
+        return t.src << 16 ^ t.target; // Bitshift to create least overlap between transitions
     }
 };
 }

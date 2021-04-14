@@ -79,7 +79,7 @@ void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
         TransitionSystem ts = fts.get_transition_system(fts_i);
         if (ts.get_num_states() <= max_ts_size) {
             int before_label_mutexes = label_mutexes.size();
-            infer_label_group_mutex_in_ts(ts);
+            infer_label_group_mutex_in_ts(fts, fts_i);
             utils::g_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes) << endl;
         }
     }
@@ -89,7 +89,8 @@ void OpMutexPruningMethod::run(FactoredTransitionSystem &fts) {
     runtime += utils::g_timer() - start_time;
 }
 
-void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
+void OpMutexPruningMethod::infer_label_group_mutex_in_ts(FactoredTransitionSystem &fts, int fts_index) {
+    TransitionSystem ts = fts.get_transition_system(fts_index);
     int initial_state = ts.get_init_state();
     unordered_set<int> goal_states;
 
@@ -105,8 +106,10 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
     for (int group = 0; group < ler->get_size(); group++) {
         for (Transition t : tbg[group]) {
             grouped_transitions.emplace_back(t.src, t.target, group);
+            utils::g_log << "(" << to_string(Transition(t.src, t.target, group)) << ") ";
         }
     }
+    utils::g_log << endl;
 
     CondensedTransitionSystem cts = CondensedTransitionSystem(grouped_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);
@@ -114,7 +117,60 @@ void OpMutexPruningMethod::infer_label_group_mutex_in_ts(TransitionSystem &ts) {
     // Compute unreachable states based on already known op-mutexes
     previous_ops_strategy->run(cts, ler, label_mutexes);
 
+    if (previous_ops_strategy->will_prune()) {
+        vector<vector<Transition>> new_transitions(tbg.size());
+        vector<Transition> abstract_transitions = cts.abstract_transitions;
+
+        for (Transition &at : abstract_transitions) {
+            utils::g_log << "(" << to_string(at) << ") , ";
+        }
+        utils::g_log << endl;
+
+        for (size_t g = 0; g < tbg.size(); g++) {
+            for (Transition &t : tbg[g]) {
+                Transition at(cts.concrete_to_abstract_state[t.src], cts.concrete_to_abstract_state[t.target], g);
+                int l = lower_bound(abstract_transitions.begin(), abstract_transitions.end(), at, Transition::transition_comparison) - abstract_transitions.begin();
+
+                utils::g_log << g << ": (" << to_string(t) << ") - (" << to_string(at) << ") = " << l << endl;
+
+                if (Transition::full_equals(abstract_transitions[l], at)) {
+                    new_transitions[g].push_back(t);
+                }
+            }
+        }
+
+        for (size_t g = 0; g < tbg.size(); g++) {
+            utils::g_log << g << ": ";
+            if (tbg[g].size() != new_transitions[g].size()) {
+                utils::g_log << "cdiff " << tbg[g].size() << "," << new_transitions[g].size() << endl;
+                continue;
+            }
+
+            for (std::size_t t = 0; t < tbg[g].size(); t++) {
+                if (t >= new_transitions.size()) {
+                    utils::g_log << "none " << t << ",";
+                } else if (tbg[g][t] != new_transitions[g][t]) {
+                    utils::g_log << "diff " << to_string(tbg[g][t]) << " " << to_string(new_transitions[g][t]);
+                }
+            }
+            utils::g_log << endl;
+        }
+
+        fts.set_transitions(fts_index, new_transitions);
+    }
+
     vector<pair<int, int>> label_group_mutexes = infer_label_group_mutex_in_condensed_ts(cts);
+
+    // All operators are implicitly op-mutex with operators that have NO transitions
+    auto ts2 = fts.get_transition_system(fts_index);
+    auto tbg2 = ts2.get_transitions();
+    for (size_t og = 0; og < tbg2.size(); og++) {
+        if (tbg2[og].size() == 0) {
+            for (size_t ig = 0; ig < tbg2.size(); ig++) {
+                label_group_mutexes.emplace_back(og, ig);
+            }
+        }
+    }
 
     // Expand label groups into concrete labels
     for (auto gm : label_group_mutexes) {
@@ -144,8 +200,7 @@ OpMutexPruningMethod::infer_label_group_mutex_in_condensed_ts(CondensedTransitio
     vector<bool> reach = reachability_strategy->run(cts);
 
     // Sort transitions on label group
-    std::sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end(),
-              [](Transition a, Transition b) { return a.label_group < b.label_group; });
+    std::sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end(), Transition::label_comparison);
 
     // Find label_group mutexes
     vector<pair<int, int>> label_group_mutexes = vector<pair<int, int>>();

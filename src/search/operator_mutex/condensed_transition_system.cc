@@ -50,11 +50,13 @@ void CondensedTransitionSystem::discover_sccs() {
     unordered_set<Transition> temp_abstract_transitions;
     // Generate abstract transitions
     for (Transition & ct : concrete_transitions) {
+        utils::g_log  << "(" << to_string(ct) << ") >>> (" << to_string(Transition(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group)) << ")" << endl;
         temp_abstract_transitions.emplace(concrete_to_abstract_state[ct.src], concrete_to_abstract_state[ct.target], ct.label_group);
     }
 
     for (const Transition &t : temp_abstract_transitions) {
         abstract_transitions.push_back(t);
+        utils::g_log << "(" << to_string(t) << ")" << endl;
     }
 
     // Sort abstract transitions by source, if equal then by target.
@@ -158,7 +160,7 @@ void CondensedTransitionSystem::tdfs_visit(int s, int* current_scc, const std::v
 std::vector<Transition> CondensedTransitionSystem::get_abstract_transitions_from_state(int source) const {
     std::vector<Transition> ret = std::vector<Transition>();
 
-    assert(std::is_sorted(abstract_transitions.begin(), abstract_transitions.end(), [](Transition t1, Transition t2) { return t1.src < t2.src; }));
+    assert(std::is_sorted(abstract_transitions.begin(), abstract_transitions.end(), Transition::transition_comparison));
 
     // Use binary search to find the first index with the src = source
     size_t l = std::lower_bound(abstract_transitions.begin(), abstract_transitions.end(), source,
