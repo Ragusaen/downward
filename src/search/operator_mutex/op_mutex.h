@@ -1,67 +1,34 @@
-#ifndef FAST_DOWNWARD_OPERATOR_MUTEX_H
-#define FAST_DOWNWARD_OPERATOR_MUTEX_H
 
-#include "../pruning_method.h"
-#include "../merge_and_shrink/factored_transition_system.h"
-#include "../merge_and_shrink/transition_system.h"
-#include "condensed_transition_system.h"
-#include "reachability_strategy.h"
-#include "op_mutex2.h"
-#include "previous_ops.h"
-#include "../algorithms/dynamic_bitset.h"
+#ifndef FAST_DOWNWARD_OP_MUTEX_H
+#define FAST_DOWNWARD_OP_MUTEX_H
 
-using namespace reachability;
-using namespace dynamic_bitset;
-using namespace op_mutex2;
-using namespace previous_ops;
-using namespace std;
-
-using merge_and_shrink::FactoredTransitionSystem;
-using merge_and_shrink::Transition;
+#include <unordered_set>
+#include <string>
 
 namespace op_mutex {
-enum class ReachabilityOption {
-    GOAL_REACHABILITY,
-    NO_GOAL_REACHABILITY
+struct OpMutex {
+    int label1;
+    int label2;
+
+    OpMutex(int l1, int l2) : label1(l1), label2(l2) {}
 };
 
-enum class PreviousOpsOption{
-    NoPO,
-    NaSUSPO,
-    NaSUTPO,
-    NeLUSPO
-};
-
-class OpMutexPruningMethod {
-    unique_ptr<ReachabilityStrategy> reachability_strategy;
-    unique_ptr<PreviousOps> previous_ops_strategy;
-
-private:
-    int max_ts_size;
-
-    int iteration = 0;
-
-    unordered_set<OpMutex> label_mutexes;
-
-    // This adds both symmetric op-mutexes
-    void add_opmutex(int label1, int label2) {
-        label_mutexes.emplace(label1, label2);
-        label_mutexes.emplace(label2, label1);
-    }
-
-public:
-    explicit OpMutexPruningMethod(const options::Options &opts);
-
-    void run(FactoredTransitionSystem &fts);
-
-    void finalize(FactoredTransitionSystem &fts);
-
-    void infer_label_group_mutex_in_ts(FactoredTransitionSystem &fts, int fts_index);
-
-    double runtime = 0.0;
-
-    vector<pair<int, int>> infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts);
-};
-
+static inline bool operator==(const OpMutex a, const OpMutex b) {
+    return a.label1 == b.label1 && a.label2 == b.label2;
 }
-#endif
+
+static std::string to_string(OpMutex op_mutex) {
+    return "(" + std::to_string(op_mutex.label1) + ", " + std::to_string(op_mutex.label2) + ")";
+}
+}
+
+namespace std {
+template<>
+struct hash<op_mutex::OpMutex> {
+    std::size_t operator()(const op_mutex::OpMutex &p) const noexcept {
+        return p.label1 ^ p.label2 << 16; // Bitshift 16 bits to create least overlap between labels
+    }
+};
+}
+
+#endif //FAST_DOWNWARD_OP_MUTEX_H

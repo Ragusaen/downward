@@ -23,6 +23,11 @@ using namespace std;
 using utils::ExitCode;
 
 namespace merge_and_shrink {
+
+std::string to_string(Transition t) {
+    return "(" + std::to_string(t.src) + " -> " + std::to_string(t.target) + ")";
+}
+
 ostream &operator<<(ostream &os, const Transition &trans) {
     os << trans.src << "->" << trans.target;
     return os;

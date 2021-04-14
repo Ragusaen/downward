@@ -3,16 +3,15 @@
 
 #include "../merge_and_shrink/label_equivalence_relation.h"
 #include "../merge_and_shrink/labels.h"
-#include "condensed_transition_system.h"
 #include "reachability_strategy.h"
-#include "op_mutex2.h"
+#include "labeled_transition.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
 
 using namespace std;
 
-namespace previous_ops {
+namespace op_mutex {
 
 unordered_set<OpMutex> PreviousOps::get_label_group_mutexes(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes) {
     unordered_set<OpMutex> label_group_mutexes;
@@ -65,8 +64,8 @@ DynamicBitset<> NeLUSPO::find_unreachable_states(CondensedTransitionSystem &cts,
 
         //utils::g_log << "Current state " << state << endl;
 
-        std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
-        for (Transition t  : outgoing_transitions) {
+        std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+        for (LabeledTransition t  : outgoing_transitions) {
             if (t.target == state)
                 continue;
 
@@ -112,9 +111,9 @@ DynamicBitset<> NeLUSPO::find_unreachable_states(CondensedTransitionSystem &cts,
 }
 
 void NeLUSPO::count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state) {
-    std::vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+    std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
-    for (Transition t : outgoing_transitions) {
+    for (LabeledTransition t : outgoing_transitions) {
         if (t.target == state)
             continue;
 
@@ -131,11 +130,11 @@ void UnreachableStatesPreviousOps::run(CondensedTransitionSystem &cts, shared_pt
 
     DynamicBitset<> unreachable_states = find_unreachable_states(cts, get_label_group_mutexes(ler, label_mutexes), ler->get_size());
 
-    vector<Transition> new_transitions;
+    vector<LabeledTransition> new_transitions;
 
     for (int s = 0; s < cts.num_abstract_states; s++) {
         if (unreachable_states[s] == 0) {
-            for (Transition t : cts.get_abstract_transitions_from_state(s)) {
+            for (LabeledTransition t : cts.get_abstract_transitions_from_state(s)) {
                 new_transitions.push_back(t);
             }
         }
@@ -162,9 +161,9 @@ void NaSUSPO::unreachable_states_dfs(
     if (cts.abstract_goal_states.count(state))
         fully_reachable.set(state);
 
-    vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+    vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
-    for(Transition &t : outgoing_transitions) {
+    for(LabeledTransition &t : outgoing_transitions) {
         if(t.target == state)
             continue;
 
@@ -204,14 +203,14 @@ void NaSUSPO::unreachable_states_dfs(
 void UnreachableTransitionsPreviousOps::run(CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler,
                                        unordered_set<OpMutex> &label_mutexes){
 
-    vector<Transition> useable_transitions = find_useable_transitions(cts, get_label_group_mutexes(ler, label_mutexes), ler->get_size());
+    vector<LabeledTransition> useable_transitions = find_useable_transitions(cts, get_label_group_mutexes(ler, label_mutexes), ler->get_size());
 
     if (cts.abstract_transitions.size() - useable_transitions.size() > 0) {
         utils::g_log << "Unuseable transitions: " << (cts.abstract_transitions.size() - useable_transitions.size()) << endl;
 
-        for (Transition &t : cts.abstract_transitions) {
+        for (LabeledTransition &t : cts.abstract_transitions) {
             if (find(useable_transitions.begin(), useable_transitions.end(), t) == useable_transitions.end()) {
-                utils::g_log << to_string(t) << endl;
+                utils::g_log << op_mutex::to_string(t) << endl;
             }
         }
 
@@ -219,30 +218,30 @@ void UnreachableTransitionsPreviousOps::run(CondensedTransitionSystem &cts, shar
     }
 }
 
-vector<Transition> NaSUTPO::find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) {
+vector<LabeledTransition> NaSUTPO::find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) {
     DynamicBitset<> path(num_label_groups);
-    unordered_set<Transition> usable_transitions;
+    unordered_set<LabeledTransition> usable_transitions;
 
     useable_transitions_dfs(cts, cts.initial_abstract_state, path, usable_transitions, label_group_mutexes);
 
-    vector<Transition> ret;
-    for (const Transition &t : usable_transitions) {
+    vector<LabeledTransition> ret;
+    for (const LabeledTransition &t : usable_transitions) {
         ret.push_back(t);
     }
 
-    std::sort(ret.begin(), ret.end(), Transition::transition_comparison);
+    std::sort(ret.begin(), ret.end());
 
     return ret;
 }
 
 void NaSUTPO::useable_transitions_dfs(
-        const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path, unordered_set<Transition> &usable_transitions,
+        const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path, unordered_set<LabeledTransition> &usable_transitions,
         const unordered_set<OpMutex> &label_group_mutexes)
 {
 
-    vector<Transition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+    vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
-    for(Transition &t : outgoing_transitions) {
+    for(LabeledTransition &t : outgoing_transitions) {
         if(t.target == state) {
             // Self loops are trivially usable, even though they might be op-mutex with a something in the path, because
             // removing them can NEVER cause more op-mutexes, so we might as well not bother

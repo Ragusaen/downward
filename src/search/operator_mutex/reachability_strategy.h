@@ -7,9 +7,7 @@
 #include "condensed_transition_system.h"
 #include <unordered_set>
 
-namespace reachability {
-
-
+namespace op_mutex {
 class ReachabilityStrategy {
 
 public:

@@ -224,7 +224,7 @@ static shared_ptr<Heuristic> _parse(options::OptionParser &parser) {
     add_merge_and_shrink_algorithm_options_to_parser(parser);
 
     // operator mutex
-    parser.add_option<shared_ptr<op_mutex::OpMutexPruningMethod>>(
+    parser.add_option<shared_ptr<op_mutex::OperatorMutexSearcher>>(
             "op_mutex",
             "Operator mutex pruning.",
             "no_operator_mutex"

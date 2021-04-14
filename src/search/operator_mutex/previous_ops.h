@@ -5,14 +5,13 @@
 
 #include <unordered_set>
 #include "condensed_transition_system.h"
-#include "op_mutex2.h"
 #include "../algorithms/dynamic_bitset.h"
+#include "op_mutex.h"
 
 using namespace dynamic_bitset;
-using namespace op_mutex2;
 using namespace std;
 
-namespace previous_ops {
+namespace op_mutex {
 class PreviousOps {
 
 public:
@@ -35,17 +34,17 @@ class UnreachableTransitionsPreviousOps : public PreviousOps {
         return true;
     }
 protected:
-    virtual vector<Transition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) = 0;
+    virtual vector<LabeledTransition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) = 0;
 };
 
 class NaSUTPO : public UnreachableTransitionsPreviousOps {
 
 protected:
-    vector<Transition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+    vector<LabeledTransition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 
 private:
     void useable_transitions_dfs(const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path,
-                                 unordered_set<Transition> &usable_transitions, const unordered_set<OpMutex> &label_group_mutexes);
+                                 unordered_set<LabeledTransition> &usable_transitions, const unordered_set<OpMutex> &label_group_mutexes);
 };
 
 class UnreachableStatesPreviousOps : public PreviousOps {

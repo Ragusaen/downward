@@ -3,7 +3,7 @@
 
 using namespace std;
 
-namespace reachability {
+namespace op_mutex {
 #define REACH_XY(x, y) (reach[(x) * cts.num_abstract_states + (y)])
 
 vector<bool> GoalReachability::run(const CondensedTransitionSystem &cts) {

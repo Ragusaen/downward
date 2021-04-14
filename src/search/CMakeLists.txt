@@ -20,14 +20,14 @@ SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
 option(
   USE_GLIBCXX_DEBUG
   "Enable the libstdc++ debug mode that does additional safety checks. (On Linux systems, g++ and clang++ usually use libstdc++ for the C++ library.) The checks come at a significant performance cost and should only be enabled in debug mode. Enabling them makes the binary incompatible with libraries that are not compiled with this flag, which can lead to hard-to-debug errors."
-  FALSE)
+  TRUE)
 
 fast_downward_set_compiler_flags()
 fast_downward_set_linker_flags()
 
 # Collect source files needed for the active plugins.
 include("${CMAKE_CURRENT_SOURCE_DIR}/DownwardFiles.cmake")
-add_executable(downward ${PLANNER_SOURCES} operator_mutex/reachability_strategy.cc operator_mutex/reachability_strategy.h operator_mutex/previous_ops.cc operator_mutex/previous_ops.h operator_mutex/op_mutex2.cc operator_mutex/op_mutex2.h)
+add_executable(downward ${PLANNER_SOURCES})
 
 ## == Includes ==
 

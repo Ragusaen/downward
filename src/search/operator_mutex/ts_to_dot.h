@@ -9,6 +9,7 @@
 #include "condensed_transition_system.h"
 
 using namespace std;
+using namespace op_mutex;
 
 string ts_to_dot(const TransitionSystem &ts);
 string cts_to_dot(const CondensedTransitionSystem &cts);

@@ -49,7 +49,7 @@ MergeAndShrinkAlgorithm::MergeAndShrinkAlgorithm(const Options &opts) :
     merge_strategy_factory(opts.get<shared_ptr<MergeStrategyFactory>>("merge_strategy")),
     shrink_strategy(opts.get<shared_ptr<ShrinkStrategy>>("shrink_strategy")),
     label_reduction(opts.get<shared_ptr<LabelReduction>>("label_reduction", nullptr)),
-    operator_mutex_pruning(opts.get<shared_ptr<op_mutex::OpMutexPruningMethod>>("op_mutex")),
+    operator_mutex_pruning(opts.get<shared_ptr<op_mutex::OperatorMutexSearcher>>("op_mutex")),
     max_states(opts.get<int>("max_states")),
     max_states_before_merge(opts.get<int>("max_states_before_merge")),
     shrink_threshold_before_merge(opts.get<int>("threshold_before_merge")),

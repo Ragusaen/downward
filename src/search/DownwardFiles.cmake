@@ -775,10 +775,10 @@ fast_downward_plugin(
         HELP "Plugin for operator mutex pruning"
         SOURCES
             operator_mutex/condensed_transition_system
-            operator_mutex/op_mutex
+            operator_mutex/operator_mutex_searcher
             operator_mutex/reachability_strategy
             operator_mutex/previous_ops
-            operator_mutex/op_mutex2
+            operator_mutex/op_mutex
             operator_mutex/ts_to_dot
             operator_mutex/labeled_transition
 )

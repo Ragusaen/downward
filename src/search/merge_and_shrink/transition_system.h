@@ -45,6 +45,7 @@ struct Transition {
     }
 };
 
+std::string to_string(Transition t);
 
 struct GroupAndTransitions {
     const LabelGroup &label_group;

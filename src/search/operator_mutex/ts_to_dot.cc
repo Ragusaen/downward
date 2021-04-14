@@ -16,21 +16,21 @@ string ts_to_dot(const TransitionSystem &ts) {
     }
     out += "    " + to_string(ts.get_init_state()) + " [color=red];\n";
 
-    vector<Transition> grouped_transitions;
+    vector<LabeledTransition> labeled_transitions;
     int group_id = 0;
     for (auto group : ts) {
         for (Transition t : group.transitions) {
-            grouped_transitions.emplace_back(t.src, t.target, group_id);
+            labeled_transitions.emplace_back(t.src, t.target, group_id);
         }
         group_id++;
     }
 
-    sort(grouped_transitions.begin(), grouped_transitions.end(), [](Transition a, Transition b) { if (a.src == b.src) return a.target < b.target; else return a.src < b.src;});
+    sort(labeled_transitions.begin(), labeled_transitions.end(), [](Transition a, Transition b) { if (a.src == b.src) return a.target < b.target; else return a.src < b.src;});
 
-    Transition current_t = Transition(-1, -1, -1);
-    string current_ls = "";
+    LabeledTransition current_t = LabeledTransition(-1, -1, -1);
+    string current_ls;
     bool first = true;
-    for (Transition t : grouped_transitions) {
+    for (LabeledTransition t : labeled_transitions) {
         if (current_t.src != t.src || current_t.target != t.target) {
             if (!first)
                 out += "    " + to_string(current_t.src) + " -> " + to_string(current_t.target) + " [label=\"" + current_ls + "\"];\n";
@@ -58,10 +58,10 @@ string cts_to_dot(const CondensedTransitionSystem &cts) {
     }
     out += "    " + to_string(cts.initial_abstract_state) + " [color=red];\n";
 
-    Transition current_t = Transition(-1, -1, -1);
-    string current_ls = "";
+    LabeledTransition current_t = LabeledTransition(-1, -1, -1);
+    string current_ls;
     bool first = true;
-    for (Transition t : cts.abstract_transitions) {
+    for (LabeledTransition t : cts.abstract_transitions) {
         if (current_t.src != t.src || current_t.target != t.target) {
             if (!first)
                 out += "    " + to_string(current_t.src) + " -> " + to_string(current_t.target) + " [label=\"" + current_ls + "\"];\n";
