@@ -59,6 +59,11 @@ def main():
         r"Operator Mutex total time: (.+)s\n",
         type=float,
     )
+    parser.add_pattern(
+        "num_labels",
+        r"Number of labels: (\d+)\n",
+        type=int,
+    )
     parser.add_repeated_pattern(
         "h_values",
         r"New best heuristic value for .+: (\d+)\n",
