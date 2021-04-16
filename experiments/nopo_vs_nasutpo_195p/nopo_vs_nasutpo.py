@@ -113,6 +113,7 @@ exp.add_parser(DIR / "parser.py")
 ATTRIBUTES = [
     "operator_mutex_time",
     "operator_mutexes_num",
+    "num_labels",
     #project.EVALUATIONS_PER_TIME,
 ]
 
