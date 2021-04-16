@@ -143,4 +143,6 @@ exp.add_report(report, name=name, outfile=outfile)
 #             name=f"{exp.name}-{algo1}-vs-{algo2}-{attr}{suffix}",
 #         )
 
+exp.add_parse_again_step()
+
 exp.run_steps()
