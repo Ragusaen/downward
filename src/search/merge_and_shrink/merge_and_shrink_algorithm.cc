@@ -312,7 +312,7 @@ void MergeAndShrinkAlgorithm::main_loop(
             utils::g_log << endl;
         }
 
-        if (operator_mutex_pruning) {
+        if (operator_mutex_pruning && operator_mutex_pruning->run_on_intermediate) {
             operator_mutex_pruning->run(fts);
         }
 

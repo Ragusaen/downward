@@ -25,7 +25,8 @@ enum class PreviousOpsOption{
     NoPO,
     NaSUSPO,
     NaSUTPO,
-    NeLUSPO
+    NeLUSPO,
+    NeLUTPO
 };
 
 class OperatorMutexSearcher {
@@ -57,6 +58,8 @@ public:
     double runtime = 0.0;
 
     vector<pair<int, int>> infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts);
+
+    bool run_on_intermediate = true;
 };
 
 }

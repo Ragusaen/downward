@@ -20,6 +20,8 @@ public:
         return false;
     }
 protected:
+    void count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state);
+
     static unordered_set<OpMutex> get_label_group_mutexes(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
 };
 
@@ -34,17 +36,24 @@ class UnreachableTransitionsPreviousOps : public PreviousOps {
         return true;
     }
 protected:
-    virtual vector<LabeledTransition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) = 0;
+    virtual vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) = 0;
 };
 
 class NaSUTPO : public UnreachableTransitionsPreviousOps {
 
 protected:
-    vector<LabeledTransition> find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 
 private:
-    void useable_transitions_dfs(const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path,
+    void usable_transitions_dfs(const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path,
                                  unordered_set<LabeledTransition> &usable_transitions, const unordered_set<OpMutex> &label_group_mutexes);
+};
+
+class NeLUTPO : public UnreachableTransitionsPreviousOps {
+    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+
+private:
+    static bool is_usable(const DynamicBitset<> &label_landmarks, LabeledTransition transition, const unordered_set<OpMutex> &label_group_mutexes);
 };
 
 class UnreachableStatesPreviousOps : public PreviousOps {
@@ -59,8 +68,6 @@ protected:
 class NeLUSPO : public UnreachableStatesPreviousOps {
 protected:
     DynamicBitset<> find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
-private:
-    void count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state);
 };
 
 class NaSUSPO : public UnreachableStatesPreviousOps {

@@ -12,6 +12,7 @@
 #include "reachability_strategy.h"
 #include "previous_ops.h"
 #include "labeled_transition.h"
+#include "ts_to_dot.h"
 #include <iostream>
 #include <string>
 #include <utility>
@@ -61,9 +62,12 @@ OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
             break;
         case PreviousOpsOption::NaSUTPO:
             previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
+        case PreviousOpsOption::NeLUTPO:
+            previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
     }
 
     max_ts_size = opts.get<int>("max_ts_size");
+    run_on_intermediate = opts.get<bool>("run_intermediate");
 }
 
 bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
@@ -109,10 +113,13 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
             labeled_transitions.emplace_back(t.src, t.target, group);
         }
     }
-    utils::g_log << endl;
+
+    //utils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
 
     CondensedTransitionSystem cts = CondensedTransitionSystem(labeled_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);
+
+    //utils::g_log << cts_to_dot(cts) << endl;
 
     // Compute unreachable states based on already known op-mutexes
     previous_ops_strategy->run(cts, ler, label_mutexes);
@@ -120,8 +127,6 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
     if (previous_ops_strategy->will_prune()) {
         vector<vector<Transition>> new_transitions(tbg.size());
         vector<LabeledTransition> abstract_transitions = cts.abstract_transitions;
-
-        utils::g_log << endl;
 
         for (size_t g = 0; g < tbg.size(); g++) {
             for (Transition &t : tbg[g]) {
@@ -275,6 +280,7 @@ void add_algo_options_to_parser(OptionParser &parser) {
     previous_ops_options.emplace_back("NaSUSPO");
     previous_ops_options.emplace_back("NaSUTPO");
     previous_ops_options.emplace_back("NeLUSPO");
+    previous_ops_options.emplace_back("NeLUTPO");
     parser.add_enum_option<PreviousOpsOption>(
             "use_previous_ops",
             previous_ops_options,
@@ -286,6 +292,12 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "max_ts_size",
             "Maximum number of states a transition system can have that will be considered",
             "5000"
+            );
+
+    parser.add_option<bool>(
+            "run_intermediate",
+            "Whether or not intermediate factors of MAS should be used.",
+            "true"
             );
 }
 

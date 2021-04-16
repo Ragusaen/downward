@@ -110,7 +110,7 @@ DynamicBitset<> NeLUSPO::find_unreachable_states(CondensedTransitionSystem &cts,
     return unreachable_states;
 }
 
-void NeLUSPO::count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state) {
+void PreviousOps::count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state) {
     std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
     for (LabeledTransition t : outgoing_transitions) {
@@ -141,6 +141,7 @@ void UnreachableStatesPreviousOps::run(CondensedTransitionSystem &cts, shared_pt
     }
 
     cts.abstract_transitions = new_transitions;
+    sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end());
 }
 
 DynamicBitset<> NaSUSPO::find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_labels) {
@@ -203,26 +204,27 @@ void NaSUSPO::unreachable_states_dfs(
 void UnreachableTransitionsPreviousOps::run(CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler,
                                        unordered_set<OpMutex> &label_mutexes){
 
-    vector<LabeledTransition> useable_transitions = find_useable_transitions(cts, get_label_group_mutexes(ler, label_mutexes), ler->get_size());
+    vector<LabeledTransition> usable_transitions = find_usable_transitions(cts, get_label_group_mutexes(ler, label_mutexes), ler->get_size());
 
-    if (cts.abstract_transitions.size() - useable_transitions.size() > 0) {
-        utils::g_log << "Unuseable transitions: " << (cts.abstract_transitions.size() - useable_transitions.size()) << endl;
+    if (cts.abstract_transitions.size() - usable_transitions.size() > 0) {
+        utils::g_log << "Unusable transitions: " << (cts.abstract_transitions.size() - usable_transitions.size()) << endl;
 
         for (LabeledTransition &t : cts.abstract_transitions) {
-            if (find(useable_transitions.begin(), useable_transitions.end(), t) == useable_transitions.end()) {
+            if (find(usable_transitions.begin(), usable_transitions.end(), t) == usable_transitions.end()) {
                 utils::g_log << op_mutex::to_string(t) << endl;
             }
         }
 
-        cts.abstract_transitions = useable_transitions;
+        cts.abstract_transitions = usable_transitions;
+        sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end());
     }
 }
 
-vector<LabeledTransition> NaSUTPO::find_useable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) {
+vector<LabeledTransition> NaSUTPO::find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) {
     DynamicBitset<> path(num_label_groups);
     unordered_set<LabeledTransition> usable_transitions;
 
-    useable_transitions_dfs(cts, cts.initial_abstract_state, path, usable_transitions, label_group_mutexes);
+    usable_transitions_dfs(cts, cts.initial_abstract_state, path, usable_transitions, label_group_mutexes);
 
     vector<LabeledTransition> ret;
     for (const LabeledTransition &t : usable_transitions) {
@@ -234,7 +236,7 @@ vector<LabeledTransition> NaSUTPO::find_useable_transitions(CondensedTransitionS
     return ret;
 }
 
-void NaSUTPO::useable_transitions_dfs(
+void NaSUTPO::usable_transitions_dfs(
         const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path, unordered_set<LabeledTransition> &usable_transitions,
         const unordered_set<OpMutex> &label_group_mutexes)
 {
@@ -272,7 +274,7 @@ void NaSUTPO::useable_transitions_dfs(
 
         bool prev_bit = path[t.label_group];
         path.set(t.label_group);
-        useable_transitions_dfs(cts, t.target, path, usable_transitions, label_group_mutexes);
+        usable_transitions_dfs(cts, t.target, path, usable_transitions, label_group_mutexes);
 
         // Only reset this bit if it was not set before
         if(!prev_bit)
@@ -280,4 +282,69 @@ void NaSUTPO::useable_transitions_dfs(
     }
 }
 
+vector<LabeledTransition>
+NeLUTPO::find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes,
+                                 int num_label_groups) {
+    std::vector<int> remaining_parents(cts.num_abstract_states);
+    count_parents(cts, remaining_parents, cts.initial_abstract_state);
+
+    // Initialize the ready_states to be the initial state (we do not care about any other states that start with indegree
+    // 0, if they should exist.
+    std::unordered_set<int> ready_states;
+    assert(remaining_parents[cts.initial_abstract_state] == 0);
+    ready_states.insert(cts.initial_abstract_state);
+
+    // For each state we have a set of operator landmarks for it
+    vector<DynamicBitset<>> state_labels = vector<DynamicBitset<>>(cts.num_abstract_states, DynamicBitset<>(num_label_groups));
+
+    std::vector<bool> has_visited(cts.num_abstract_states, false);
+
+    vector<LabeledTransition> usable_transitions;
+
+    while (!ready_states.empty()) {
+        int state = *ready_states.begin();
+        ready_states.erase(state);
+
+        std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+        for (LabeledTransition t  : outgoing_transitions) {
+            if (t.target == state) {
+                usable_transitions.push_back(t);
+                continue;
+            }
+
+            remaining_parents[t.target]--;
+            if (remaining_parents[t.target] == 0)
+                ready_states.insert(t.target);
+
+            // Only consider this transition if it is usable
+            if (!is_usable(state_labels[state], t, label_group_mutexes))
+                continue;
+
+            if (!has_visited[t.target]) {
+                state_labels[t.target] |= state_labels[state];
+                state_labels[t.target].set(t.label_group);
+                has_visited[t.target] = true;
+            } else {
+                auto temp = DynamicBitset<>(num_label_groups);
+                temp.set(t.label_group);
+                temp |= state_labels[state];
+                state_labels[t.target] &= temp;
+            }
+            usable_transitions.push_back(t);
+        }
+    }
+
+    return usable_transitions;
+}
+
+bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransition transition,
+                        const unordered_set<OpMutex> &label_group_mutexes) {
+    for (std::size_t i = 0; i < label_landmarks.size(); i++) {
+        // If label i is used and i is op-mutex with the transitions label
+        if (label_landmarks.test(i) && label_group_mutexes.count(OpMutex(i, transition.label_group))) {
+            return false;
+        }
+    }
+    return true;
+}
 }
