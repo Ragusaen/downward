@@ -41,7 +41,7 @@ REV = "main"
 # ]
 
 CONFIGS = [
-    (f"{index:02d}-{h_nick}", ["--search", f"astar(merge_and_shrink(op_mutex={op_mutex}, merge_strategy={mstrat}, shrink_strategy={sstrat}))"])
+    (f"{index:02d}-{h_nick}", ["--search", f"astar(merge_and_shrink(op_mutex={op_mutex}))"])
     for index, (h_nick, op_mutex) in enumerate(
         
             # [(f"{on}-{mn}-{sn}", f"op_mutex(use_previous_ops={o}, reachability_strategy=goal)", f"{m}", f"{s}") 
