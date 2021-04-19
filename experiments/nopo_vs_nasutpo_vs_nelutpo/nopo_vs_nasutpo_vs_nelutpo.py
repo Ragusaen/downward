@@ -69,8 +69,6 @@ CONFIGS = [
     )
 ]
 i = len(CONFIGS)
-CONFIGS.extend([(f"{i:02d}-o_np-default", ["--search", f"astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=NoPO, reachability_strategy=goal)))"]),
-		(f"{i+1:02d}-o_nstp-default", ["--search", f"astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=NaSUTPO, reachability_strategy=goal)))"])])
 
 
 BUILD_OPTIONS = []
