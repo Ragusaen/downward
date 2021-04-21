@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/grid/prob03.pddl

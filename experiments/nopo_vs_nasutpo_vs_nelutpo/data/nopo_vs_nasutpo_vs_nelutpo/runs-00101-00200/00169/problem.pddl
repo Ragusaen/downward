@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/ged-opt14-strips/d-7-6.pddl

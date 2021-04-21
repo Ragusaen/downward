@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/mystery/prob04.pddl

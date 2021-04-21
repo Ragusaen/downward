@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/openstacks-opt14-strips/domain_p35_1.pddl

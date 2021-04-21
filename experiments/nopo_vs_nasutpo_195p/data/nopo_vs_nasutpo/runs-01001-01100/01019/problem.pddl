@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/openstacks-opt14-strips/p20_2.pddl

@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/organic-synthesis-opt18-strips/p03.pddl

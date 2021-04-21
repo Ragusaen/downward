@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/freecell/p06.pddl

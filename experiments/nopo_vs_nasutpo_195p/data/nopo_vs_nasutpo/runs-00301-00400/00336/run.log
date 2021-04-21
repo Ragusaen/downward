@@ -1,0 +1,1876 @@
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: 599.96s
+INFO     translator memory limit: 7000 MB
+INFO     translator command line string: /usr/bin/python3 /user/student.aau.dk/lkar18/downward-projects/downward/experiments/nopo_vs_nasutpo_195p/data/nopo_vs_nasutpo/code-94571df14dfaf5b06207d9589b12facdd93f580c_e5e41175/builds/release/bin/translate/translate.py domain.pddl problem.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.230s CPU, 0.232s wall-clock]
+Normalizing task... [0.020s CPU, 0.024s wall-clock]
+Instantiating...
+Generating Datalog program... [0.030s CPU, 0.028s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.190s CPU, 0.188s wall-clock]
+Preparing model... [0.120s CPU, 0.126s wall-clock]
+Generated 6310 rules.
+Computing model... [1.160s CPU, 1.154s wall-clock]
+30513 relevant atoms
+44811 auxiliary atoms
+75324 final queue length
+114412 total queue pushes
+Completing instantiation... [1.190s CPU, 1.181s wall-clock]
+Instantiating: [2.730s CPU, 2.729s wall-clock]
+Computing fact groups...
+Finding invariants...
+1272 initial candidates
+Finding invariants: [28.240s CPU, 28.420s wall-clock]
+Checking invariant weight... [0.000s CPU, 0.000s wall-clock]
+Instantiating groups... [0.000s CPU, 0.000s wall-clock]
+Collecting mutex groups... [0.000s CPU, 0.000s wall-clock]
+Choosing groups...
+1049 uncovered facts
+Choosing groups: [0.000s CPU, 0.000s wall-clock]
+Building translation key... [0.000s CPU, 0.004s wall-clock]
+Computing fact groups: [28.260s CPU, 28.436s wall-clock]
+Building STRIPS to SAS dictionary... [0.000s CPU, 0.002s wall-clock]
+Building dictionary for full mutex groups... [0.000s CPU, 0.001s wall-clock]
+Building mutex information...
+Building mutex information: [0.000s CPU, 0.001s wall-clock]
+Translating task...
+Processing axioms...
+Simplifying axioms... [0.000s CPU, 0.000s wall-clock]
+Translator axioms removed by simplifying: 0
+Computing negative axioms... [0.000s CPU, 0.000s wall-clock]
+Processing axioms: [0.060s CPU, 0.056s wall-clock]
+Translating task: [1.380s CPU, 1.378s wall-clock]
+41584 effect conditions simplified
+0 implied preconditions added
+Detecting unreachable propositions...
+2053 operators removed
+0 axioms removed
+78 propositions removed
+Detecting unreachable propositions: [0.800s CPU, 0.797s wall-clock]
+Reordering and filtering variables...
+948 of 1010 variables necessary.
+0 of 0 mutex groups necessary.
+23959 of 25357 operators necessary.
+0 of 0 axiom rules necessary.
+Reordering and filtering variables: [0.440s CPU, 0.441s wall-clock]
+Translator variables: 948
+Translator derived variables: 0
+Translator facts: 1896
+Translator goal facts: 31
+Translator mutex groups: 0
+Translator total mutex groups size: 0
+Translator operators: 23959
+Translator axioms: 0
+Translator task size: 162762
+Translator peak memory: 326044 KB
+Writing output... [0.340s CPU, 0.339s wall-clock]
+Done! [34.250s CPU, 34.429s wall-clock]
+translate exit code: 0
+
+INFO     Running search (release).
+INFO     search stdin: output.sas
+INFO     search time limit: 565.63s
+INFO     search memory limit: 7000 MB
+INFO     search command line string: /user/student.aau.dk/lkar18/downward-projects/downward/experiments/nopo_vs_nasutpo_195p/data/nopo_vs_nasutpo/code-94571df14dfaf5b06207d9589b12facdd93f580c_e5e41175/builds/release/bin/downward --search 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=NoPO, reachability_strategy=goal), merge_strategy=merge_sccs(order_of_sccs=topological, merge_tree=linear()), shrink_strategy=shrink_bisimulation(greedy=true, at_limit=USE_UP)))' --internal-plan-file sas_plan < output.sas
+[t=4.5e-05s, 22344 KB] reading input...
+[t=0.101598s, 29996 KB] done reading input!
+[t=0.103089s, 30392 KB] Initializing merge-and-shrink heuristic...
+[t=0.103165s, 30392 KB] Running merge-and-shrink algorithm...
+[t=0.103185s, 30392 KB] Merge strategy options:
+[t=0.103205s, 30392 KB] Type: sccs
+[t=0.103224s, 30392 KB] Merge order of sccs: topological
+[t=0.103244s, 30392 KB] Merge strategy for merging within sccs: 
+[t=0.103264s, 30392 KB] Merge tree options: 
+[t=0.103283s, 30392 KB] Type: linear
+[t=0.103301s, 30392 KB] Update option: use random
+[t=0.103329s, 30392 KB] Variable order type: CG/GOAL, tie breaking on level (main)
+
+[t=0.103351s, 30392 KB] Options related to size limits and shrinking: 
+[t=0.103371s, 30392 KB] Transition system size limit: 50000
+[t=0.10339s, 30392 KB] Transition system size limit right before merge: 50000
+[t=0.103408s, 30392 KB] Threshold to trigger shrinking right before merge: 1
+
+[t=0.103429s, 30392 KB] Pruning unreachable states: yes
+[t=0.103449s, 30392 KB] Pruning irrelevant states: yes
+
+[t=0.103469s, 30392 KB] Label reduction disabled
+
+[t=0.103491s, 30392 KB] Main loop max time in seconds: inf
+
+[t=0.103526s, 30392 KB] ===============================================================================
+[t=0.103548s, 30392 KB] WARNING! You did not enable label reduction.
+This may drastically reduce the performance of merge-and-shrink!
+[t=0.103567s, 30392 KB] ===============================================================================
+
+[t=0.103588s, 30392 KB] Building atomic transition systems... 
+[t=1.75402s, 4072632 KB] M&S algorithm timer: 1.65111s (after computation of atomic factors)
+[t=1.75463s, 4072632 KB] M&S algorithm timer: 1.65149s (after pruning atomic factors)
+
+[t=1.75466s, 4072632 KB] Starting main loop without a time limit.
+[t=1.75471s, 4072632 KB] building causal graph...done! [t=0.0829542s]
+[t=1.86506s, 4072632 KB] SCCs of the causal graph:
+[t=1.86511s, 4072632 KB] [0, 1, 2, 3, 4, 17, 33, 34, 81, 91, 90, 79, 18, 36, 35, 152, 16, 80, 153, 23, 610, 611, 812, 814, 872, 875, 412, 813, 815, 413, 770, 773, 774, 200, 140, 141, 176, 42, 51, 40, 27, 9, 28, 38, 10, 185, 11, 29, 22, 689, 105, 213, 216, 135, 108, 6, 112, 5, 110, 7, 113, 111, 117, 148, 147, 114, 146, 115, 154, 208, 116, 207, 118, 212, 8, 218, 136, 149, 137, 206, 138, 201, 198, 202, 203, 199, 204, 205, 522, 106, 214, 107, 217, 109, 391, 124, 15, 125, 25, 122, 126, 37, 98, 19, 95, 14, 31, 32, 729, 75, 87, 712, 99, 26, 92, 73, 85, 616, 170, 469, 175, 94, 102, 96, 74, 86, 649, 44, 52, 39, 30, 41, 455, 470, 191, 43, 53, 625, 61, 368, 45, 62, 373, 46, 63, 376, 47, 64, 377, 12, 224, 221, 97, 93, 100, 20, 163, 21, 101, 171, 172, 173, 155, 76, 193, 226, 536, 13, 227, 549, 77, 88, 162, 408, 440, 445, 448, 451, 453, 511, 196, 197, 558, 174, 411, 441, 446, 449, 452, 454, 219, 539, 210, 209, 535, 144, 543, 378, 374, 533, 365, 156, 82, 157, 78, 89, 494, 158, 123, 127, 119, 167, 687, 24, 139, 393, 150, 84, 104, 823, 401, 128, 120, 165, 211, 390, 389, 647, 132, 133, 169, 392, 395, 228, 266, 302, 370, 298, 371, 303, 479, 304, 691, 305, 306, 307, 308, 309, 310, 311, 332, 334, 335, 338, 407, 613, 545, 380, 419, 415, 416, 417, 265, 678, 121, 168, 700, 130, 131, 134, 129, 160, 159, 523, 145, 405, 439, 444, 438, 397, 396, 400, 433, 443, 447, 450, 423, 364, 424, 404, 229, 267, 327, 142, 143, 328, 220, 161, 222, 471, 177, 60, 548, 48, 65, 574, 49, 66, 629, 238, 276, 354, 239, 277, 529, 230, 268, 530, 231, 269, 557, 232, 270, 352, 233, 271, 576, 581, 563, 583, 333, 315, 336, 565, 683, 375, 692, 367, 693, 540, 215, 573, 542, 366, 456, 547, 384, 383, 382, 381, 559, 234, 272, 589, 178, 83, 103, 180, 179, 907, 682, 164, 387, 386, 394, 236, 274, 353, 235, 273, 577, 684, 465, 843, 242, 280, 355, 241, 279, 579, 776, 316, 337, 568, 181, 195, 182, 369, 183, 486, 223, 225, 472, 351, 341, 319, 342, 566, 778, 323, 346, 324, 348, 567, 777, 320, 343, 569, 184, 489, 356, 473, 372, 474, 461, 462, 475, 464, 357, 244, 282, 580, 779, 256, 294, 361, 257, 295, 571, 186, 50, 67, 630, 243, 281, 592, 187, 54, 68, 631, 245, 283, 593, 188, 55, 69, 632, 247, 285, 358, 248, 286, 584, 780, 260, 299, 362, 261, 300, 564, 781, 253, 291, 360, 254, 292, 586, 782, 457, 406, 514, 379, 418, 517, 463, 359, 250, 288, 585, 784, 312, 329, 582, 785, 481, 681, 189, 56, 70, 633, 251, 289, 595, 190, 57, 71, 634, 255, 293, 596, 192, 58, 72, 635, 262, 301, 572, 194, 503, 476, 810, 808, 754, 317, 339, 599, 318, 340, 621, 237, 275, 590, 487, 478, 553, 363, 546, 807, 806, 802, 798, 790, 765, 477, 480, 617, 495, 482, 483, 488, 425, 422, 402, 240, 278, 578, 809, 516, 458, 520, 518, 544, 414, 688, 166, 409, 410, 398, 399, 421, 442, 848, 403, 690, 249, 287, 594, 497, 498, 541, 484, 485, 552, 490, 554, 491, 492, 555, 493, 496, 556, 499, 500, 560, 501, 502, 561, 263, 507, 151, 526, 347, 570, 325, 349, 601, 326, 350, 618, 626, 321, 344, 600, 322, 345, 650, 648, 651, 662, 252, 290, 614, 697, 246, 284, 609, 731, 739, 855, 715, 258, 296, 602, 259, 297, 619, 504, 562, 505, 506, 620, 627, 653, 313, 330, 588, 314, 331, 604, 732, 598, 748, 749, 750, 795, 794, 788, 753, 804, 803, 800, 793, 792, 787, 538, 534, 867, 716, 550, 665, 385, 420, 668, 426, 427, 429, 428, 430, 509, 264, 388, 654, 431, 432, 512, 466, 844, 459, 845, 460, 828, 528, 434, 435, 515, 468, 846, 467, 847, 551, 436, 437, 524, 508, 531, 532, 852, 575, 811, 695, 519, 656, 510, 537, 698, 699, 513, 527, 658, 521, 664, 652, 666, 667, 923, 612, 868, 603, 869, 605, 873, 606, 928, 628, 660, 587, 59, 637, 685, 638, 686, 639, 703, 525, 705, 622, 640, 706, 704, 849, 591, 655, 657, 659, 850, 607, 931, 672, 851, 661, 856, 608, 925, 673, 857, 663, 861, 615, 929, 677, 862, 669, 863, 670, 864, 671, 870, 674, 871, 675, 876, 676, 879, 680, 880, 707, 597, 767, 623, 713, 718, 710, 679, 719, 714, 721, 717, 722, 720, 724, 723, 725, 726, 727, 728, 733, 734, 736, 735, 730, 786, 791, 737, 740, 738, 742, 741, 624, 743, 744, 751, 745, 752, 746, 799, 853, 747, 829, 830, 831, 883, 694, 755, 636, 768, 641, 789, 756, 642, 796, 797, 643, 801, 644, 824, 645, 825, 646, 826, 711, 827, 835, 832, 854, 833, 877, 709, 708, 816, 696, 817, 757, 763, 758, 805, 759, 818, 760, 819, 761, 874, 884, 885, 762, 886, 764, 893, 766, 934, 783, 820, 887, 822, 878, 834, 881, 769, 926, 701, 702, 947, 821, 858, 859, 860, 882, 771, 932, 840, 889, 772, 924, 841, 890, 775, 938, 842, 891, 836, 894, 837, 896, 838, 897, 839, 898, 888, 899, 892, 901, 895, 904, 900, 905, 902, 908, 903, 915, 906, 909, 910, 911, 912, 913, 914, 930, 939, 940, 943, 944, 945, 946, 933, 916, 917, 922, 918, 919, 920, 921, 927, 936, 935, 937, 941, 942, 865, 866]
+[t=1.86522s, 4072632 KB] Only one single SCC
+[t=1.86595s, 4072632 KB] Next pair of indices: (947, 946)
+[t=1.86599s, 4072632 KB] M&S algorithm main loop timer: 0.111342s (after computation of next merge)
+[t=1.86819s, 4072632 KB] M&S algorithm main loop timer: 0.11381s (after merging)
+
+[t=1.86849s, 4072632 KB] Operator mutex starting iteration 0
+
+[t=1.87219s, 4072632 KB] In ts_0_0 of size 2 found num new op-mutexes 0
+
+[t=1.87576s, 4072632 KB] In ts_0_1 of size 2 found num new op-mutexes 0
+
+[t=1.87923s, 4072632 KB] In ts_0_2 of size 2 found num new op-mutexes 0
+
+[t=1.88267s, 4072632 KB] In ts_0_3 of size 2 found num new op-mutexes 0
+
+[t=1.88617s, 4072632 KB] In ts_0_4 of size 2 found num new op-mutexes 0
+
+[t=1.88975s, 4072632 KB] In ts_0_5 of size 2 found num new op-mutexes 0
+
+[t=1.89326s, 4072632 KB] In ts_0_6 of size 2 found num new op-mutexes 0
+
+[t=1.89677s, 4072632 KB] In ts_0_7 of size 2 found num new op-mutexes 0
+
+[t=1.90035s, 4072632 KB] In ts_0_8 of size 2 found num new op-mutexes 0
+
+[t=1.90391s, 4072632 KB] In ts_0_9 of size 2 found num new op-mutexes 0
+
+[t=1.90742s, 4072632 KB] In ts_0_10 of size 2 found num new op-mutexes 0
+
+[t=1.91095s, 4072632 KB] In ts_0_11 of size 2 found num new op-mutexes 0
+
+[t=1.91452s, 4072632 KB] In ts_0_12 of size 2 found num new op-mutexes 0
+
+[t=1.98488s, 4072632 KB] In ts_0_13 of size 1 found num new op-mutexes 191656
+
+[t=1.98822s, 4072632 KB] In ts_0_14 of size 2 found num new op-mutexes 0
+
+[t=2.08106s, 4072632 KB] In ts_0_15 of size 1 found num new op-mutexes 191624
+
+[t=2.20392s, 4072632 KB] In ts_0_16 of size 1 found num new op-mutexes 191592
+
+[t=2.20733s, 4072632 KB] In ts_0_17 of size 2 found num new op-mutexes 0
+
+[t=2.21052s, 4072632 KB] In ts_0_18 of size 2 found num new op-mutexes 0
+
+[t=2.21368s, 4072632 KB] In ts_0_19 of size 2 found num new op-mutexes 0
+
+[t=2.21686s, 4072632 KB] In ts_0_20 of size 2 found num new op-mutexes 0
+
+[t=2.22167s, 4072632 KB] In ts_0_21 of size 2 found num new op-mutexes 0
+
+[t=2.22494s, 4072632 KB] In ts_0_22 of size 2 found num new op-mutexes 0
+
+[t=2.22873s, 4072632 KB] In ts_0_23 of size 2 found num new op-mutexes 0
+
+[t=2.23198s, 4072632 KB] In ts_0_24 of size 2 found num new op-mutexes 0
+
+[t=2.32722s, 4072632 KB] In ts_0_25 of size 1 found num new op-mutexes 191560
+
+[t=2.51712s, 4072632 KB] In ts_0_26 of size 1 found num new op-mutexes 191528
+
+[t=2.52043s, 4072632 KB] In ts_0_27 of size 2 found num new op-mutexes 0
+
+[t=2.52362s, 4072632 KB] In ts_0_28 of size 2 found num new op-mutexes 0
+
+[t=2.5268s, 4072632 KB] In ts_0_29 of size 2 found num new op-mutexes 0
+
+[t=2.52997s, 4072632 KB] In ts_0_30 of size 2 found num new op-mutexes 0
+
+[t=2.53307s, 4072632 KB] In ts_0_31 of size 2 found num new op-mutexes 0
+
+[t=2.53621s, 4072632 KB] In ts_0_32 of size 2 found num new op-mutexes 0
+
+[t=2.53936s, 4072632 KB] In ts_0_33 of size 2 found num new op-mutexes 0
+
+[t=2.54247s, 4072632 KB] In ts_0_34 of size 2 found num new op-mutexes 0
+
+[t=2.54559s, 4072632 KB] In ts_0_35 of size 2 found num new op-mutexes 0
+
+[t=2.54869s, 4072632 KB] In ts_0_36 of size 2 found num new op-mutexes 0
+
+[t=2.5518s, 4072632 KB] In ts_0_37 of size 2 found num new op-mutexes 0
+
+[t=2.55495s, 4072632 KB] In ts_0_38 of size 2 found num new op-mutexes 0
+
+[t=2.55808s, 4072632 KB] In ts_0_39 of size 2 found num new op-mutexes 0
+
+[t=2.5612s, 4072632 KB] In ts_0_40 of size 2 found num new op-mutexes 0
+
+[t=2.5644s, 4072632 KB] In ts_0_41 of size 2 found num new op-mutexes 0
+
+[t=2.56755s, 4072632 KB] In ts_0_42 of size 2 found num new op-mutexes 0
+
+[t=2.57063s, 4072632 KB] In ts_0_43 of size 2 found num new op-mutexes 0
+
+[t=2.57371s, 4072632 KB] In ts_0_44 of size 2 found num new op-mutexes 0
+
+[t=2.57683s, 4072632 KB] In ts_0_45 of size 2 found num new op-mutexes 0
+
+[t=2.57992s, 4072632 KB] In ts_0_46 of size 2 found num new op-mutexes 0
+
+[t=2.58305s, 4072632 KB] In ts_0_47 of size 2 found num new op-mutexes 0
+
+[t=2.58619s, 4072632 KB] In ts_0_48 of size 2 found num new op-mutexes 0
+
+[t=2.58928s, 4072632 KB] In ts_0_49 of size 2 found num new op-mutexes 0
+
+[t=2.59236s, 4072632 KB] In ts_0_50 of size 2 found num new op-mutexes 0
+
+[t=2.59548s, 4072632 KB] In ts_0_51 of size 2 found num new op-mutexes 0
+
+[t=2.5986s, 4072632 KB] In ts_0_52 of size 2 found num new op-mutexes 0
+
+[t=2.60173s, 4072632 KB] In ts_0_53 of size 2 found num new op-mutexes 0
+
+[t=2.60486s, 4072632 KB] In ts_0_54 of size 2 found num new op-mutexes 0
+
+[t=2.608s, 4072632 KB] In ts_0_55 of size 2 found num new op-mutexes 0
+
+[t=2.61111s, 4072632 KB] In ts_0_56 of size 2 found num new op-mutexes 0
+
+[t=2.61422s, 4072632 KB] In ts_0_57 of size 2 found num new op-mutexes 0
+
+[t=2.61733s, 4072632 KB] In ts_0_58 of size 2 found num new op-mutexes 0
+
+[t=2.62041s, 4072632 KB] In ts_0_59 of size 2 found num new op-mutexes 0
+
+[t=2.62358s, 4072632 KB] In ts_0_60 of size 2 found num new op-mutexes 0
+
+[t=2.62741s, 4072632 KB] In ts_0_61 of size 2 found num new op-mutexes 0
+
+[t=2.6306s, 4072632 KB] In ts_0_62 of size 2 found num new op-mutexes 0
+
+[t=2.63379s, 4072632 KB] In ts_0_63 of size 2 found num new op-mutexes 0
+
+[t=2.6369s, 4072632 KB] In ts_0_64 of size 2 found num new op-mutexes 0
+
+[t=2.63998s, 4072632 KB] In ts_0_65 of size 2 found num new op-mutexes 0
+
+[t=2.64307s, 4072632 KB] In ts_0_66 of size 2 found num new op-mutexes 0
+
+[t=2.64622s, 4072632 KB] In ts_0_67 of size 2 found num new op-mutexes 0
+
+[t=2.64932s, 4072632 KB] In ts_0_68 of size 2 found num new op-mutexes 0
+
+[t=2.6524s, 4072632 KB] In ts_0_69 of size 2 found num new op-mutexes 0
+
+[t=2.65551s, 4072632 KB] In ts_0_70 of size 2 found num new op-mutexes 0
+
+[t=2.65862s, 4072632 KB] In ts_0_71 of size 2 found num new op-mutexes 0
+
+[t=2.66169s, 4072632 KB] In ts_0_72 of size 2 found num new op-mutexes 0
+
+[t=2.6648s, 4072632 KB] In ts_0_73 of size 2 found num new op-mutexes 0
+
+[t=2.66788s, 4072632 KB] In ts_0_74 of size 2 found num new op-mutexes 0
+
+[t=2.67099s, 4072632 KB] In ts_0_75 of size 2 found num new op-mutexes 0
+
+[t=2.67412s, 4072632 KB] In ts_0_76 of size 2 found num new op-mutexes 0
+
+[t=2.67722s, 4072632 KB] In ts_0_77 of size 2 found num new op-mutexes 0
+
+[t=2.68034s, 4072632 KB] In ts_0_78 of size 2 found num new op-mutexes 0
+
+[t=2.6835s, 4072632 KB] In ts_0_79 of size 2 found num new op-mutexes 0
+
+[t=2.68669s, 4072632 KB] In ts_0_80 of size 2 found num new op-mutexes 0
+
+[t=2.68982s, 4072632 KB] In ts_0_81 of size 2 found num new op-mutexes 0
+
+[t=2.69296s, 4072632 KB] In ts_0_82 of size 2 found num new op-mutexes 0
+
+[t=2.69608s, 4072632 KB] In ts_0_83 of size 2 found num new op-mutexes 0
+
+[t=2.69923s, 4072632 KB] In ts_0_84 of size 2 found num new op-mutexes 0
+
+[t=2.7024s, 4072632 KB] In ts_0_85 of size 2 found num new op-mutexes 0
+
+[t=2.70559s, 4072632 KB] In ts_0_86 of size 2 found num new op-mutexes 0
+
+[t=2.70873s, 4072632 KB] In ts_0_87 of size 2 found num new op-mutexes 0
+
+[t=2.71183s, 4072632 KB] In ts_0_88 of size 2 found num new op-mutexes 0
+
+[t=2.71502s, 4072632 KB] In ts_0_89 of size 2 found num new op-mutexes 0
+
+[t=2.71815s, 4072632 KB] In ts_0_90 of size 2 found num new op-mutexes 0
+
+[t=2.72127s, 4072632 KB] In ts_0_91 of size 2 found num new op-mutexes 0
+
+[t=2.72517s, 4072632 KB] In ts_0_92 of size 2 found num new op-mutexes 1
+
+[t=2.7293s, 4072632 KB] In ts_0_93 of size 2 found num new op-mutexes 0
+
+[t=2.7325s, 4072632 KB] In ts_0_94 of size 2 found num new op-mutexes 0
+
+[t=2.73565s, 4072632 KB] In ts_0_95 of size 2 found num new op-mutexes 1
+
+[t=2.73878s, 4072632 KB] In ts_0_96 of size 2 found num new op-mutexes 1
+
+[t=2.74261s, 4072632 KB] In ts_0_97 of size 2 found num new op-mutexes 1
+
+[t=2.74632s, 4072632 KB] In ts_0_98 of size 2 found num new op-mutexes 0
+
+[t=2.7495s, 4072632 KB] In ts_0_99 of size 2 found num new op-mutexes 0
+
+[t=2.75315s, 4072632 KB] In ts_0_100 of size 2 found num new op-mutexes 0
+
+[t=2.75674s, 4072632 KB] In ts_0_101 of size 2 found num new op-mutexes 0
+
+[t=2.75991s, 4072632 KB] In ts_0_102 of size 2 found num new op-mutexes 0
+
+[t=2.76309s, 4072632 KB] In ts_0_103 of size 2 found num new op-mutexes 0
+
+[t=2.76628s, 4072632 KB] In ts_0_104 of size 2 found num new op-mutexes 0
+
+[t=2.76947s, 4072632 KB] In ts_0_105 of size 2 found num new op-mutexes 0
+
+[t=2.77268s, 4072632 KB] In ts_0_106 of size 2 found num new op-mutexes 0
+
+[t=2.77678s, 4072632 KB] In ts_0_107 of size 2 found num new op-mutexes 0
+
+[t=2.77996s, 4072632 KB] In ts_0_108 of size 2 found num new op-mutexes 0
+
+[t=2.78336s, 4072632 KB] In ts_0_109 of size 2 found num new op-mutexes 0
+
+[t=2.78651s, 4072632 KB] In ts_0_110 of size 2 found num new op-mutexes 0
+
+[t=2.78966s, 4072632 KB] In ts_0_111 of size 2 found num new op-mutexes 0
+
+[t=2.79282s, 4072632 KB] In ts_0_112 of size 2 found num new op-mutexes 0
+
+[t=2.79601s, 4072632 KB] In ts_0_113 of size 2 found num new op-mutexes 0
+
+[t=2.79925s, 4072632 KB] In ts_0_114 of size 2 found num new op-mutexes 0
+
+[t=2.80246s, 4072632 KB] In ts_0_115 of size 2 found num new op-mutexes 0
+
+[t=2.8056s, 4072632 KB] In ts_0_116 of size 2 found num new op-mutexes 0
+
+[t=2.80876s, 4072632 KB] In ts_0_117 of size 2 found num new op-mutexes 0
+
+[t=2.81195s, 4072632 KB] In ts_0_118 of size 2 found num new op-mutexes 0
+
+[t=2.81512s, 4072632 KB] In ts_0_119 of size 2 found num new op-mutexes 0
+
+[t=2.81825s, 4072632 KB] In ts_0_120 of size 2 found num new op-mutexes 0
+
+[t=2.82145s, 4072632 KB] In ts_0_121 of size 2 found num new op-mutexes 0
+
+[t=2.82532s, 4072632 KB] In ts_0_122 of size 2 found num new op-mutexes 0
+
+[t=2.82957s, 4072632 KB] In ts_0_123 of size 2 found num new op-mutexes 0
+
+[t=2.83319s, 4072632 KB] In ts_0_124 of size 2 found num new op-mutexes 0
+
+[t=2.83637s, 4072632 KB] In ts_0_125 of size 2 found num new op-mutexes 0
+
+[t=2.83955s, 4072632 KB] In ts_0_126 of size 2 found num new op-mutexes 0
+
+[t=2.84274s, 4072632 KB] In ts_0_127 of size 2 found num new op-mutexes 0
+
+[t=2.84592s, 4072632 KB] In ts_0_128 of size 2 found num new op-mutexes 0
+
+[t=2.84911s, 4072632 KB] In ts_0_129 of size 2 found num new op-mutexes 0
+
+[t=2.85234s, 4072632 KB] In ts_0_130 of size 2 found num new op-mutexes 0
+
+[t=2.85556s, 4072632 KB] In ts_0_131 of size 2 found num new op-mutexes 0
+
+[t=2.85936s, 4072632 KB] In ts_0_132 of size 2 found num new op-mutexes 0
+
+[t=2.86318s, 4072632 KB] In ts_0_133 of size 2 found num new op-mutexes 0
+
+[t=2.86638s, 4072632 KB] In ts_0_134 of size 2 found num new op-mutexes 0
+
+[t=2.86955s, 4072632 KB] In ts_0_135 of size 2 found num new op-mutexes 0
+
+[t=2.87275s, 4072632 KB] In ts_0_136 of size 2 found num new op-mutexes 0
+
+[t=2.87593s, 4072632 KB] In ts_0_137 of size 2 found num new op-mutexes 0
+
+[t=2.8791s, 4072632 KB] In ts_0_138 of size 2 found num new op-mutexes 0
+
+[t=2.88237s, 4072632 KB] In ts_0_139 of size 2 found num new op-mutexes 0
+
+[t=2.8871s, 4072632 KB] In ts_0_140 of size 2 found num new op-mutexes 0
+
+[t=2.89051s, 4072632 KB] In ts_0_141 of size 2 found num new op-mutexes 0
+
+[t=2.89384s, 4072632 KB] In ts_0_142 of size 2 found num new op-mutexes 0
+
+[t=2.89713s, 4072632 KB] In ts_0_143 of size 2 found num new op-mutexes 0
+
+[t=3.16819s, 4072632 KB] In ts_0_144 of size 1 found num new op-mutexes 574392
+
+[t=3.17154s, 4072632 KB] In ts_0_145 of size 2 found num new op-mutexes 0
+
+[t=3.17469s, 4072632 KB] In ts_0_146 of size 2 found num new op-mutexes 0
+
+[t=3.17857s, 4072632 KB] In ts_0_147 of size 2 found num new op-mutexes 0
+
+[t=3.18176s, 4072632 KB] In ts_0_148 of size 2 found num new op-mutexes 0
+
+[t=3.18489s, 4072632 KB] In ts_0_149 of size 2 found num new op-mutexes 0
+
+[t=3.18803s, 4072632 KB] In ts_0_150 of size 2 found num new op-mutexes 0
+
+[t=3.1912s, 4072632 KB] In ts_0_151 of size 2 found num new op-mutexes 0
+
+[t=3.19437s, 4072632 KB] In ts_0_152 of size 2 found num new op-mutexes 0
+
+[t=3.1975s, 4072632 KB] In ts_0_153 of size 2 found num new op-mutexes 0
+
+[t=3.20064s, 4072632 KB] In ts_0_154 of size 2 found num new op-mutexes 0
+
+[t=3.20375s, 4072632 KB] In ts_0_155 of size 2 found num new op-mutexes 0
+
+[t=3.20687s, 4072632 KB] In ts_0_156 of size 2 found num new op-mutexes 0
+
+[t=3.21004s, 4072632 KB] In ts_0_157 of size 2 found num new op-mutexes 0
+
+[t=3.21319s, 4072632 KB] In ts_0_158 of size 2 found num new op-mutexes 0
+
+[t=3.21635s, 4072632 KB] In ts_0_159 of size 2 found num new op-mutexes 0
+
+[t=3.21951s, 4072632 KB] In ts_0_160 of size 2 found num new op-mutexes 0
+
+[t=3.22281s, 4072632 KB] In ts_0_161 of size 2 found num new op-mutexes 0
+
+[t=3.22604s, 4072632 KB] In ts_0_162 of size 2 found num new op-mutexes 0
+
+[t=3.2292s, 4072632 KB] In ts_0_163 of size 2 found num new op-mutexes 0
+
+[t=3.23234s, 4072632 KB] In ts_0_164 of size 2 found num new op-mutexes 0
+
+[t=3.23548s, 4072632 KB] In ts_0_165 of size 2 found num new op-mutexes 0
+
+[t=3.23864s, 4072632 KB] In ts_0_166 of size 2 found num new op-mutexes 0
+
+[t=3.24179s, 4072632 KB] In ts_0_167 of size 2 found num new op-mutexes 0
+
+[t=3.24486s, 4072632 KB] In ts_0_168 of size 2 found num new op-mutexes 0
+
+[t=3.24792s, 4072632 KB] In ts_0_169 of size 2 found num new op-mutexes 0
+
+[t=3.81182s, 4072632 KB] In ts_0_170 of size 1 found num new op-mutexes 717585
+
+[t=3.81524s, 4072632 KB] In ts_0_171 of size 2 found num new op-mutexes 0
+
+[t=3.81842s, 4072632 KB] In ts_0_172 of size 2 found num new op-mutexes 0
+
+[t=3.82158s, 4072632 KB] In ts_0_173 of size 2 found num new op-mutexes 0
+
+[t=3.82466s, 4072632 KB] In ts_0_174 of size 2 found num new op-mutexes 0
+
+[t=3.82775s, 4072632 KB] In ts_0_175 of size 2 found num new op-mutexes 0
+
+[t=3.8309s, 4072632 KB] In ts_0_176 of size 2 found num new op-mutexes 0
+
+[t=3.83403s, 4072632 KB] In ts_0_177 of size 2 found num new op-mutexes 0
+
+[t=3.83712s, 4072632 KB] In ts_0_178 of size 2 found num new op-mutexes 0
+
+[t=3.84024s, 4072632 KB] In ts_0_179 of size 2 found num new op-mutexes 0
+
+[t=3.84334s, 4072632 KB] In ts_0_180 of size 2 found num new op-mutexes 0
+
+[t=3.84647s, 4072632 KB] In ts_0_181 of size 2 found num new op-mutexes 0
+
+[t=3.8496s, 4072632 KB] In ts_0_182 of size 2 found num new op-mutexes 0
+
+[t=3.85267s, 4072632 KB] In ts_0_183 of size 2 found num new op-mutexes 0
+
+[t=3.85573s, 4072632 KB] In ts_0_184 of size 2 found num new op-mutexes 0
+
+[t=3.85882s, 4072632 KB] In ts_0_185 of size 2 found num new op-mutexes 0
+
+[t=3.86198s, 4072632 KB] In ts_0_186 of size 2 found num new op-mutexes 0
+
+[t=3.86514s, 4072632 KB] In ts_0_187 of size 2 found num new op-mutexes 0
+
+[t=3.86827s, 4072632 KB] In ts_0_188 of size 2 found num new op-mutexes 0
+
+[t=3.87145s, 4072632 KB] In ts_0_189 of size 2 found num new op-mutexes 0
+
+[t=3.87457s, 4072632 KB] In ts_0_190 of size 2 found num new op-mutexes 0
+
+[t=3.87766s, 4072632 KB] In ts_0_191 of size 2 found num new op-mutexes 0
+
+[t=3.88077s, 4072632 KB] In ts_0_192 of size 2 found num new op-mutexes 0
+
+[t=3.88386s, 4072632 KB] In ts_0_193 of size 2 found num new op-mutexes 0
+
+[t=3.88694s, 4072632 KB] In ts_0_194 of size 2 found num new op-mutexes 0
+
+[t=3.89007s, 4072632 KB] In ts_0_195 of size 2 found num new op-mutexes 0
+
+[t=3.89317s, 4072632 KB] In ts_0_196 of size 2 found num new op-mutexes 0
+
+[t=3.89626s, 4072632 KB] In ts_0_197 of size 2 found num new op-mutexes 0
+
+[t=3.89936s, 4072632 KB] In ts_0_198 of size 2 found num new op-mutexes 0
+
+[t=3.90247s, 4072632 KB] In ts_0_199 of size 2 found num new op-mutexes 0
+
+[t=3.90561s, 4072632 KB] In ts_0_200 of size 2 found num new op-mutexes 0
+
+[t=3.90874s, 4072632 KB] In ts_0_201 of size 2 found num new op-mutexes 0
+
+[t=3.91187s, 4072632 KB] In ts_0_202 of size 2 found num new op-mutexes 0
+
+[t=3.915s, 4072632 KB] In ts_0_203 of size 2 found num new op-mutexes 0
+
+[t=3.91808s, 4072632 KB] In ts_0_204 of size 2 found num new op-mutexes 0
+
+[t=3.9212s, 4072632 KB] In ts_0_205 of size 2 found num new op-mutexes 0
+
+[t=3.9243s, 4072632 KB] In ts_0_206 of size 2 found num new op-mutexes 0
+
+[t=3.92734s, 4072632 KB] In ts_0_207 of size 2 found num new op-mutexes 0
+
+[t=3.93043s, 4072632 KB] In ts_0_208 of size 2 found num new op-mutexes 0
+
+[t=3.93353s, 4072632 KB] In ts_0_209 of size 2 found num new op-mutexes 0
+
+[t=3.93667s, 4072632 KB] In ts_0_210 of size 2 found num new op-mutexes 0
+
+[t=3.93978s, 4072632 KB] In ts_0_211 of size 2 found num new op-mutexes 0
+
+[t=3.94286s, 4072632 KB] In ts_0_212 of size 2 found num new op-mutexes 0
+
+[t=3.94595s, 4072632 KB] In ts_0_213 of size 2 found num new op-mutexes 0
+
+[t=3.94904s, 4072632 KB] In ts_0_214 of size 2 found num new op-mutexes 0
+
+[t=3.95211s, 4072632 KB] In ts_0_215 of size 2 found num new op-mutexes 0
+
+[t=3.95517s, 4072632 KB] In ts_0_216 of size 2 found num new op-mutexes 0
+
+[t=3.95827s, 4072632 KB] In ts_0_217 of size 2 found num new op-mutexes 0
+
+[t=3.96137s, 4072632 KB] In ts_0_218 of size 2 found num new op-mutexes 0
+
+[t=3.9645s, 4072632 KB] In ts_0_219 of size 2 found num new op-mutexes 0
+
+[t=3.96762s, 4072632 KB] In ts_0_220 of size 2 found num new op-mutexes 0
+
+[t=3.97077s, 4072632 KB] In ts_0_221 of size 2 found num new op-mutexes 0
+
+[t=3.97387s, 4072632 KB] In ts_0_222 of size 2 found num new op-mutexes 0
+
+[t=3.97699s, 4072632 KB] In ts_0_223 of size 2 found num new op-mutexes 0
+
+[t=3.98017s, 4072632 KB] In ts_0_224 of size 2 found num new op-mutexes 0
+
+[t=3.98328s, 4072632 KB] In ts_0_225 of size 2 found num new op-mutexes 0
+
+[t=3.98639s, 4072632 KB] In ts_0_226 of size 2 found num new op-mutexes 0
+
+[t=3.98957s, 4072632 KB] In ts_0_227 of size 2 found num new op-mutexes 0
+
+[t=3.99267s, 4072632 KB] In ts_0_228 of size 2 found num new op-mutexes 0
+
+[t=3.9958s, 4072632 KB] In ts_0_229 of size 2 found num new op-mutexes 0
+
+[t=3.99889s, 4072632 KB] In ts_0_230 of size 2 found num new op-mutexes 0
+
+[t=4.00196s, 4072632 KB] In ts_0_231 of size 2 found num new op-mutexes 0
+
+[t=4.00504s, 4072632 KB] In ts_0_232 of size 2 found num new op-mutexes 0
+
+[t=4.00836s, 4072632 KB] In ts_0_233 of size 2 found num new op-mutexes 0
+
+[t=4.01144s, 4072632 KB] In ts_0_234 of size 2 found num new op-mutexes 0
+
+[t=4.01449s, 4072632 KB] In ts_0_235 of size 2 found num new op-mutexes 0
+
+[t=4.0176s, 4072632 KB] In ts_0_236 of size 2 found num new op-mutexes 0
+
+[t=4.0207s, 4072632 KB] In ts_0_237 of size 2 found num new op-mutexes 0
+
+[t=4.02387s, 4072632 KB] In ts_0_238 of size 2 found num new op-mutexes 0
+
+[t=4.02696s, 4072632 KB] In ts_0_239 of size 2 found num new op-mutexes 0
+
+[t=4.03014s, 4072632 KB] In ts_0_240 of size 2 found num new op-mutexes 0
+
+[t=4.03336s, 4072632 KB] In ts_0_241 of size 2 found num new op-mutexes 0
+
+[t=4.0366s, 4072632 KB] In ts_0_242 of size 2 found num new op-mutexes 0
+
+[t=4.03985s, 4072632 KB] In ts_0_243 of size 2 found num new op-mutexes 0
+
+[t=4.04308s, 4072632 KB] In ts_0_244 of size 2 found num new op-mutexes 0
+
+[t=4.04626s, 4072632 KB] In ts_0_245 of size 2 found num new op-mutexes 0
+
+[t=4.04949s, 4072632 KB] In ts_0_246 of size 2 found num new op-mutexes 0
+
+[t=4.05261s, 4072632 KB] In ts_0_247 of size 2 found num new op-mutexes 0
+
+[t=4.05568s, 4072632 KB] In ts_0_248 of size 2 found num new op-mutexes 0
+
+[t=4.0588s, 4072632 KB] In ts_0_249 of size 2 found num new op-mutexes 0
+
+[t=4.06188s, 4072632 KB] In ts_0_250 of size 2 found num new op-mutexes 0
+
+[t=4.065s, 4072632 KB] In ts_0_251 of size 2 found num new op-mutexes 0
+
+[t=4.06814s, 4072632 KB] In ts_0_252 of size 2 found num new op-mutexes 0
+
+[t=4.07122s, 4072632 KB] In ts_0_253 of size 2 found num new op-mutexes 0
+
+[t=4.07428s, 4072632 KB] In ts_0_254 of size 2 found num new op-mutexes 0
+
+[t=4.0774s, 4072632 KB] In ts_0_255 of size 2 found num new op-mutexes 0
+
+[t=4.08052s, 4072632 KB] In ts_0_256 of size 2 found num new op-mutexes 0
+
+[t=4.08364s, 4072632 KB] In ts_0_257 of size 2 found num new op-mutexes 0
+
+[t=4.08677s, 4072632 KB] In ts_0_258 of size 2 found num new op-mutexes 0
+
+[t=4.08986s, 4072632 KB] In ts_0_259 of size 2 found num new op-mutexes 0
+
+[t=4.09296s, 4072632 KB] In ts_0_260 of size 2 found num new op-mutexes 0
+
+[t=4.09605s, 4072632 KB] In ts_0_261 of size 2 found num new op-mutexes 0
+
+[t=4.09915s, 4072632 KB] In ts_0_262 of size 2 found num new op-mutexes 0
+
+[t=4.10225s, 4072632 KB] In ts_0_263 of size 2 found num new op-mutexes 0
+
+[t=4.10532s, 4072632 KB] In ts_0_264 of size 2 found num new op-mutexes 0
+
+[t=4.10843s, 4072632 KB] In ts_0_265 of size 2 found num new op-mutexes 0
+
+[t=4.11153s, 4072632 KB] In ts_0_266 of size 2 found num new op-mutexes 0
+
+[t=4.11457s, 4072632 KB] In ts_0_267 of size 2 found num new op-mutexes 0
+
+[t=4.11767s, 4072632 KB] In ts_0_268 of size 2 found num new op-mutexes 0
+
+[t=4.12074s, 4072632 KB] In ts_0_269 of size 2 found num new op-mutexes 0
+
+[t=4.12383s, 4072632 KB] In ts_0_270 of size 2 found num new op-mutexes 0
+
+[t=4.12694s, 4072632 KB] In ts_0_271 of size 2 found num new op-mutexes 0
+
+[t=4.13002s, 4072632 KB] In ts_0_272 of size 2 found num new op-mutexes 0
+
+[t=4.13309s, 4072632 KB] In ts_0_273 of size 2 found num new op-mutexes 0
+
+[t=4.13618s, 4072632 KB] In ts_0_274 of size 2 found num new op-mutexes 0
+
+[t=4.13928s, 4072632 KB] In ts_0_275 of size 2 found num new op-mutexes 0
+
+[t=4.14235s, 4072632 KB] In ts_0_276 of size 2 found num new op-mutexes 0
+
+[t=4.14539s, 4072632 KB] In ts_0_277 of size 2 found num new op-mutexes 0
+
+[t=4.1485s, 4072632 KB] In ts_0_278 of size 2 found num new op-mutexes 0
+
+[t=4.15159s, 4072632 KB] In ts_0_279 of size 2 found num new op-mutexes 0
+
+[t=4.15479s, 4072632 KB] In ts_0_280 of size 2 found num new op-mutexes 0
+
+[t=4.15801s, 4072632 KB] In ts_0_281 of size 2 found num new op-mutexes 0
+
+[t=4.16119s, 4072632 KB] In ts_0_282 of size 2 found num new op-mutexes 0
+
+[t=4.16436s, 4072632 KB] In ts_0_283 of size 2 found num new op-mutexes 0
+
+[t=4.16756s, 4072632 KB] In ts_0_284 of size 2 found num new op-mutexes 0
+
+[t=4.17075s, 4072632 KB] In ts_0_285 of size 2 found num new op-mutexes 0
+
+[t=4.17395s, 4072632 KB] In ts_0_286 of size 2 found num new op-mutexes 0
+
+[t=4.17712s, 4072632 KB] In ts_0_287 of size 2 found num new op-mutexes 0
+
+[t=4.1803s, 4072632 KB] In ts_0_288 of size 2 found num new op-mutexes 0
+
+[t=4.18347s, 4072632 KB] In ts_0_289 of size 2 found num new op-mutexes 0
+
+[t=4.18668s, 4072632 KB] In ts_0_290 of size 2 found num new op-mutexes 0
+
+[t=4.18982s, 4072632 KB] In ts_0_291 of size 2 found num new op-mutexes 0
+
+[t=4.1929s, 4072632 KB] In ts_0_292 of size 2 found num new op-mutexes 0
+
+[t=4.19597s, 4072632 KB] In ts_0_293 of size 2 found num new op-mutexes 0
+
+[t=4.19906s, 4072632 KB] In ts_0_294 of size 2 found num new op-mutexes 0
+
+[t=4.20211s, 4072632 KB] In ts_0_295 of size 2 found num new op-mutexes 0
+
+[t=4.20523s, 4072632 KB] In ts_0_296 of size 2 found num new op-mutexes 0
+
+[t=4.20832s, 4072632 KB] In ts_0_297 of size 2 found num new op-mutexes 0
+
+[t=4.21141s, 4072632 KB] In ts_0_298 of size 2 found num new op-mutexes 0
+
+[t=4.21448s, 4072632 KB] In ts_0_299 of size 2 found num new op-mutexes 0
+
+[t=4.2176s, 4072632 KB] In ts_0_300 of size 2 found num new op-mutexes 0
+
+[t=4.22066s, 4072632 KB] In ts_0_301 of size 2 found num new op-mutexes 0
+
+[t=4.22374s, 4072632 KB] In ts_0_302 of size 2 found num new op-mutexes 0
+
+[t=4.22681s, 4072632 KB] In ts_0_303 of size 2 found num new op-mutexes 0
+
+[t=4.22987s, 4072632 KB] In ts_0_304 of size 2 found num new op-mutexes 0
+
+[t=4.23297s, 4072632 KB] In ts_0_305 of size 2 found num new op-mutexes 0
+
+[t=4.23605s, 4072632 KB] In ts_0_306 of size 2 found num new op-mutexes 0
+
+[t=4.23911s, 4072632 KB] In ts_0_307 of size 2 found num new op-mutexes 0
+
+[t=4.24218s, 4072632 KB] In ts_0_308 of size 2 found num new op-mutexes 0
+
+[t=4.24529s, 4072632 KB] In ts_0_309 of size 2 found num new op-mutexes 0
+
+[t=4.24839s, 4072632 KB] In ts_0_310 of size 2 found num new op-mutexes 0
+
+[t=4.25149s, 4072632 KB] In ts_0_311 of size 2 found num new op-mutexes 0
+
+[t=4.25461s, 4072632 KB] In ts_0_312 of size 2 found num new op-mutexes 0
+
+[t=4.25771s, 4072632 KB] In ts_0_313 of size 2 found num new op-mutexes 0
+
+[t=4.26079s, 4072632 KB] In ts_0_314 of size 2 found num new op-mutexes 0
+
+[t=4.26382s, 4072632 KB] In ts_0_315 of size 2 found num new op-mutexes 0
+
+[t=4.26691s, 4072632 KB] In ts_0_316 of size 2 found num new op-mutexes 0
+
+[t=4.26999s, 4072632 KB] In ts_0_317 of size 2 found num new op-mutexes 0
+
+[t=4.27311s, 4072632 KB] In ts_0_318 of size 2 found num new op-mutexes 0
+
+[t=4.27625s, 4072632 KB] In ts_0_319 of size 2 found num new op-mutexes 0
+
+[t=4.27933s, 4072632 KB] In ts_0_320 of size 2 found num new op-mutexes 0
+
+[t=4.28242s, 4072632 KB] In ts_0_321 of size 2 found num new op-mutexes 0
+
+[t=4.28551s, 4072632 KB] In ts_0_322 of size 2 found num new op-mutexes 0
+
+[t=4.28857s, 4072632 KB] In ts_0_323 of size 2 found num new op-mutexes 0
+
+[t=4.29163s, 4072632 KB] In ts_0_324 of size 2 found num new op-mutexes 0
+
+[t=4.29471s, 4072632 KB] In ts_0_325 of size 2 found num new op-mutexes 0
+
+[t=4.29782s, 4072632 KB] In ts_0_326 of size 2 found num new op-mutexes 0
+
+[t=4.30091s, 4072632 KB] In ts_0_327 of size 2 found num new op-mutexes 0
+
+[t=4.30394s, 4072632 KB] In ts_0_328 of size 2 found num new op-mutexes 0
+
+[t=4.30705s, 4072632 KB] In ts_0_329 of size 2 found num new op-mutexes 0
+
+[t=4.31011s, 4072632 KB] In ts_0_330 of size 2 found num new op-mutexes 0
+
+[t=4.31318s, 4072632 KB] In ts_0_331 of size 2 found num new op-mutexes 0
+
+[t=4.31628s, 4072632 KB] In ts_0_332 of size 2 found num new op-mutexes 0
+
+[t=4.31942s, 4072632 KB] In ts_0_333 of size 2 found num new op-mutexes 0
+
+[t=4.32258s, 4072632 KB] In ts_0_334 of size 2 found num new op-mutexes 0
+
+[t=4.32576s, 4072632 KB] In ts_0_335 of size 2 found num new op-mutexes 0
+
+[t=4.32889s, 4072632 KB] In ts_0_336 of size 2 found num new op-mutexes 0
+
+[t=4.33202s, 4072632 KB] In ts_0_337 of size 2 found num new op-mutexes 0
+
+[t=4.33514s, 4072632 KB] In ts_0_338 of size 2 found num new op-mutexes 0
+
+[t=4.33821s, 4072632 KB] In ts_0_339 of size 2 found num new op-mutexes 0
+
+[t=4.34127s, 4072632 KB] In ts_0_340 of size 2 found num new op-mutexes 0
+
+[t=4.34433s, 4072632 KB] In ts_0_341 of size 2 found num new op-mutexes 0
+
+[t=4.3474s, 4072632 KB] In ts_0_342 of size 2 found num new op-mutexes 0
+
+[t=4.35048s, 4072632 KB] In ts_0_343 of size 2 found num new op-mutexes 0
+
+[t=4.35355s, 4072632 KB] In ts_0_344 of size 2 found num new op-mutexes 0
+
+[t=4.35668s, 4072632 KB] In ts_0_345 of size 2 found num new op-mutexes 0
+
+[t=4.35976s, 4072632 KB] In ts_0_346 of size 2 found num new op-mutexes 0
+
+[t=4.36284s, 4072632 KB] In ts_0_347 of size 2 found num new op-mutexes 0
+
+[t=4.36602s, 4072632 KB] In ts_0_348 of size 2 found num new op-mutexes 0
+
+[t=4.36916s, 4072632 KB] In ts_0_349 of size 2 found num new op-mutexes 0
+
+[t=4.37226s, 4072632 KB] In ts_0_350 of size 2 found num new op-mutexes 0
+
+[t=4.37533s, 4072632 KB] In ts_0_351 of size 2 found num new op-mutexes 0
+
+[t=4.37841s, 4072632 KB] In ts_0_352 of size 2 found num new op-mutexes 0
+
+[t=4.38155s, 4072632 KB] In ts_0_353 of size 2 found num new op-mutexes 0
+
+[t=4.38472s, 4072632 KB] In ts_0_354 of size 2 found num new op-mutexes 0
+
+[t=4.3879s, 4072632 KB] In ts_0_355 of size 2 found num new op-mutexes 0
+
+[t=4.39098s, 4072632 KB] In ts_0_356 of size 2 found num new op-mutexes 0
+
+[t=4.39414s, 4072632 KB] In ts_0_357 of size 2 found num new op-mutexes 0
+
+[t=4.39724s, 4072632 KB] In ts_0_358 of size 2 found num new op-mutexes 0
+
+[t=4.40032s, 4072632 KB] In ts_0_359 of size 2 found num new op-mutexes 0
+
+[t=4.4034s, 4072632 KB] In ts_0_360 of size 2 found num new op-mutexes 0
+
+[t=4.40649s, 4072632 KB] In ts_0_361 of size 2 found num new op-mutexes 0
+
+[t=4.40952s, 4072632 KB] In ts_0_362 of size 2 found num new op-mutexes 0
+
+[t=4.41259s, 4072632 KB] In ts_0_363 of size 2 found num new op-mutexes 0
+
+[t=4.41567s, 4072632 KB] In ts_0_364 of size 2 found num new op-mutexes 0
+
+[t=4.41874s, 4072632 KB] In ts_0_365 of size 2 found num new op-mutexes 0
+
+[t=4.42183s, 4072632 KB] In ts_0_366 of size 2 found num new op-mutexes 0
+
+[t=4.42496s, 4072632 KB] In ts_0_367 of size 2 found num new op-mutexes 0
+
+[t=4.42801s, 4072632 KB] In ts_0_368 of size 2 found num new op-mutexes 0
+
+[t=4.43105s, 4072632 KB] In ts_0_369 of size 2 found num new op-mutexes 0
+
+[t=4.43414s, 4072632 KB] In ts_0_370 of size 2 found num new op-mutexes 0
+
+[t=4.43719s, 4072632 KB] In ts_0_371 of size 2 found num new op-mutexes 0
+
+[t=4.44028s, 4072632 KB] In ts_0_372 of size 2 found num new op-mutexes 0
+
+[t=4.44345s, 4072632 KB] In ts_0_373 of size 2 found num new op-mutexes 0
+
+[t=4.44658s, 4072632 KB] In ts_0_374 of size 2 found num new op-mutexes 0
+
+[t=4.44967s, 4072632 KB] In ts_0_375 of size 2 found num new op-mutexes 0
+
+[t=4.45275s, 4072632 KB] In ts_0_376 of size 2 found num new op-mutexes 0
+
+[t=4.45587s, 4072632 KB] In ts_0_377 of size 2 found num new op-mutexes 0
+
+[t=4.45901s, 4072632 KB] In ts_0_378 of size 2 found num new op-mutexes 0
+
+[t=4.46208s, 4072632 KB] In ts_0_379 of size 2 found num new op-mutexes 0
+
+[t=4.4652s, 4072632 KB] In ts_0_380 of size 2 found num new op-mutexes 0
+
+[t=4.4683s, 4072632 KB] In ts_0_381 of size 2 found num new op-mutexes 0
+
+[t=4.47142s, 4072632 KB] In ts_0_382 of size 2 found num new op-mutexes 0
+
+[t=4.4746s, 4072632 KB] In ts_0_383 of size 2 found num new op-mutexes 0
+
+[t=4.47781s, 4072632 KB] In ts_0_384 of size 2 found num new op-mutexes 0
+
+[t=4.48101s, 4072632 KB] In ts_0_385 of size 2 found num new op-mutexes 0
+
+[t=4.48422s, 4072632 KB] In ts_0_386 of size 2 found num new op-mutexes 0
+
+[t=4.4873s, 4072632 KB] In ts_0_387 of size 2 found num new op-mutexes 0
+
+[t=4.49035s, 4072632 KB] In ts_0_388 of size 2 found num new op-mutexes 0
+
+[t=4.4934s, 4072632 KB] In ts_0_389 of size 2 found num new op-mutexes 0
+
+[t=4.49643s, 4072632 KB] In ts_0_390 of size 2 found num new op-mutexes 0
+
+[t=4.49949s, 4072632 KB] In ts_0_391 of size 2 found num new op-mutexes 0
+
+[t=4.50258s, 4072632 KB] In ts_0_392 of size 2 found num new op-mutexes 0
+
+[t=4.50565s, 4072632 KB] In ts_0_393 of size 2 found num new op-mutexes 0
+
+[t=4.5087s, 4072632 KB] In ts_0_394 of size 2 found num new op-mutexes 0
+
+[t=4.51175s, 4072632 KB] In ts_0_395 of size 2 found num new op-mutexes 0
+
+[t=4.51486s, 4072632 KB] In ts_0_396 of size 2 found num new op-mutexes 0
+
+[t=4.51797s, 4072632 KB] In ts_0_397 of size 2 found num new op-mutexes 0
+
+[t=4.52103s, 4072632 KB] In ts_0_398 of size 2 found num new op-mutexes 0
+
+[t=4.52409s, 4072632 KB] In ts_0_399 of size 2 found num new op-mutexes 0
+
+[t=4.52715s, 4072632 KB] In ts_0_400 of size 2 found num new op-mutexes 0
+
+[t=4.53025s, 4072632 KB] In ts_0_401 of size 2 found num new op-mutexes 0
+
+[t=4.53333s, 4072632 KB] In ts_0_402 of size 2 found num new op-mutexes 0
+
+[t=4.53636s, 4072632 KB] In ts_0_403 of size 2 found num new op-mutexes 0
+
+[t=4.53942s, 4072632 KB] In ts_0_404 of size 2 found num new op-mutexes 0
+
+[t=4.5425s, 4072632 KB] In ts_0_405 of size 2 found num new op-mutexes 0
+
+[t=4.54556s, 4072632 KB] In ts_0_406 of size 2 found num new op-mutexes 0
+
+[t=4.54861s, 4072632 KB] In ts_0_407 of size 2 found num new op-mutexes 0
+
+[t=4.55164s, 4072632 KB] In ts_0_408 of size 2 found num new op-mutexes 0
+
+[t=4.55474s, 4072632 KB] In ts_0_409 of size 2 found num new op-mutexes 0
+
+[t=4.55778s, 4072632 KB] In ts_0_410 of size 2 found num new op-mutexes 0
+
+[t=4.5608s, 4072632 KB] In ts_0_411 of size 2 found num new op-mutexes 0
+
+[t=4.56394s, 4072632 KB] In ts_0_412 of size 2 found num new op-mutexes 0
+
+[t=4.56707s, 4072632 KB] In ts_0_413 of size 2 found num new op-mutexes 0
+
+[t=4.5702s, 4072632 KB] In ts_0_414 of size 2 found num new op-mutexes 0
+
+[t=4.57335s, 4072632 KB] In ts_0_415 of size 2 found num new op-mutexes 0
+
+[t=4.57652s, 4072632 KB] In ts_0_416 of size 2 found num new op-mutexes 0
+
+[t=4.57971s, 4072632 KB] In ts_0_417 of size 2 found num new op-mutexes 0
+
+[t=4.58287s, 4072632 KB] In ts_0_418 of size 2 found num new op-mutexes 0
+
+[t=4.58595s, 4072632 KB] In ts_0_419 of size 2 found num new op-mutexes 0
+
+[t=4.58899s, 4072632 KB] In ts_0_420 of size 2 found num new op-mutexes 0
+
+[t=4.59209s, 4072632 KB] In ts_0_421 of size 2 found num new op-mutexes 0
+
+[t=4.5952s, 4072632 KB] In ts_0_422 of size 2 found num new op-mutexes 0
+
+[t=4.59824s, 4072632 KB] In ts_0_423 of size 2 found num new op-mutexes 0
+
+[t=4.60132s, 4072632 KB] In ts_0_424 of size 2 found num new op-mutexes 0
+
+[t=4.60441s, 4072632 KB] In ts_0_425 of size 2 found num new op-mutexes 0
+
+[t=4.60749s, 4072632 KB] In ts_0_426 of size 2 found num new op-mutexes 0
+
+[t=4.6106s, 4072632 KB] In ts_0_427 of size 2 found num new op-mutexes 0
+
+[t=4.61375s, 4072632 KB] In ts_0_428 of size 2 found num new op-mutexes 0
+
+[t=4.61687s, 4072632 KB] In ts_0_429 of size 2 found num new op-mutexes 0
+
+[t=4.61994s, 4072632 KB] In ts_0_430 of size 2 found num new op-mutexes 0
+
+[t=4.62305s, 4072632 KB] In ts_0_431 of size 2 found num new op-mutexes 0
+
+[t=4.62615s, 4072632 KB] In ts_0_432 of size 2 found num new op-mutexes 0
+
+[t=4.62923s, 4072632 KB] In ts_0_433 of size 2 found num new op-mutexes 0
+
+[t=4.63233s, 4072632 KB] In ts_0_434 of size 2 found num new op-mutexes 0
+
+[t=4.63538s, 4072632 KB] In ts_0_435 of size 2 found num new op-mutexes 0
+
+[t=4.63844s, 4072632 KB] In ts_0_436 of size 2 found num new op-mutexes 0
+
+[t=4.64155s, 4072632 KB] In ts_0_437 of size 2 found num new op-mutexes 0
+
+[t=4.64461s, 4072632 KB] In ts_0_438 of size 2 found num new op-mutexes 0
+
+[t=4.64769s, 4072632 KB] In ts_0_439 of size 2 found num new op-mutexes 0
+
+[t=4.65076s, 4072632 KB] In ts_0_440 of size 2 found num new op-mutexes 0
+
+[t=4.65383s, 4072632 KB] In ts_0_441 of size 2 found num new op-mutexes 0
+
+[t=4.65688s, 4072632 KB] In ts_0_442 of size 2 found num new op-mutexes 0
+
+[t=4.65993s, 4072632 KB] In ts_0_443 of size 2 found num new op-mutexes 0
+
+[t=4.66302s, 4072632 KB] In ts_0_444 of size 2 found num new op-mutexes 0
+
+[t=4.66608s, 4072632 KB] In ts_0_445 of size 2 found num new op-mutexes 0
+
+[t=4.66913s, 4072632 KB] In ts_0_446 of size 2 found num new op-mutexes 0
+
+[t=4.6722s, 4072632 KB] In ts_0_447 of size 2 found num new op-mutexes 0
+
+[t=4.67543s, 4072632 KB] In ts_0_448 of size 2 found num new op-mutexes 0
+
+[t=4.67866s, 4072632 KB] In ts_0_449 of size 2 found num new op-mutexes 0
+
+[t=4.68185s, 4072632 KB] In ts_0_450 of size 2 found num new op-mutexes 0
+
+[t=4.68505s, 4072632 KB] In ts_0_451 of size 2 found num new op-mutexes 0
+
+[t=4.68833s, 4072632 KB] In ts_0_452 of size 2 found num new op-mutexes 0
+
+[t=4.69154s, 4072632 KB] In ts_0_453 of size 2 found num new op-mutexes 0
+
+[t=4.69473s, 4072632 KB] In ts_0_454 of size 2 found num new op-mutexes 0
+
+[t=4.69788s, 4072632 KB] In ts_0_455 of size 2 found num new op-mutexes 0
+
+[t=4.701s, 4072632 KB] In ts_0_456 of size 2 found num new op-mutexes 0
+
+[t=4.70409s, 4072632 KB] In ts_0_457 of size 2 found num new op-mutexes 0
+
+[t=4.70717s, 4072632 KB] In ts_0_458 of size 2 found num new op-mutexes 0
+
+[t=4.71025s, 4072632 KB] In ts_0_459 of size 2 found num new op-mutexes 0
+
+[t=4.71345s, 4072632 KB] In ts_0_460 of size 2 found num new op-mutexes 0
+
+[t=4.71659s, 4072632 KB] In ts_0_461 of size 2 found num new op-mutexes 0
+
+[t=4.71962s, 4072632 KB] In ts_0_462 of size 2 found num new op-mutexes 0
+
+[t=4.7227s, 4072632 KB] In ts_0_463 of size 2 found num new op-mutexes 0
+
+[t=4.72578s, 4072632 KB] In ts_0_464 of size 2 found num new op-mutexes 0
+
+[t=4.72886s, 4072632 KB] In ts_0_465 of size 2 found num new op-mutexes 0
+
+[t=4.73197s, 4072632 KB] In ts_0_466 of size 2 found num new op-mutexes 0
+
+[t=4.73506s, 4072632 KB] In ts_0_467 of size 2 found num new op-mutexes 0
+
+[t=4.73816s, 4072632 KB] In ts_0_468 of size 2 found num new op-mutexes 0
+
+[t=4.74128s, 4072632 KB] In ts_0_469 of size 2 found num new op-mutexes 0
+
+[t=4.74441s, 4072632 KB] In ts_0_470 of size 2 found num new op-mutexes 0
+
+[t=4.74754s, 4072632 KB] In ts_0_471 of size 2 found num new op-mutexes 0
+
+[t=4.75067s, 4072632 KB] In ts_0_472 of size 2 found num new op-mutexes 0
+
+[t=4.75382s, 4072632 KB] In ts_0_473 of size 2 found num new op-mutexes 0
+
+[t=4.75693s, 4072632 KB] In ts_0_474 of size 2 found num new op-mutexes 0
+
+[t=4.76004s, 4072632 KB] In ts_0_475 of size 2 found num new op-mutexes 0
+
+[t=4.76316s, 4072632 KB] In ts_0_476 of size 2 found num new op-mutexes 0
+
+[t=4.76628s, 4072632 KB] In ts_0_477 of size 2 found num new op-mutexes 0
+
+[t=4.76946s, 4072632 KB] In ts_0_478 of size 2 found num new op-mutexes 0
+
+[t=4.7726s, 4072632 KB] In ts_0_479 of size 2 found num new op-mutexes 0
+
+[t=4.77573s, 4072632 KB] In ts_0_480 of size 2 found num new op-mutexes 0
+
+[t=4.77886s, 4072632 KB] In ts_0_481 of size 2 found num new op-mutexes 0
+
+[t=4.78199s, 4072632 KB] In ts_0_482 of size 2 found num new op-mutexes 0
+
+[t=4.78509s, 4072632 KB] In ts_0_483 of size 2 found num new op-mutexes 0
+
+[t=4.78819s, 4072632 KB] In ts_0_484 of size 2 found num new op-mutexes 0
+
+[t=4.79134s, 4072632 KB] In ts_0_485 of size 2 found num new op-mutexes 0
+
+[t=4.79443s, 4072632 KB] In ts_0_486 of size 2 found num new op-mutexes 0
+
+[t=4.79752s, 4072632 KB] In ts_0_487 of size 2 found num new op-mutexes 0
+
+[t=4.80065s, 4072632 KB] In ts_0_488 of size 2 found num new op-mutexes 0
+
+[t=4.80374s, 4072632 KB] In ts_0_489 of size 2 found num new op-mutexes 0
+
+[t=4.80682s, 4072632 KB] In ts_0_490 of size 2 found num new op-mutexes 0
+
+[t=4.80996s, 4072632 KB] In ts_0_491 of size 2 found num new op-mutexes 0
+
+[t=4.81305s, 4072632 KB] In ts_0_492 of size 2 found num new op-mutexes 0
+
+[t=4.81616s, 4072632 KB] In ts_0_493 of size 2 found num new op-mutexes 0
+
+[t=4.81929s, 4072632 KB] In ts_0_494 of size 2 found num new op-mutexes 0
+
+[t=4.82238s, 4072632 KB] In ts_0_495 of size 2 found num new op-mutexes 0
+
+[t=4.82551s, 4072632 KB] In ts_0_496 of size 2 found num new op-mutexes 0
+
+[t=4.82862s, 4072632 KB] In ts_0_497 of size 2 found num new op-mutexes 0
+
+[t=4.8317s, 4072632 KB] In ts_0_498 of size 2 found num new op-mutexes 0
+
+[t=4.83479s, 4072632 KB] In ts_0_499 of size 2 found num new op-mutexes 0
+
+[t=4.83795s, 4072632 KB] In ts_0_500 of size 2 found num new op-mutexes 0
+
+[t=4.84107s, 4072632 KB] In ts_0_501 of size 2 found num new op-mutexes 0
+
+[t=4.84418s, 4072632 KB] In ts_0_502 of size 2 found num new op-mutexes 0
+
+[t=4.84731s, 4072632 KB] In ts_0_503 of size 2 found num new op-mutexes 0
+
+[t=4.85046s, 4072632 KB] In ts_0_504 of size 2 found num new op-mutexes 0
+
+[t=4.85359s, 4072632 KB] In ts_0_505 of size 2 found num new op-mutexes 0
+
+[t=4.85673s, 4072632 KB] In ts_0_506 of size 2 found num new op-mutexes 0
+
+[t=4.85985s, 4072632 KB] In ts_0_507 of size 2 found num new op-mutexes 0
+
+[t=4.86296s, 4072632 KB] In ts_0_508 of size 2 found num new op-mutexes 0
+
+[t=4.86605s, 4072632 KB] In ts_0_509 of size 2 found num new op-mutexes 0
+
+[t=4.86918s, 4072632 KB] In ts_0_510 of size 2 found num new op-mutexes 0
+
+[t=4.87227s, 4072632 KB] In ts_0_511 of size 2 found num new op-mutexes 0
+
+[t=4.87536s, 4072632 KB] In ts_0_512 of size 2 found num new op-mutexes 0
+
+[t=4.87853s, 4072632 KB] In ts_0_513 of size 2 found num new op-mutexes 0
+
+[t=4.88167s, 4072632 KB] In ts_0_514 of size 2 found num new op-mutexes 0
+
+[t=4.88477s, 4072632 KB] In ts_0_515 of size 2 found num new op-mutexes 0
+
+[t=4.88788s, 4072632 KB] In ts_0_516 of size 2 found num new op-mutexes 0
+
+[t=4.89098s, 4072632 KB] In ts_0_517 of size 2 found num new op-mutexes 0
+
+[t=4.89408s, 4072632 KB] In ts_0_518 of size 2 found num new op-mutexes 0
+
+[t=4.89722s, 4072632 KB] In ts_0_519 of size 2 found num new op-mutexes 0
+
+[t=4.90033s, 4072632 KB] In ts_0_520 of size 2 found num new op-mutexes 0
+
+[t=4.90345s, 4072632 KB] In ts_0_521 of size 2 found num new op-mutexes 0
+
+[t=4.90661s, 4072632 KB] In ts_0_522 of size 2 found num new op-mutexes 0
+
+[t=4.90974s, 4072632 KB] In ts_0_523 of size 2 found num new op-mutexes 0
+
+[t=4.91288s, 4072632 KB] In ts_0_524 of size 2 found num new op-mutexes 0
+
+[t=4.91602s, 4072632 KB] In ts_0_525 of size 2 found num new op-mutexes 0
+
+[t=4.9191s, 4072632 KB] In ts_0_526 of size 2 found num new op-mutexes 0
+
+[t=4.92217s, 4072632 KB] In ts_0_527 of size 2 found num new op-mutexes 0
+
+[t=4.92529s, 4072632 KB] In ts_0_528 of size 2 found num new op-mutexes 0
+
+[t=4.92839s, 4072632 KB] In ts_0_529 of size 2 found num new op-mutexes 0
+
+[t=4.93147s, 4072632 KB] In ts_0_530 of size 2 found num new op-mutexes 0
+
+[t=4.93454s, 4072632 KB] In ts_0_531 of size 2 found num new op-mutexes 0
+
+[t=4.93763s, 4072632 KB] In ts_0_532 of size 2 found num new op-mutexes 0
+
+[t=4.94069s, 4072632 KB] In ts_0_533 of size 2 found num new op-mutexes 0
+
+[t=6.69287s, 4163572 KB] In ts_0_534 of size 1 found num new op-mutexes 2675008
+
+[t=6.69622s, 4163572 KB] In ts_0_535 of size 2 found num new op-mutexes 0
+
+[t=6.69935s, 4163572 KB] In ts_0_536 of size 2 found num new op-mutexes 0
+
+[t=6.70245s, 4163572 KB] In ts_0_537 of size 2 found num new op-mutexes 0
+
+[t=6.70557s, 4163572 KB] In ts_0_538 of size 2 found num new op-mutexes 0
+
+[t=6.70874s, 4163572 KB] In ts_0_539 of size 2 found num new op-mutexes 0
+
+[t=6.71189s, 4163572 KB] In ts_0_540 of size 2 found num new op-mutexes 0
+
+[t=6.715s, 4163572 KB] In ts_0_541 of size 2 found num new op-mutexes 0
+
+[t=6.71814s, 4163572 KB] In ts_0_542 of size 2 found num new op-mutexes 0
+
+[t=6.72132s, 4163572 KB] In ts_0_543 of size 2 found num new op-mutexes 0
+
+[t=6.72449s, 4163572 KB] In ts_0_544 of size 2 found num new op-mutexes 0
+
+[t=6.72765s, 4163572 KB] In ts_0_545 of size 2 found num new op-mutexes 0
+
+[t=6.73076s, 4163572 KB] In ts_0_546 of size 2 found num new op-mutexes 0
+
+[t=6.73385s, 4163572 KB] In ts_0_547 of size 2 found num new op-mutexes 0
+
+[t=6.73697s, 4163572 KB] In ts_0_548 of size 2 found num new op-mutexes 0
+
+[t=6.74005s, 4163572 KB] In ts_0_549 of size 2 found num new op-mutexes 0
+
+[t=6.74315s, 4163572 KB] In ts_0_550 of size 2 found num new op-mutexes 0
+
+[t=6.74628s, 4163572 KB] In ts_0_551 of size 2 found num new op-mutexes 0
+
+[t=6.74938s, 4163572 KB] In ts_0_552 of size 2 found num new op-mutexes 0
+
+[t=6.75249s, 4163572 KB] In ts_0_553 of size 2 found num new op-mutexes 0
+
+[t=6.75566s, 4163572 KB] In ts_0_554 of size 2 found num new op-mutexes 0
+
+[t=6.75879s, 4163572 KB] In ts_0_555 of size 2 found num new op-mutexes 0
+
+[t=6.76188s, 4163572 KB] In ts_0_556 of size 2 found num new op-mutexes 0
+
+[t=6.76503s, 4163572 KB] In ts_0_557 of size 2 found num new op-mutexes 0
+
+[t=6.76818s, 4163572 KB] In ts_0_558 of size 2 found num new op-mutexes 0
+
+[t=6.77133s, 4163572 KB] In ts_0_559 of size 2 found num new op-mutexes 0
+
+[t=6.77447s, 4163572 KB] In ts_0_560 of size 2 found num new op-mutexes 0
+
+[t=6.77759s, 4163572 KB] In ts_0_561 of size 2 found num new op-mutexes 0
+
+[t=6.78071s, 4163572 KB] In ts_0_562 of size 2 found num new op-mutexes 0
+
+[t=6.78381s, 4163572 KB] In ts_0_563 of size 2 found num new op-mutexes 0
+
+[t=6.78696s, 4163572 KB] In ts_0_564 of size 2 found num new op-mutexes 0
+
+[t=6.79009s, 4163572 KB] In ts_0_565 of size 2 found num new op-mutexes 0
+
+[t=6.79317s, 4163572 KB] In ts_0_566 of size 2 found num new op-mutexes 0
+
+[t=6.79628s, 4163572 KB] In ts_0_567 of size 2 found num new op-mutexes 0
+
+[t=6.79939s, 4163572 KB] In ts_0_568 of size 2 found num new op-mutexes 0
+
+[t=6.80254s, 4163572 KB] In ts_0_569 of size 2 found num new op-mutexes 0
+
+[t=6.8057s, 4163572 KB] In ts_0_570 of size 2 found num new op-mutexes 0
+
+[t=6.8088s, 4163572 KB] In ts_0_571 of size 2 found num new op-mutexes 0
+
+[t=6.81187s, 4163572 KB] In ts_0_572 of size 2 found num new op-mutexes 0
+
+[t=6.81499s, 4163572 KB] In ts_0_573 of size 2 found num new op-mutexes 0
+
+[t=6.81809s, 4163572 KB] In ts_0_574 of size 2 found num new op-mutexes 0
+
+[t=6.82127s, 4163572 KB] In ts_0_575 of size 2 found num new op-mutexes 0
+
+[t=6.82442s, 4163572 KB] In ts_0_576 of size 2 found num new op-mutexes 0
+
+[t=6.82759s, 4163572 KB] In ts_0_577 of size 2 found num new op-mutexes 0
+
+[t=6.83072s, 4163572 KB] In ts_0_578 of size 2 found num new op-mutexes 0
+
+[t=6.83384s, 4163572 KB] In ts_0_579 of size 2 found num new op-mutexes 0
+
+[t=6.83696s, 4163572 KB] In ts_0_580 of size 2 found num new op-mutexes 0
+
+[t=13.0553s, 4536204 KB] In ts_0_581 of size 1 found num new op-mutexes 9975420
+
+[t=13.0587s, 4536204 KB] In ts_0_582 of size 2 found num new op-mutexes 0
+
+[t=13.0619s, 4536204 KB] In ts_0_583 of size 2 found num new op-mutexes 0
+
+[t=13.065s, 4536204 KB] In ts_0_584 of size 2 found num new op-mutexes 0
+
+[t=13.0682s, 4536204 KB] In ts_0_585 of size 2 found num new op-mutexes 0
+
+[t=13.0714s, 4536204 KB] In ts_0_586 of size 2 found num new op-mutexes 0
+
+[t=13.0747s, 4536204 KB] In ts_0_587 of size 2 found num new op-mutexes 0
+
+[t=13.0779s, 4536204 KB] In ts_0_588 of size 2 found num new op-mutexes 0
+
+[t=13.081s, 4536204 KB] In ts_0_589 of size 2 found num new op-mutexes 0
+
+[t=13.0842s, 4536204 KB] In ts_0_590 of size 2 found num new op-mutexes 0
+
+[t=13.0873s, 4536204 KB] In ts_0_591 of size 2 found num new op-mutexes 0
+
+[t=13.0905s, 4536204 KB] In ts_0_592 of size 2 found num new op-mutexes 0
+
+[t=13.0937s, 4536204 KB] In ts_0_593 of size 2 found num new op-mutexes 0
+
+[t=13.0969s, 4536204 KB] In ts_0_594 of size 2 found num new op-mutexes 0
+
+[t=13.1001s, 4536204 KB] In ts_0_595 of size 2 found num new op-mutexes 0
+
+[t=13.1033s, 4536204 KB] In ts_0_596 of size 2 found num new op-mutexes 0
+
+[t=13.1066s, 4536204 KB] In ts_0_597 of size 2 found num new op-mutexes 0
+
+[t=13.1097s, 4536204 KB] In ts_0_598 of size 2 found num new op-mutexes 0
+
+[t=13.1128s, 4536204 KB] In ts_0_599 of size 2 found num new op-mutexes 0
+
+[t=13.116s, 4536204 KB] In ts_0_600 of size 2 found num new op-mutexes 0
+
+[t=13.1191s, 4536204 KB] In ts_0_601 of size 2 found num new op-mutexes 0
+
+[t=13.1223s, 4536204 KB] In ts_0_602 of size 2 found num new op-mutexes 0
+
+[t=13.1254s, 4536204 KB] In ts_0_603 of size 2 found num new op-mutexes 0
+
+[t=13.1286s, 4536204 KB] In ts_0_604 of size 2 found num new op-mutexes 0
+
+[t=13.1317s, 4536204 KB] In ts_0_605 of size 2 found num new op-mutexes 0
+
+[t=13.1349s, 4536204 KB] In ts_0_606 of size 2 found num new op-mutexes 0
+
+[t=13.138s, 4536204 KB] In ts_0_607 of size 2 found num new op-mutexes 0
+
+[t=13.1411s, 4536204 KB] In ts_0_608 of size 2 found num new op-mutexes 0
+
+[t=13.1443s, 4536204 KB] In ts_0_609 of size 2 found num new op-mutexes 0
+
+[t=32.1961s, 5662332 KB] In ts_0_610 of size 1 found num new op-mutexes 19686240
+
+[t=32.1996s, 5662332 KB] In ts_0_611 of size 2 found num new op-mutexes 0
+
+[t=32.203s, 5662332 KB] In ts_0_612 of size 2 found num new op-mutexes 0
+
+[t=32.2063s, 5662332 KB] In ts_0_613 of size 2 found num new op-mutexes 0
+
+[t=32.2095s, 5662332 KB] In ts_0_614 of size 2 found num new op-mutexes 0
+
+[t=32.2127s, 5662332 KB] In ts_0_615 of size 2 found num new op-mutexes 0
+
+[t=32.2159s, 5662332 KB] In ts_0_616 of size 2 found num new op-mutexes 0
+
+[t=32.2191s, 5662332 KB] In ts_0_617 of size 2 found num new op-mutexes 0
+
+[t=32.2222s, 5662332 KB] In ts_0_618 of size 2 found num new op-mutexes 0
+
+[t=32.2254s, 5662332 KB] In ts_0_619 of size 2 found num new op-mutexes 0
+
+[t=32.2285s, 5662332 KB] In ts_0_620 of size 2 found num new op-mutexes 0
+
+[t=32.2317s, 5662332 KB] In ts_0_621 of size 2 found num new op-mutexes 0
+
+[t=32.2349s, 5662332 KB] In ts_0_622 of size 2 found num new op-mutexes 0
+
+[t=32.238s, 5662332 KB] In ts_0_623 of size 2 found num new op-mutexes 0
+
+[t=32.2412s, 5662332 KB] In ts_0_624 of size 2 found num new op-mutexes 0
+
+[t=32.2444s, 5662332 KB] In ts_0_625 of size 2 found num new op-mutexes 0
+
+[t=32.2477s, 5662332 KB] In ts_0_626 of size 2 found num new op-mutexes 0
+
+[t=32.2509s, 5662332 KB] In ts_0_627 of size 2 found num new op-mutexes 0
+
+[t=32.2541s, 5662332 KB] In ts_0_628 of size 2 found num new op-mutexes 0
+
+[t=32.2573s, 5662332 KB] In ts_0_629 of size 2 found num new op-mutexes 0
+
+[t=32.2605s, 5662332 KB] In ts_0_630 of size 2 found num new op-mutexes 0
+
+[t=32.2637s, 5662332 KB] In ts_0_631 of size 2 found num new op-mutexes 0
+
+[t=32.2669s, 5662332 KB] In ts_0_632 of size 2 found num new op-mutexes 0
+
+[t=32.2701s, 5662332 KB] In ts_0_633 of size 2 found num new op-mutexes 0
+
+[t=32.2733s, 5662332 KB] In ts_0_634 of size 2 found num new op-mutexes 0
+
+[t=32.2764s, 5662332 KB] In ts_0_635 of size 2 found num new op-mutexes 0
+
+[t=32.2796s, 5662332 KB] In ts_0_636 of size 2 found num new op-mutexes 0
+
+[t=32.2828s, 5662332 KB] In ts_0_637 of size 2 found num new op-mutexes 0
+
+[t=32.286s, 5662332 KB] In ts_0_638 of size 2 found num new op-mutexes 0
+
+[t=32.2892s, 5662332 KB] In ts_0_639 of size 2 found num new op-mutexes 0
+
+[t=32.2923s, 5662332 KB] In ts_0_640 of size 2 found num new op-mutexes 0
+
+[t=32.2955s, 5662332 KB] In ts_0_641 of size 2 found num new op-mutexes 0
+
+[t=32.2988s, 5662332 KB] In ts_0_642 of size 2 found num new op-mutexes 0
+
+[t=32.3019s, 5662332 KB] In ts_0_643 of size 2 found num new op-mutexes 0
+
+[t=32.3055s, 5662332 KB] In ts_0_644 of size 2 found num new op-mutexes 0
+
+[t=32.3086s, 5662332 KB] In ts_0_645 of size 2 found num new op-mutexes 0
+
+[t=32.3118s, 5662332 KB] In ts_0_646 of size 2 found num new op-mutexes 0
+
+[t=32.3149s, 5662332 KB] In ts_0_647 of size 2 found num new op-mutexes 0
+
+[t=32.3181s, 5662332 KB] In ts_0_648 of size 2 found num new op-mutexes 0
+
+[t=32.3213s, 5662332 KB] In ts_0_649 of size 2 found num new op-mutexes 0
+
+[t=32.3252s, 5662332 KB] In ts_0_650 of size 2 found num new op-mutexes 0
+
+[t=32.3285s, 5662332 KB] In ts_0_651 of size 2 found num new op-mutexes 0
+
+[t=32.3317s, 5662332 KB] In ts_0_652 of size 2 found num new op-mutexes 0
+
+[t=32.3349s, 5662332 KB] In ts_0_653 of size 2 found num new op-mutexes 0
+
+[t=32.3381s, 5662332 KB] In ts_0_654 of size 2 found num new op-mutexes 0
+
+[t=32.3413s, 5662332 KB] In ts_0_655 of size 2 found num new op-mutexes 0
+
+[t=32.3445s, 5662332 KB] In ts_0_656 of size 2 found num new op-mutexes 0
+
+[t=32.3477s, 5662332 KB] In ts_0_657 of size 2 found num new op-mutexes 0
+
+[t=32.3509s, 5662332 KB] In ts_0_658 of size 2 found num new op-mutexes 0
+
+[t=32.3541s, 5662332 KB] In ts_0_659 of size 2 found num new op-mutexes 0
+
+[t=32.3573s, 5662332 KB] In ts_0_660 of size 2 found num new op-mutexes 0
+
+[t=32.3605s, 5662332 KB] In ts_0_661 of size 2 found num new op-mutexes 0
+
+[t=32.3637s, 5662332 KB] In ts_0_662 of size 2 found num new op-mutexes 0
+
+[t=32.3669s, 5662332 KB] In ts_0_663 of size 2 found num new op-mutexes 0
+
+[t=32.37s, 5662332 KB] In ts_0_664 of size 2 found num new op-mutexes 0
+
+[t=32.3732s, 5662332 KB] In ts_0_665 of size 2 found num new op-mutexes 0
+
+[t=32.3763s, 5662332 KB] In ts_0_666 of size 2 found num new op-mutexes 0
+
+[t=32.3795s, 5662332 KB] In ts_0_667 of size 2 found num new op-mutexes 0
+
+[t=32.3826s, 5662332 KB] In ts_0_668 of size 2 found num new op-mutexes 0
+
+[t=32.3858s, 5662332 KB] In ts_0_669 of size 2 found num new op-mutexes 0
+
+[t=32.389s, 5662332 KB] In ts_0_670 of size 2 found num new op-mutexes 0
+
+[t=32.3921s, 5662332 KB] In ts_0_671 of size 2 found num new op-mutexes 0
+
+[t=32.3953s, 5662332 KB] In ts_0_672 of size 2 found num new op-mutexes 0
+
+[t=32.3985s, 5662332 KB] In ts_0_673 of size 2 found num new op-mutexes 0
+
+[t=32.4016s, 5662332 KB] In ts_0_674 of size 2 found num new op-mutexes 0
+
+[t=32.4048s, 5662332 KB] In ts_0_675 of size 2 found num new op-mutexes 0
+
+[t=32.408s, 5662332 KB] In ts_0_676 of size 2 found num new op-mutexes 0
+
+[t=32.4111s, 5662332 KB] In ts_0_677 of size 2 found num new op-mutexes 0
+
+[t=32.4143s, 5662332 KB] In ts_0_678 of size 2 found num new op-mutexes 0
+
+[t=32.4175s, 5662332 KB] In ts_0_679 of size 2 found num new op-mutexes 0
+
+[t=32.4206s, 5662332 KB] In ts_0_680 of size 2 found num new op-mutexes 0
+
+[t=32.4238s, 5662332 KB] In ts_0_681 of size 2 found num new op-mutexes 0
+
+[t=32.4269s, 5662332 KB] In ts_0_682 of size 2 found num new op-mutexes 0
+
+[t=32.43s, 5662332 KB] In ts_0_683 of size 2 found num new op-mutexes 0
+
+[t=32.4331s, 5662332 KB] In ts_0_684 of size 2 found num new op-mutexes 0
+
+[t=32.4362s, 5662332 KB] In ts_0_685 of size 2 found num new op-mutexes 0
+
+[t=32.4393s, 5662332 KB] In ts_0_686 of size 2 found num new op-mutexes 0
+
+[t=32.4424s, 5662332 KB] In ts_0_687 of size 2 found num new op-mutexes 0
+
+[t=32.4456s, 5662332 KB] In ts_0_688 of size 2 found num new op-mutexes 0
+
+[t=32.4487s, 5662332 KB] In ts_0_689 of size 2 found num new op-mutexes 0
+
+[t=32.4518s, 5662332 KB] In ts_0_690 of size 2 found num new op-mutexes 0
+
+[t=32.4549s, 5662332 KB] In ts_0_691 of size 2 found num new op-mutexes 0
+
+[t=32.458s, 5662332 KB] In ts_0_692 of size 2 found num new op-mutexes 0
+
+[t=32.4611s, 5662332 KB] In ts_0_693 of size 2 found num new op-mutexes 0
+
+[t=32.4643s, 5662332 KB] In ts_0_694 of size 2 found num new op-mutexes 0
+
+[t=32.4674s, 5662332 KB] In ts_0_695 of size 2 found num new op-mutexes 0
+
+[t=32.4705s, 5662332 KB] In ts_0_696 of size 2 found num new op-mutexes 0
+
+[t=32.4736s, 5662332 KB] In ts_0_697 of size 2 found num new op-mutexes 0
+
+[t=32.4767s, 5662332 KB] In ts_0_698 of size 2 found num new op-mutexes 0
+
+[t=32.4798s, 5662332 KB] In ts_0_699 of size 2 found num new op-mutexes 0
+
+[t=32.4829s, 5662332 KB] In ts_0_700 of size 2 found num new op-mutexes 0
+
+[t=32.486s, 5662332 KB] In ts_0_701 of size 2 found num new op-mutexes 0
+
+[t=32.4891s, 5662332 KB] In ts_0_702 of size 2 found num new op-mutexes 0
+
+[t=32.4923s, 5662332 KB] In ts_0_703 of size 2 found num new op-mutexes 0
+
+[t=32.4954s, 5662332 KB] In ts_0_704 of size 2 found num new op-mutexes 0
+
+[t=32.4985s, 5662332 KB] In ts_0_705 of size 2 found num new op-mutexes 0
+
+[t=32.5017s, 5662332 KB] In ts_0_706 of size 2 found num new op-mutexes 0
+
+[t=32.5056s, 5662332 KB] In ts_0_707 of size 2 found num new op-mutexes 0
+
+[t=32.5089s, 5662332 KB] In ts_0_708 of size 2 found num new op-mutexes 0
+
+[t=32.5121s, 5662332 KB] In ts_0_709 of size 2 found num new op-mutexes 0
+
+[t=32.5152s, 5662332 KB] In ts_0_710 of size 2 found num new op-mutexes 0
+
+[t=32.5184s, 5662332 KB] In ts_0_711 of size 2 found num new op-mutexes 0
+
+[t=32.5215s, 5662332 KB] In ts_0_712 of size 2 found num new op-mutexes 0
+
+[t=32.5247s, 5662332 KB] In ts_0_713 of size 2 found num new op-mutexes 0
+
+[t=32.5278s, 5662332 KB] In ts_0_714 of size 2 found num new op-mutexes 0
+
+[t=32.531s, 5662332 KB] In ts_0_715 of size 2 found num new op-mutexes 0
+
+[t=32.5342s, 5662332 KB] In ts_0_716 of size 2 found num new op-mutexes 0
+
+[t=32.5373s, 5662332 KB] In ts_0_717 of size 2 found num new op-mutexes 0
+
+[t=32.5405s, 5662332 KB] In ts_0_718 of size 2 found num new op-mutexes 0
+
+[t=32.5436s, 5662332 KB] In ts_0_719 of size 2 found num new op-mutexes 0
+
+[t=32.5467s, 5662332 KB] In ts_0_720 of size 2 found num new op-mutexes 0
+
+[t=32.5499s, 5662332 KB] In ts_0_721 of size 2 found num new op-mutexes 0
+
+[t=32.5531s, 5662332 KB] In ts_0_722 of size 2 found num new op-mutexes 0
+
+[t=32.5563s, 5662332 KB] In ts_0_723 of size 2 found num new op-mutexes 0
+
+[t=32.5594s, 5662332 KB] In ts_0_724 of size 2 found num new op-mutexes 0
+
+[t=32.5625s, 5662332 KB] In ts_0_725 of size 2 found num new op-mutexes 0
+
+[t=32.5657s, 5662332 KB] In ts_0_726 of size 2 found num new op-mutexes 0
+
+[t=32.5688s, 5662332 KB] In ts_0_727 of size 2 found num new op-mutexes 0
+
+[t=32.5719s, 5662332 KB] In ts_0_728 of size 2 found num new op-mutexes 0
+
+[t=32.5751s, 5662332 KB] In ts_0_729 of size 2 found num new op-mutexes 0
+
+[t=32.5782s, 5662332 KB] In ts_0_730 of size 2 found num new op-mutexes 0
+
+[t=32.5814s, 5662332 KB] In ts_0_731 of size 2 found num new op-mutexes 0
+
+[t=32.5845s, 5662332 KB] In ts_0_732 of size 2 found num new op-mutexes 0
+
+[t=32.5877s, 5662332 KB] In ts_0_733 of size 2 found num new op-mutexes 0
+
+[t=32.5908s, 5662332 KB] In ts_0_734 of size 2 found num new op-mutexes 0
+
+[t=32.5939s, 5662332 KB] In ts_0_735 of size 2 found num new op-mutexes 0
+
+[t=32.5971s, 5662332 KB] In ts_0_736 of size 2 found num new op-mutexes 0
+
+[t=32.6002s, 5662332 KB] In ts_0_737 of size 2 found num new op-mutexes 0
+
+[t=32.6041s, 5662332 KB] In ts_0_738 of size 2 found num new op-mutexes 0
+
+[t=32.6074s, 5662332 KB] In ts_0_739 of size 2 found num new op-mutexes 0
+
+[t=32.6108s, 5662332 KB] In ts_0_740 of size 2 found num new op-mutexes 0
+
+[t=32.614s, 5662332 KB] In ts_0_741 of size 2 found num new op-mutexes 0
+
+[t=32.6172s, 5662332 KB] In ts_0_742 of size 2 found num new op-mutexes 0
+
+[t=32.6203s, 5662332 KB] In ts_0_743 of size 2 found num new op-mutexes 0
+
+[t=32.6234s, 5662332 KB] In ts_0_744 of size 2 found num new op-mutexes 0
+
+[t=32.6266s, 5662332 KB] In ts_0_745 of size 2 found num new op-mutexes 0
+
+[t=32.6297s, 5662332 KB] In ts_0_746 of size 2 found num new op-mutexes 0
+
+[t=32.6328s, 5662332 KB] In ts_0_747 of size 2 found num new op-mutexes 0
+
+[t=32.6359s, 5662332 KB] In ts_0_748 of size 2 found num new op-mutexes 0
+
+[t=32.639s, 5662332 KB] In ts_0_749 of size 2 found num new op-mutexes 0
+
+[t=32.6421s, 5662332 KB] In ts_0_750 of size 2 found num new op-mutexes 0
+
+[t=32.6452s, 5662332 KB] In ts_0_751 of size 2 found num new op-mutexes 0
+
+[t=32.6483s, 5662332 KB] In ts_0_752 of size 2 found num new op-mutexes 0
+
+[t=32.6514s, 5662332 KB] In ts_0_753 of size 2 found num new op-mutexes 0
+
+[t=32.6545s, 5662332 KB] In ts_0_754 of size 2 found num new op-mutexes 0
+
+[t=32.6576s, 5662332 KB] In ts_0_755 of size 2 found num new op-mutexes 0
+
+[t=32.6608s, 5662332 KB] In ts_0_756 of size 2 found num new op-mutexes 0
+
+[t=32.6639s, 5662332 KB] In ts_0_757 of size 2 found num new op-mutexes 0
+
+[t=32.667s, 5662332 KB] In ts_0_758 of size 2 found num new op-mutexes 0
+
+[t=32.6701s, 5662332 KB] In ts_0_759 of size 2 found num new op-mutexes 0
+
+[t=32.6733s, 5662332 KB] In ts_0_760 of size 2 found num new op-mutexes 0
+
+[t=32.6764s, 5662332 KB] In ts_0_761 of size 2 found num new op-mutexes 0
+
+[t=32.6795s, 5662332 KB] In ts_0_762 of size 2 found num new op-mutexes 0
+
+[t=32.6826s, 5662332 KB] In ts_0_763 of size 2 found num new op-mutexes 0
+
+[t=32.6857s, 5662332 KB] In ts_0_764 of size 2 found num new op-mutexes 0
+
+[t=37.9337s, 5829404 KB] In ts_0_765 of size 1 found num new op-mutexes 9710820
+
+[t=37.9372s, 5829404 KB] In ts_0_766 of size 2 found num new op-mutexes 0
+
+[t=37.9404s, 5829404 KB] In ts_0_767 of size 2 found num new op-mutexes 0
+
+[t=37.9437s, 5829404 KB] In ts_0_768 of size 2 found num new op-mutexes 0
+
+[t=37.9469s, 5829404 KB] In ts_0_769 of size 2 found num new op-mutexes 0
+
+[t=37.9502s, 5829404 KB] In ts_0_770 of size 2 found num new op-mutexes 0
+
+[t=37.9535s, 5829404 KB] In ts_0_771 of size 2 found num new op-mutexes 0
+
+[t=37.9568s, 5829404 KB] In ts_0_772 of size 2 found num new op-mutexes 0
+
+[t=37.9602s, 5829404 KB] In ts_0_773 of size 2 found num new op-mutexes 0
+
+[t=37.9636s, 5829404 KB] In ts_0_774 of size 2 found num new op-mutexes 0
+
+[t=37.9669s, 5829404 KB] In ts_0_775 of size 2 found num new op-mutexes 0
+
+[t=37.9703s, 5829404 KB] In ts_0_776 of size 2 found num new op-mutexes 0
+
+[t=37.9737s, 5829404 KB] In ts_0_777 of size 2 found num new op-mutexes 0
+
+[t=37.9771s, 5829404 KB] In ts_0_778 of size 2 found num new op-mutexes 0
+
+[t=37.9804s, 5829404 KB] In ts_0_779 of size 2 found num new op-mutexes 0
+
+[t=37.9839s, 5829404 KB] In ts_0_780 of size 2 found num new op-mutexes 0
+
+[t=37.9873s, 5829404 KB] In ts_0_781 of size 2 found num new op-mutexes 0
+
+[t=37.9907s, 5829404 KB] In ts_0_782 of size 2 found num new op-mutexes 0
+
+[t=37.9944s, 5829404 KB] In ts_0_783 of size 2 found num new op-mutexes 0
+
+[t=37.9979s, 5829404 KB] In ts_0_784 of size 2 found num new op-mutexes 0
+
+[t=38.0014s, 5829404 KB] In ts_0_785 of size 2 found num new op-mutexes 0
+
+[t=38.0048s, 5829404 KB] In ts_0_786 of size 2 found num new op-mutexes 0
+
+[t=38.0083s, 5829404 KB] In ts_0_787 of size 2 found num new op-mutexes 0
+
+[t=38.0117s, 5829404 KB] In ts_0_788 of size 2 found num new op-mutexes 0
+
+[t=38.0151s, 5829404 KB] In ts_0_789 of size 2 found num new op-mutexes 0
+
+[t=38.0185s, 5829404 KB] In ts_0_790 of size 2 found num new op-mutexes 0
+
+[t=38.0218s, 5829404 KB] In ts_0_791 of size 2 found num new op-mutexes 0
+
+[t=38.0252s, 5829404 KB] In ts_0_792 of size 2 found num new op-mutexes 0
+
+[t=38.0285s, 5829404 KB] In ts_0_793 of size 2 found num new op-mutexes 0
+
+[t=38.0318s, 5829404 KB] In ts_0_794 of size 2 found num new op-mutexes 0
+
+[t=38.0351s, 5829404 KB] In ts_0_795 of size 2 found num new op-mutexes 0
+
+[t=38.0385s, 5829404 KB] In ts_0_796 of size 2 found num new op-mutexes 0
+
+[t=38.0419s, 5829404 KB] In ts_0_797 of size 2 found num new op-mutexes 0
+
+[t=38.0453s, 5829404 KB] In ts_0_798 of size 2 found num new op-mutexes 0
+
+[t=38.0488s, 5829404 KB] In ts_0_799 of size 2 found num new op-mutexes 0
+
+[t=38.0522s, 5829404 KB] In ts_0_800 of size 2 found num new op-mutexes 0
+
+[t=38.0556s, 5829404 KB] In ts_0_801 of size 2 found num new op-mutexes 0
+
+[t=38.0589s, 5829404 KB] In ts_0_802 of size 2 found num new op-mutexes 0
+
+[t=38.0623s, 5829404 KB] In ts_0_803 of size 2 found num new op-mutexes 0
+
+[t=38.0657s, 5829404 KB] In ts_0_804 of size 2 found num new op-mutexes 0
+
+[t=38.0691s, 5829404 KB] In ts_0_805 of size 2 found num new op-mutexes 0
+
+[t=38.0725s, 5829404 KB] In ts_0_806 of size 2 found num new op-mutexes 0
+
+[t=38.0758s, 5829404 KB] In ts_0_807 of size 2 found num new op-mutexes 0
+
+[t=38.0792s, 5829404 KB] In ts_0_808 of size 2 found num new op-mutexes 0
+
+[t=38.0825s, 5829404 KB] In ts_0_809 of size 2 found num new op-mutexes 0
+
+[t=38.0859s, 5829404 KB] In ts_0_810 of size 2 found num new op-mutexes 0
+
+[t=38.0894s, 5829404 KB] In ts_0_811 of size 2 found num new op-mutexes 0
+
+[t=38.0929s, 5829404 KB] In ts_0_812 of size 2 found num new op-mutexes 0
+
+[t=38.0968s, 5829404 KB] In ts_0_813 of size 2 found num new op-mutexes 0
+
+[t=38.1002s, 5829404 KB] In ts_0_814 of size 2 found num new op-mutexes 0
+
+[t=38.1035s, 5829404 KB] In ts_0_815 of size 2 found num new op-mutexes 0
+
+[t=38.1067s, 5829404 KB] In ts_0_816 of size 2 found num new op-mutexes 0
+
+[t=38.11s, 5829404 KB] In ts_0_817 of size 2 found num new op-mutexes 0
+
+[t=38.1132s, 5829404 KB] In ts_0_818 of size 2 found num new op-mutexes 0
+
+[t=38.1165s, 5829404 KB] In ts_0_819 of size 2 found num new op-mutexes 0
+
+[t=38.1198s, 5829404 KB] In ts_0_820 of size 2 found num new op-mutexes 0
+
+[t=38.1231s, 5829404 KB] In ts_0_821 of size 2 found num new op-mutexes 0
+
+[t=38.1263s, 5829404 KB] In ts_0_822 of size 2 found num new op-mutexes 0
+
+[t=38.1295s, 5829404 KB] In ts_0_823 of size 2 found num new op-mutexes 0
+
+[t=38.1327s, 5829404 KB] In ts_0_824 of size 2 found num new op-mutexes 0
+
+[t=38.1359s, 5829404 KB] In ts_0_825 of size 2 found num new op-mutexes 0
+
+[t=38.1391s, 5829404 KB] In ts_0_826 of size 2 found num new op-mutexes 0
+
+[t=38.1422s, 5829404 KB] In ts_0_827 of size 2 found num new op-mutexes 0
+
+[t=38.1454s, 5829404 KB] In ts_0_828 of size 2 found num new op-mutexes 0
+
+[t=38.1486s, 5829404 KB] In ts_0_829 of size 2 found num new op-mutexes 0
+
+[t=38.1517s, 5829404 KB] In ts_0_830 of size 2 found num new op-mutexes 0
+
+[t=38.1549s, 5829404 KB] In ts_0_831 of size 2 found num new op-mutexes 0
+
+[t=38.1582s, 5829404 KB] In ts_0_832 of size 2 found num new op-mutexes 0
+
+[t=38.1614s, 5829404 KB] In ts_0_833 of size 2 found num new op-mutexes 0
+
+[t=38.1645s, 5829404 KB] In ts_0_834 of size 2 found num new op-mutexes 0
+
+[t=38.1677s, 5829404 KB] In ts_0_835 of size 2 found num new op-mutexes 0
+
+[t=38.1709s, 5829404 KB] In ts_0_836 of size 2 found num new op-mutexes 0
+
+[t=38.1741s, 5829404 KB] In ts_0_837 of size 2 found num new op-mutexes 0
+
+[t=38.1774s, 5829404 KB] In ts_0_838 of size 2 found num new op-mutexes 0
+
+[t=38.1805s, 5829404 KB] In ts_0_839 of size 2 found num new op-mutexes 0
+
+[t=38.1837s, 5829404 KB] In ts_0_840 of size 2 found num new op-mutexes 0
+
+[t=38.1869s, 5829404 KB] In ts_0_841 of size 2 found num new op-mutexes 0
+
+[t=38.1901s, 5829404 KB] In ts_0_842 of size 2 found num new op-mutexes 0
+
+[t=38.1933s, 5829404 KB] In ts_0_843 of size 2 found num new op-mutexes 0
+
+[t=38.1966s, 5829404 KB] In ts_0_844 of size 2 found num new op-mutexes 0
+
+[t=38.1998s, 5829404 KB] In ts_0_845 of size 2 found num new op-mutexes 0
+
+[t=38.2031s, 5829404 KB] In ts_0_846 of size 2 found num new op-mutexes 0
+
+[t=38.2064s, 5829404 KB] In ts_0_847 of size 2 found num new op-mutexes 0
+
+[t=38.2097s, 5829404 KB] In ts_0_848 of size 2 found num new op-mutexes 0
+
+[t=38.2129s, 5829404 KB] In ts_0_849 of size 2 found num new op-mutexes 0
+
+[t=38.2161s, 5829404 KB] In ts_0_850 of size 2 found num new op-mutexes 0
+
+[t=44.4303s, 6130100 KB] In ts_0_851 of size 1 found num new op-mutexes 9622620
+
+[t=44.4337s, 6130100 KB] In ts_0_852 of size 2 found num new op-mutexes 0
+
+[t=44.4371s, 6130100 KB] In ts_0_853 of size 2 found num new op-mutexes 0
+
+[t=44.4403s, 6130100 KB] In ts_0_854 of size 2 found num new op-mutexes 0
+
+[t=44.4435s, 6130100 KB] In ts_0_855 of size 2 found num new op-mutexes 0
+
+[t=44.4467s, 6130100 KB] In ts_0_856 of size 2 found num new op-mutexes 0
+
+[t=44.4499s, 6130100 KB] In ts_0_857 of size 2 found num new op-mutexes 0
+
+[t=44.453s, 6130100 KB] In ts_0_858 of size 2 found num new op-mutexes 0
+
+[t=44.4562s, 6130100 KB] In ts_0_859 of size 2 found num new op-mutexes 0
+
+[t=44.4594s, 6130100 KB] In ts_0_860 of size 2 found num new op-mutexes 0
+
+[t=44.4625s, 6130100 KB] In ts_0_861 of size 2 found num new op-mutexes 0
+
+[t=44.4657s, 6130100 KB] In ts_0_862 of size 2 found num new op-mutexes 0
+
+[t=44.4689s, 6130100 KB] In ts_0_863 of size 2 found num new op-mutexes 0
+
+[t=44.472s, 6130100 KB] In ts_0_864 of size 2 found num new op-mutexes 0
+
+[t=44.4753s, 6130100 KB] In ts_0_865 of size 2 found num new op-mutexes 0
+
+[t=44.4784s, 6130100 KB] In ts_0_866 of size 2 found num new op-mutexes 0
+
+[t=44.4817s, 6130100 KB] In ts_0_867 of size 2 found num new op-mutexes 0
+
+[t=44.4848s, 6130100 KB] In ts_0_868 of size 2 found num new op-mutexes 0
+
+[t=44.488s, 6130100 KB] In ts_0_869 of size 2 found num new op-mutexes 0
+
+[t=44.4912s, 6130100 KB] In ts_0_870 of size 2 found num new op-mutexes 0
+
+[t=44.4944s, 6130100 KB] In ts_0_871 of size 2 found num new op-mutexes 0
+
+[t=44.4982s, 6130100 KB] In ts_0_872 of size 2 found num new op-mutexes 0
+
+[t=44.5015s, 6130100 KB] In ts_0_873 of size 2 found num new op-mutexes 0
+
+Failed to allocate memory.
+Memory limit has been reached.
+Peak memory: 6422480 KB
+Remove intermediate file output.sas
+search exit code: 22
+
+Driver aborting after search

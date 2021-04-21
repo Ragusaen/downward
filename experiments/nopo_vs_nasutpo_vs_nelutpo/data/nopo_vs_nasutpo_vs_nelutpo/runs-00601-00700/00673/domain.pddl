@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/organic-synthesis-split-opt18-strips/domain-p02.pddl

@@ -1,0 +1,319 @@
+INFO     Running translator.
+INFO     translator stdin: None
+INFO     translator time limit: 599.96s
+INFO     translator memory limit: 7000 MB
+INFO     translator command line string: /usr/bin/python3 /user/student.aau.dk/lkar18/downward-projects/downward/experiments/nopo_vs_nasutpo_195p/data/nopo_vs_nasutpo/code-94571df14dfaf5b06207d9589b12facdd93f580c_e5e41175/builds/release/bin/translate/translate.py domain.pddl problem.pddl --sas-file output.sas
+Parsing...
+Parsing: [0.020s CPU, 0.015s wall-clock]
+Normalizing task... [0.000s CPU, 0.002s wall-clock]
+Instantiating...
+Generating Datalog program... [0.000s CPU, 0.001s wall-clock]
+Normalizing Datalog program...
+Normalizing Datalog program: [0.000s CPU, 0.003s wall-clock]
+Preparing model... [0.010s CPU, 0.003s wall-clock]
+Generated 311 rules.
+Computing model... [0.000s CPU, 0.002s wall-clock]
+153 relevant atoms
+0 auxiliary atoms
+153 final queue length
+323 total queue pushes
+Completing instantiation... [0.000s CPU, 0.003s wall-clock]
+Instantiating: [0.010s CPU, 0.012s wall-clock]
+Computing fact groups...
+Finding invariants...
+37 initial candidates
+Finding invariants: [0.420s CPU, 0.414s wall-clock]
+Checking invariant weight... [0.000s CPU, 0.001s wall-clock]
+Instantiating groups... [0.000s CPU, 0.000s wall-clock]
+Collecting mutex groups... [0.000s CPU, 0.000s wall-clock]
+Choosing groups...
+10 uncovered facts
+Choosing groups: [0.000s CPU, 0.000s wall-clock]
+Building translation key... [0.000s CPU, 0.000s wall-clock]
+Computing fact groups: [0.420s CPU, 0.415s wall-clock]
+Building STRIPS to SAS dictionary... [0.000s CPU, 0.000s wall-clock]
+Building dictionary for full mutex groups... [0.000s CPU, 0.000s wall-clock]
+Building mutex information...
+Building mutex information: [0.000s CPU, 0.000s wall-clock]
+Translating task...
+Processing axioms...
+Simplifying axioms... [0.000s CPU, 0.000s wall-clock]
+Translator axioms removed by simplifying: 0
+Computing negative axioms... [0.000s CPU, 0.000s wall-clock]
+Processing axioms: [0.000s CPU, 0.000s wall-clock]
+Translating task: [0.000s CPU, 0.004s wall-clock]
+30 effect conditions simplified
+0 implied preconditions added
+Detecting unreachable propositions...
+0 operators removed
+0 axioms removed
+7 propositions removed
+Detecting unreachable propositions: [0.000s CPU, 0.002s wall-clock]
+Reordering and filtering variables...
+17 of 17 variables necessary.
+0 of 12 mutex groups necessary.
+115 of 115 operators necessary.
+0 of 0 axiom rules necessary.
+Reordering and filtering variables: [0.010s CPU, 0.001s wall-clock]
+Translator variables: 17
+Translator derived variables: 0
+Translator facts: 47
+Translator goal facts: 5
+Translator mutex groups: 0
+Translator total mutex groups size: 0
+Translator operators: 115
+Translator axioms: 0
+Translator task size: 774
+Translator peak memory: 44060 KB
+Writing output... [0.000s CPU, 0.002s wall-clock]
+Done! [0.460s CPU, 0.455s wall-clock]
+translate exit code: 0
+
+INFO     Running search (release).
+INFO     search stdin: output.sas
+INFO     search time limit: 599.46s
+INFO     search memory limit: 7000 MB
+INFO     search command line string: /user/student.aau.dk/lkar18/downward-projects/downward/experiments/nopo_vs_nasutpo_195p/data/nopo_vs_nasutpo/code-94571df14dfaf5b06207d9589b12facdd93f580c_e5e41175/builds/release/bin/downward --search 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=NaSUTPO, reachability_strategy=goal), merge_strategy=merge_sccs(order_of_sccs=topological, merge_tree=linear()), shrink_strategy=shrink_fh()))' --internal-plan-file sas_plan < output.sas
+[t=5.264e-05s, 22344 KB] reading input...
+[t=0.000597567s, 22344 KB] done reading input!
+[t=0.00200603s, 22600 KB] Initializing merge-and-shrink heuristic...
+[t=0.00207526s, 22600 KB] Running merge-and-shrink algorithm...
+[t=0.00209483s, 22600 KB] Merge strategy options:
+[t=0.00211578s, 22600 KB] Type: sccs
+[t=0.00213583s, 22600 KB] Merge order of sccs: topological
+[t=0.00215525s, 22600 KB] Merge strategy for merging within sccs: 
+[t=0.00217423s, 22600 KB] Merge tree options: 
+[t=0.00219402s, 22600 KB] Type: linear
+[t=0.00221339s, 22600 KB] Update option: use random
+[t=0.00223316s, 22600 KB] Variable order type: CG/GOAL, tie breaking on level (main)
+
+[t=0.00225522s, 22600 KB] Options related to size limits and shrinking: 
+[t=0.00227639s, 22600 KB] Transition system size limit: 50000
+[t=0.00229633s, 22600 KB] Transition system size limit right before merge: 50000
+[t=0.00231545s, 22600 KB] Threshold to trigger shrinking right before merge: 1
+
+[t=0.00233718s, 22600 KB] Pruning unreachable states: yes
+[t=0.00235715s, 22600 KB] Pruning irrelevant states: yes
+
+[t=0.00237883s, 22600 KB] Label reduction disabled
+
+[t=0.00240079s, 22600 KB] Main loop max time in seconds: inf
+
+[t=0.00242489s, 22600 KB] ===============================================================================
+[t=0.00244419s, 22600 KB] WARNING! You did not enable label reduction.
+This may drastically reduce the performance of merge-and-shrink!
+[t=0.00246392s, 22600 KB] ===============================================================================
+
+[t=0.00248567s, 22600 KB] Building atomic transition systems... 
+[t=0.00286043s, 23004 KB] M&S algorithm timer: 0.000815114s (after computation of atomic factors)
+
+[t=0.00290203s, 23004 KB] Starting main loop without a time limit.
+[t=0.00292685s, 23004 KB] building causal graph...done! [t=0.000117617s]
+[t=0.00306099s, 23004 KB] SCCs of the causal graph:
+[t=0.00309342s, 23004 KB] [0, 3, 11, 1, 9, 10, 2, 4, 14, 15, 5, 7, 13, 6, 8, 16, 12]
+[t=0.0031162s, 23004 KB] Only one single SCC
+[t=0.00314456s, 23004 KB] Next pair of indices: (16, 10)
+[t=0.00316679s, 23004 KB] M&S algorithm main loop timer: 0.000283501s (after computation of next merge)
+[t=0.00323623s, 23004 KB] M&S algorithm main loop timer: 0.000360491s (after merging)
+
+[t=0.00327119s, 23004 KB] Operator mutex starting iteration 0
+
+
+[t=0.00334284s, 23004 KB] In ts_0_0 of size 2 found num new op-mutexes 0
+
+
+[t=0.00341937s, 23004 KB] In ts_0_1 of size 2 found num new op-mutexes 0
+
+
+[t=0.00349349s, 23004 KB] In ts_0_2 of size 2 found num new op-mutexes 0
+
+
+[t=0.00356343s, 23004 KB] In ts_0_3 of size 2 found num new op-mutexes 0
+
+
+[t=0.00362814s, 23004 KB] In ts_0_4 of size 2 found num new op-mutexes 0
+
+
+[t=0.00368861s, 23004 KB] In ts_0_5 of size 2 found num new op-mutexes 0
+
+
+[t=0.00374765s, 23004 KB] In ts_0_6 of size 2 found num new op-mutexes 0
+
+
+[t=0.00380679s, 23004 KB] In ts_0_7 of size 2 found num new op-mutexes 0
+
+
+[t=0.00386529s, 23004 KB] In ts_0_8 of size 2 found num new op-mutexes 0
+
+
+[t=0.00392425s, 23004 KB] In ts_0_9 of size 2 found num new op-mutexes 0
+
+
+[t=0.00401259s, 23004 KB] In ts_0_11 of size 6 found num new op-mutexes 0
+
+
+[t=0.00409014s, 23004 KB] In ts_0_12 of size 3 found num new op-mutexes 50
+
+
+[t=0.00416636s, 23004 KB] In ts_0_13 of size 3 found num new op-mutexes 50
+
+
+[t=0.00423746s, 23004 KB] In ts_0_14 of size 3 found num new op-mutexes 50
+
+
+[t=0.00432367s, 23004 KB] In ts_0_15 of size 3 found num new op-mutexes 50
+
+
+[t=0.00454674s, 23004 KB] In ts_0_17 of size 18 found num new op-mutexes 50
+[t=0.00457919s, 23004 KB] Operator mutex finished iteration 0. Found an additional 250 operator mutexes
+
+[t=0.00460693s, 23004 KB] Next pair of indices: (17, 15)
+[t=0.00462829s, 23004 KB] M&S algorithm main loop timer: 0.0017445s (after computation of next merge)
+[t=0.00471848s, 23004 KB] M&S algorithm main loop timer: 0.00183959s (after merging)
+
+[t=0.00475216s, 23004 KB] Operator mutex starting iteration 1
+
+
+[t=0.00481442s, 23004 KB] In ts_1_0 of size 2 found num new op-mutexes 0
+
+
+[t=0.00488137s, 23004 KB] In ts_1_1 of size 2 found num new op-mutexes 0
+
+
+[t=0.00494261s, 23004 KB] In ts_1_2 of size 2 found num new op-mutexes 0
+
+
+[t=0.00500451s, 23004 KB] In ts_1_3 of size 2 found num new op-mutexes 0
+
+
+[t=0.00506471s, 23004 KB] In ts_1_4 of size 2 found num new op-mutexes 0
+
+
+[t=0.00512504s, 23004 KB] In ts_1_5 of size 2 found num new op-mutexes 0
+
+
+[t=0.00518426s, 23004 KB] In ts_1_6 of size 2 found num new op-mutexes 0
+
+
+[t=0.00524457s, 23004 KB] In ts_1_7 of size 2 found num new op-mutexes 0
+
+
+[t=0.00530465s, 23004 KB] In ts_1_8 of size 2 found num new op-mutexes 0
+
+
+[t=0.00536389s, 23004 KB] In ts_1_9 of size 2 found num new op-mutexes 0
+
+
+[t=0.00545733s, 23004 KB] In ts_1_11 of size 6 found num new op-mutexes 0
+
+
+[t=0.00554226s, 23004 KB] In ts_1_12 of size 3 found num new op-mutexes 0
+
+
+[t=0.00562163s, 23004 KB] In ts_1_13 of size 3 found num new op-mutexes 0
+
+
+[t=0.0056904s, 23004 KB] In ts_1_14 of size 3 found num new op-mutexes 0
+
+
+[t=0.00902545s, 23004 KB] In ts_1_18 of size 54 found num new op-mutexes 0
+[t=0.00906838s, 23004 KB] Operator mutex finished iteration 1. Found an additional 0 operator mutexes
+
+[t=0.00909941s, 23004 KB] Next pair of indices: (18, 14)
+[t=0.00912259s, 23004 KB] M&S algorithm main loop timer: 0.00623942s (after computation of next merge)
+[t=0.00927815s, 23004 KB] M&S algorithm main loop timer: 0.00640344s (after merging)
+
+[t=0.00932306s, 23004 KB] Operator mutex starting iteration 2
+
+
+[t=0.0093881s, 23004 KB] In ts_2_0 of size 2 found num new op-mutexes 0
+
+
+[t=0.00946207s, 23004 KB] In ts_2_1 of size 2 found num new op-mutexes 0
+
+
+[t=0.00952548s, 23004 KB] In ts_2_2 of size 2 found num new op-mutexes 0
+
+
+[t=0.00958892s, 23004 KB] In ts_2_3 of size 2 found num new op-mutexes 0
+
+
+[t=0.00966947s, 23004 KB] In ts_2_4 of size 2 found num new op-mutexes 0
+
+
+[t=0.00974011s, 23004 KB] In ts_2_5 of size 2 found num new op-mutexes 0
+
+
+[t=0.0098021s, 23004 KB] In ts_2_6 of size 2 found num new op-mutexes 0
+
+
+[t=0.00986388s, 23004 KB] In ts_2_7 of size 2 found num new op-mutexes 0
+
+
+[t=0.00992471s, 23004 KB] In ts_2_8 of size 2 found num new op-mutexes 0
+
+
+[t=0.00998493s, 23004 KB] In ts_2_9 of size 2 found num new op-mutexes 0
+
+
+[t=0.0100757s, 23004 KB] In ts_2_11 of size 6 found num new op-mutexes 0
+
+
+[t=0.0101497s, 23004 KB] In ts_2_12 of size 3 found num new op-mutexes 0
+
+
+[t=0.0102215s, 23004 KB] In ts_2_13 of size 3 found num new op-mutexes 0
+
+
+[t=1.29047s, 23136 KB] In ts_2_19 of size 162 found num new op-mutexes 0
+[t=1.29056s, 23136 KB] Operator mutex finished iteration 2. Found an additional 0 operator mutexes
+
+[t=1.2906s, 23136 KB] Next pair of indices: (19, 13)
+[t=1.29062s, 23136 KB] M&S algorithm main loop timer: 1.28774s (after computation of next merge)
+[t=1.29094s, 23136 KB] M&S algorithm main loop timer: 1.28808s (after merging)
+
+[t=1.29102s, 23136 KB] Operator mutex starting iteration 3
+
+
+[t=1.2911s, 23136 KB] In ts_3_0 of size 2 found num new op-mutexes 0
+
+
+[t=1.29117s, 23136 KB] In ts_3_1 of size 2 found num new op-mutexes 0
+
+
+[t=1.29123s, 23136 KB] In ts_3_2 of size 2 found num new op-mutexes 0
+
+
+[t=1.29129s, 23136 KB] In ts_3_3 of size 2 found num new op-mutexes 0
+
+
+[t=1.29135s, 23136 KB] In ts_3_4 of size 2 found num new op-mutexes 0
+
+
+[t=1.29141s, 23136 KB] In ts_3_5 of size 2 found num new op-mutexes 0
+
+
+[t=1.29148s, 23136 KB] In ts_3_6 of size 2 found num new op-mutexes 0
+
+
+[t=1.29154s, 23136 KB] In ts_3_7 of size 2 found num new op-mutexes 0
+
+
+[t=1.29161s, 23136 KB] In ts_3_8 of size 2 found num new op-mutexes 0
+
+
+[t=1.29167s, 23136 KB] In ts_3_9 of size 2 found num new op-mutexes 0
+
+
+[t=1.29177s, 23136 KB] In ts_3_11 of size 6 found num new op-mutexes 0
+
+
+[t=1.29184s, 23136 KB] In ts_3_12 of size 3 found num new op-mutexes 0
+
+Peak memory: 23372 KB
+caught signal 24 -- exiting
+Time limit has been reached.
+Remove intermediate file output.sas
+search exit code: 23
+
+Driver aborting after search

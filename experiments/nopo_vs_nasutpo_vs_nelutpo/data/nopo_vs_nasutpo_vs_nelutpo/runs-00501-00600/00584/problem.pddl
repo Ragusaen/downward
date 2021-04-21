@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/nomystery-opt11-strips/p09.pddl

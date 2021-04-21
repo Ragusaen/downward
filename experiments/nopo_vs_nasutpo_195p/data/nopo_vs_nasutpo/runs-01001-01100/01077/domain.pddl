@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/tpp/domain.pddl

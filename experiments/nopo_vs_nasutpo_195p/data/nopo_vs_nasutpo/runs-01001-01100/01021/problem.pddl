@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/openstacks-strips/p01.pddl

@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/parking-opt14-strips/p_12_7-03.pddl

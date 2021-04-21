@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/depot/p02.pddl

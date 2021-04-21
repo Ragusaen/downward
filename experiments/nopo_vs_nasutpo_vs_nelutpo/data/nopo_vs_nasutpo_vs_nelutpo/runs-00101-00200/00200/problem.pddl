@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/mystery/prob22.pddl

@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/pipesworld-notankage/p01-net1-b6-g2.pddl

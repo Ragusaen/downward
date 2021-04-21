@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/openstacks-opt14-strips/p50_3.pddl

@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/grid/domain.pddl

@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/openstacks-opt14-strips/domain_p50_2.pddl

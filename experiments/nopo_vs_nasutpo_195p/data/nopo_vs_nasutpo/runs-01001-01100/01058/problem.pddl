@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/snake-opt18-strips/p02.pddl

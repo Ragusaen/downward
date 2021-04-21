@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/openstacks-strips/domain_p02.pddl

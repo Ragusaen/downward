@@ -1,0 +1,1 @@
+../../../../../../../benchmarks/sokoban-opt11-strips/p01.pddl
