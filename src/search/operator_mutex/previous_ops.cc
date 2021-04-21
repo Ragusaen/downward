@@ -203,17 +203,16 @@ void NaSUSPO::unreachable_states_dfs(
 
 void UnreachableTransitionsPreviousOps::run(CondensedTransitionSystem &cts, shared_ptr<LabelEquivalenceRelation> ler,
                                        unordered_set<OpMutex> &label_mutexes){
+    unordered_set<OpMutex> lgm = get_label_group_mutexes(ler, label_mutexes);
 
-    vector<LabeledTransition> usable_transitions = find_usable_transitions(cts, get_label_group_mutexes(ler, label_mutexes), ler->get_size());
+    for (const OpMutex &m : lgm) {
+        utils::g_log << to_string(m) << endl;
+    }
+
+    vector<LabeledTransition> usable_transitions = find_usable_transitions(cts, lgm, ler->get_size());
 
     if (cts.abstract_transitions.size() - usable_transitions.size() > 0) {
         utils::g_log << "Unusable transitions: " << (cts.abstract_transitions.size() - usable_transitions.size()) << endl;
-
-        for (LabeledTransition &t : cts.abstract_transitions) {
-            if (find(usable_transitions.begin(), usable_transitions.end(), t) == usable_transitions.end()) {
-                utils::g_log << op_mutex::to_string(t) << endl;
-            }
-        }
 
         cts.abstract_transitions = usable_transitions;
         sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end());
@@ -231,8 +230,6 @@ vector<LabeledTransition> NaSUTPO::find_usable_transitions(CondensedTransitionSy
         ret.push_back(t);
     }
 
-    std::sort(ret.begin(), ret.end());
-
     return ret;
 }
 
@@ -240,7 +237,6 @@ void NaSUTPO::usable_transitions_dfs(
         const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path, unordered_set<LabeledTransition> &usable_transitions,
         const unordered_set<OpMutex> &label_group_mutexes)
 {
-
     vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
     for(LabeledTransition &t : outgoing_transitions) {

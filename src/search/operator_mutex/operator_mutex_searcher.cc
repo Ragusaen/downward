@@ -35,8 +35,6 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
     return ret;
 }
 
-
-
 namespace op_mutex {
 OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
     auto reachability_option = opts.get<ReachabilityOption>("reachability_strategy");
@@ -50,24 +48,27 @@ OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
     }
 
     auto previous_ops_option = opts.get<PreviousOpsOption>("use_previous_ops");
-    switch (previous_ops_option) {
-        case PreviousOpsOption::NoPO:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new NoPO());
-            break;
-        case PreviousOpsOption::NeLUSPO:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUSPO());
-            break;
-        case PreviousOpsOption::NaSUSPO:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUSPO());
-            break;
-        case PreviousOpsOption::NaSUTPO:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
-        case PreviousOpsOption::NeLUTPO:
-            previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
+    if (previous_ops_option == PreviousOpsOption::NoPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new NoPO());
+    } else if (previous_ops_option == PreviousOpsOption::NeLUSPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUSPO());
+    } else if (previous_ops_option == PreviousOpsOption::NaSUSPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUSPO());
+    } else if (previous_ops_option == PreviousOpsOption::NaSUTPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
+    } else if (previous_ops_option == PreviousOpsOption::NeLUTPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
+    } else {
+        utils::g_log << "No previous ops strategy found, this is an internal error";
+        throw std::exception();
     }
 
     max_ts_size = opts.get<int>("max_ts_size");
-    run_on_intermediate = opts.get<bool>("run_intermediate");
+    run_on_intermediate = opts.get<bool>("use_intermediate");
+
+    if (previous_ops_option == PreviousOpsOption::NoPO && !run_on_intermediate) {
+        utils::g_log << "Warning: Running previous ops has no effect when use_intermediate is false" << endl;
+    }
 }
 
 bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
@@ -114,12 +115,18 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
         }
     }
 
-    //utils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
+     utils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
 
     CondensedTransitionSystem cts = CondensedTransitionSystem(labeled_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);
 
     //utils::g_log << cts_to_dot(cts) << endl;
+
+    if (cts.abstract_transitions.size() == 0) {
+        // This CTS is unusable
+        utils::g_log << "The problem has NO transitions!" << endl;
+        return;
+    }
 
     // Compute unreachable states based on already known op-mutexes
     previous_ops_strategy->run(cts, ler, label_mutexes);
@@ -295,7 +302,7 @@ void add_algo_options_to_parser(OptionParser &parser) {
             );
 
     parser.add_option<bool>(
-            "run_intermediate",
+            "use_intermediate",
             "Whether or not intermediate factors of MAS should be used.",
             "true"
             );
