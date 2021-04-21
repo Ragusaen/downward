@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/depot/p04.pddl

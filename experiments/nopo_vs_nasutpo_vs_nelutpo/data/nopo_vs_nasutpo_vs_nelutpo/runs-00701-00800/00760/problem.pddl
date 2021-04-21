@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/airport/p26-airport4halfMUC-p6.pddl

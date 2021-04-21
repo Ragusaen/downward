@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/pathways/domain_p01.pddl

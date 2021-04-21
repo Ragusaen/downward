@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/mystery/prob08.pddl

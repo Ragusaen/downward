@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/pegsol-08-strips/p02.pddl

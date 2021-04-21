@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/airport/p23-domain.pddl

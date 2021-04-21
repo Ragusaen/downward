@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/freecell/p12.pddl

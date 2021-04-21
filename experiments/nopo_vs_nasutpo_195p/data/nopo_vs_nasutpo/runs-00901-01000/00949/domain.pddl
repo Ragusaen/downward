@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/petri-net-alignment-opt18-strips/domain-p01.pddl

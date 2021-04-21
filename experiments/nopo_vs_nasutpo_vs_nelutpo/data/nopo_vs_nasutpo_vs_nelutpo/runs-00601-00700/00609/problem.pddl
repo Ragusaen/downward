@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/openstacks-opt08-strips/p14.pddl

@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/parcprinter-opt11-strips/p01.pddl

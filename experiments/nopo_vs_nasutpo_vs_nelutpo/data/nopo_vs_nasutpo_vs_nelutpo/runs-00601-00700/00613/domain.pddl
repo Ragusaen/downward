@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/openstacks-opt08-strips/p18-domain.pddl

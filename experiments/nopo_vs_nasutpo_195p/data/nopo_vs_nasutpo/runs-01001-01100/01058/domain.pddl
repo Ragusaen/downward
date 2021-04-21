@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/snake-opt18-strips/domain.pddl

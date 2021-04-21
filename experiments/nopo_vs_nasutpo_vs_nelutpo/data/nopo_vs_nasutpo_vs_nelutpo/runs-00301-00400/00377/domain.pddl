@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/airport/p10-domain.pddl

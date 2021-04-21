@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/freecell/probfreecell-6-3.pddl

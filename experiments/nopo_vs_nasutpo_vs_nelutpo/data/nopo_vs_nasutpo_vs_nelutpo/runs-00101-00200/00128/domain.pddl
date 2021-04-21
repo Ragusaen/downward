@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/freecell/domain.pddl

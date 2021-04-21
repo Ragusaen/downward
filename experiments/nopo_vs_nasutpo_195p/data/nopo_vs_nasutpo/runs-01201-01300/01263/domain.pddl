@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/sokoban-opt11-strips/domain.pddl

@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/parking-opt11-strips/pfile03-012.pddl

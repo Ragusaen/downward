@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/pathways/p02.pddl

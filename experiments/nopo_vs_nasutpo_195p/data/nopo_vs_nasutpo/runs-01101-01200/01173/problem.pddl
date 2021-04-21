@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/tidybot-opt14-strips/p03.pddl

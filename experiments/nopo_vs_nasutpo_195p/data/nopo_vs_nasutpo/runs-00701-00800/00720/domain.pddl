@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/openstacks-opt11-strips/p03-domain.pddl

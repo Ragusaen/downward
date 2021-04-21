@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/woodworking-opt08-strips/p03.pddl

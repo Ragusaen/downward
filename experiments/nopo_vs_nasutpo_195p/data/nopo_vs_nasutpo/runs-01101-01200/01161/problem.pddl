@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/sokoban-opt08-strips/p03.pddl

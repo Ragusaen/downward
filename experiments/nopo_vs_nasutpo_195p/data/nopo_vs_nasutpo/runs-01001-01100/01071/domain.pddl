@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/tidybot-opt11-strips/domain.pddl

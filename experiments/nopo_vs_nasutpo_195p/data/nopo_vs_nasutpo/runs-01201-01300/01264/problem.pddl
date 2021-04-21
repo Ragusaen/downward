@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/spider-opt18-strips/p01.pddl

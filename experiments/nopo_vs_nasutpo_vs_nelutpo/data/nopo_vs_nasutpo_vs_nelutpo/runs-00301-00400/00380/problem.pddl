@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/airport/p13-airport3-p2.pddl

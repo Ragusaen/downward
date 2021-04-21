@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/depot/p20.pddl

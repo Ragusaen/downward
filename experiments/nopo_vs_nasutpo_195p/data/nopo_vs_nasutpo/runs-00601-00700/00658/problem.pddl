@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/scanalyzer-opt11-strips/p01.pddl

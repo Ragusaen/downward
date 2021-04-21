@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/airport/p47-airport5MUC-p8.pddl

@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/airport/p37-domain.pddl

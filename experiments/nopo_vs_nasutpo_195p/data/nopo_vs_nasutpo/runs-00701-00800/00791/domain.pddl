@@ -1,1 +1,0 @@
-../../../../../../../benchmarks/woodworking-opt11-strips/domain.pddl
