@@ -115,7 +115,7 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
         }
     }
 
-     utils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
+    //tils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
 
     CondensedTransitionSystem cts = CondensedTransitionSystem(labeled_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);

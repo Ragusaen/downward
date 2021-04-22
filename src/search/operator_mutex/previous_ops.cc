@@ -205,10 +205,6 @@ void UnreachableTransitionsPreviousOps::run(CondensedTransitionSystem &cts, shar
                                        unordered_set<OpMutex> &label_mutexes){
     unordered_set<OpMutex> lgm = get_label_group_mutexes(ler, label_mutexes);
 
-    for (const OpMutex &m : lgm) {
-        utils::g_log << to_string(m) << endl;
-    }
-
     vector<LabeledTransition> usable_transitions = find_usable_transitions(cts, lgm, ler->get_size());
 
     if (cts.abstract_transitions.size() - usable_transitions.size() > 0) {
