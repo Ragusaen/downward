@@ -24,6 +24,10 @@ public:
     LabelGroup() : cost(INF) {
     }
 
+    size_t size() const {
+        return labels.size();
+    }
+
     void set_cost(int cost_) {
         cost = cost_;
     }

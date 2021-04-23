@@ -49,7 +49,7 @@ MergeAndShrinkAlgorithm::MergeAndShrinkAlgorithm(const Options &opts) :
     merge_strategy_factory(opts.get<shared_ptr<MergeStrategyFactory>>("merge_strategy")),
     shrink_strategy(opts.get<shared_ptr<ShrinkStrategy>>("shrink_strategy")),
     label_reduction(opts.get<shared_ptr<LabelReduction>>("label_reduction", nullptr)),
-    operator_mutex_pruning(opts.get<shared_ptr<op_mutex_pruning::OpMutexPruningMethod>>("op_mutex")),
+    operator_mutex_pruning(opts.get<shared_ptr<op_mutex::OperatorMutexSearcher>>("op_mutex")),
     max_states(opts.get<int>("max_states")),
     max_states_before_merge(opts.get<int>("max_states_before_merge")),
     shrink_threshold_before_merge(opts.get<int>("threshold_before_merge")),
@@ -191,6 +191,11 @@ void MergeAndShrinkAlgorithm::main_loop(
                          << " (" << msg << ")" << endl;
         };
     int iteration_counter = 0;
+
+    if (operator_mutex_pruning) {
+        operator_mutex_pruning->run(fts);
+    }
+
     while (fts.get_num_active_entries() > 1) {
         // Choose next transition systems to merge
         pair<int, int> merge_indices = merge_strategy->get_next();
@@ -312,7 +317,7 @@ void MergeAndShrinkAlgorithm::main_loop(
             utils::g_log << endl;
         }
 
-        if (operator_mutex_pruning) {
+        if (operator_mutex_pruning && operator_mutex_pruning->run_on_intermediate) {
             operator_mutex_pruning->run(fts);
         }
 

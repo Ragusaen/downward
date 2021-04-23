@@ -10,6 +10,9 @@
 */
 
 namespace dynamic_bitset {
+
+struct DynamicBitsetIterator;
+
 template<typename Block = unsigned int>
 class DynamicBitset {
     static_assert(
@@ -123,6 +126,33 @@ public:
         }
         return true;
     }
+
+    void operator|=(const DynamicBitset<> &other) {
+        for (std::size_t i = 0; i < blocks.size() && other.blocks.size(); i++) {
+            blocks[i] |= other.blocks[i];
+        }
+    }
+
+    void operator&=(const DynamicBitset<> &other) {
+        std::size_t i = 0;
+        for (; i < blocks.size() && other.blocks.size(); i++) {
+            blocks[i] &= other.blocks[i];
+        }
+        for (; i < blocks.size(); i++) {
+            blocks[i] = 0;
+        }
+    }
+
+    DynamicBitset<> operator~() {
+        DynamicBitset<> ret(this->size());
+
+        for (std::size_t i = 0; i < blocks.size(); i++) {
+            ret.blocks[i] = ~blocks[i];
+        }
+
+        return ret;
+    }
+
 };
 
 template<typename Block>

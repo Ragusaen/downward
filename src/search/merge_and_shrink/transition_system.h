@@ -23,10 +23,8 @@ struct Transition {
     int src;
     int target;
 
-    int label_group;
-
-    Transition(int src, int target, int label_group = -1)
-        : src(src), target(target), label_group(label_group) {
+    Transition(int src, int target)
+        : src(src), target(target) {
     }
 
     bool operator==(const Transition &other) const {
@@ -46,6 +44,8 @@ struct Transition {
         return !(*this < other);
     }
 };
+
+std::string to_string(Transition t);
 
 struct GroupAndTransitions {
     const LabelGroup &label_group;
@@ -242,7 +242,18 @@ public:
         return num_states;
     }
 
+    void set_transitions(std::vector<std::vector<Transition>> new_transitions) {
+        transitions_by_group_id = new_transitions;
+    }
+};
+}
 
+namespace std {
+template<>
+struct hash<merge_and_shrink::Transition> {
+    std::size_t operator()(const merge_and_shrink::Transition &t) const noexcept {
+        return t.src << 16 ^ t.target; // Bitshift to create least overlap between transitions
+    }
 };
 }
 
