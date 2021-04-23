@@ -18,7 +18,7 @@ redirects = {"stdout": run_log, "stderr": run_err}
 # Make sure we're in the run directory.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-Call(['/usr/bin/python3', '../../code-bc1c23504bbd2eed3163864ec2eb9b6e2e4a37bf_e5e41175/fast-downward.py', '--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', 'domain.pddl', 'problem.pddl', '--search', 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=nopo)))'], hard_stderr_limit=10240, hard_stdout_limit=10240, memory_limit=None, name='planner', soft_stderr_limit=64, soft_stdout_limit=1024, time_limit=None, **redirects).wait()
+Call(['/usr/bin/python3', '../../code-93f5afb94c90e9f9d3ca06118aaf37f197a26497_e5e41175/fast-downward.py', '--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '10m', '--overall-memory-limit', '6500M', 'domain.pddl', 'problem.pddl', '--search', 'astar(merge_and_shrink(op_mutex=op_mutex(use_previous_ops=NeLUTPO, reachability_strategy=goal)))'], hard_stderr_limit=10240, hard_stdout_limit=10240, memory_limit=None, name='planner', soft_stderr_limit=64, soft_stdout_limit=1024, time_limit=None, **redirects).wait()
 
 Call(['/usr/bin/python3', '../../exitcode-parser.py'], hard_stderr_limit=10240, hard_stdout_limit=10240, memory_limit=None, name='exitcode_parser', soft_stderr_limit=64, soft_stdout_limit=1024, time_limit=None, **redirects).wait()
 

@@ -13,7 +13,7 @@ from downward.reports.absolute import AbsoluteReport
 from downward.reports.scatter import ScatterPlotReport
 
 
-env = LocalEnvironment(processes=2)
+env = LocalEnvironment(processes=4)
 exp = FastDownwardExperiment(environment=env)
 
 # Build
@@ -30,18 +30,18 @@ REPO = project.get_repo_base()
 REV = "lab-test"
 
 CONFIGS = [
-    (f"{index:02d}-{h_nick}", ["--search", f"astar(merge_and_shrink({h}))"])
+    (f"{index:02d}-{h_nick}", ["--search", f"astar(merge_and_shrink(op_mutex=op_mutex({h})))"])
     for index, (h_nick, h) in enumerate(
         [
-            ("nopo", "op_mutex=op_mutex(use_previous_ops=nopo)"),
-            ("nelutpo", "op_mutex=op_mutex(use_previous_ops=nelutpo)"),
+            ("NeLUTPO_g", "use_previous_ops=NeLUTPO, reachability_strategy=goal"),
+            ("NoPO_g", "use_previous_ops=NoPO, reachability_strategy=goal"),
         ],
         start=1,
     )
 ]
 
 BUILD_OPTIONS = []
-DRIVER_OPTIONS = []
+DRIVER_OPTIONS = ['--validate', '--overall-time-limit', '10m', '--overall-memory-limit', '6500M']
 
 for config_nick, config in CONFIGS:
     exp.add_algorithm(
@@ -55,7 +55,9 @@ for config_nick, config in CONFIGS:
 
 #Domains and problems. must use environment variables or have benchmarks and downward REPO in same folder
 
-SUITE = ["gripper:prob01.pddl", "gripper:prob02.pddl", "gripper:prob03.pddl"]
+SUITE = ["freecell:p01.pddl", "freecell:p02.pddl", "freecell:p03.pddl",
+]
+
 exp.add_suite("../../../benchmarks", SUITE)
 
 
@@ -83,20 +85,12 @@ exp.add_parser(DIR / "parser.py")
 # Absolute HTML Report
 
 ATTRIBUTES = [
-    "error",
-    "run_dir",
-    "search_start_time",
-    "search_start_memory",
-    "total_time",
-    "initial_h_value",
-    "h_values",
-    "coverage",
-    "expansions",
-    "memory",
-    project.EVALUATIONS_PER_TIME,
+    "operator_mutex_time",
+    "operator_mutexes_num",
+    #project.EVALUATIONS_PER_TIME,
 ]
 
-report = AbsoluteReport(attributes=ATTRIBUTES, filter=[project.add_evaluations_per_time])
+report = AbsoluteReport(attributes=ATTRIBUTES)
 
 name = "test-abs"
 outfile = f"{name}.{report.output_format}"
