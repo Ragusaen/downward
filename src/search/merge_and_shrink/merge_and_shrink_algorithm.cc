@@ -408,6 +408,7 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
 
     if (operator_mutex_pruning) {
         operator_mutex_pruning->finalize(fts);
+        std::exit(0);
     }
 
     return fts;
