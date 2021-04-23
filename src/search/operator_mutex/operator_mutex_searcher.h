@@ -8,6 +8,7 @@
 #include "reachability_strategy.h"
 #include "previous_ops.h"
 #include "../algorithms/dynamic_bitset.h"
+#include "cuddObj.hh"
 
 using namespace dynamic_bitset;
 using namespace std;
@@ -26,7 +27,8 @@ enum class PreviousOpsOption{
     NaSUSPO,
     NaSUTPO,
     NeLUSPO,
-    NeLUTPO
+    NeLUTPO,
+    BDDDOLMPO
 };
 
 class OperatorMutexSearcher {

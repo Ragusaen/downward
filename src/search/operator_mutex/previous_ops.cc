@@ -339,4 +339,13 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
     }
     return true;
 }
+
+vector<LabeledTransition> BDDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
+                                                             const unordered_set<OpMutex> &label_group_mutexes,
+                                                             int num_label_groups) {
+
+    utils::g_log << "hello from BDD" << endl;
+
+    return vector<LabeledTransition>();
+}
 }

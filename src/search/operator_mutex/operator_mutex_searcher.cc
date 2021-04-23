@@ -58,6 +58,8 @@ OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
         previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
     } else if (previous_ops_option == PreviousOpsOption::NeLUTPO) {
         previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
+    } else if (previous_ops_option == PreviousOpsOption::BDDDOLMPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new BDDDOLMPO());
     } else {
         utils::g_log << "No previous ops strategy found, this is an internal error";
         throw std::exception();
@@ -288,6 +290,7 @@ void add_algo_options_to_parser(OptionParser &parser) {
     previous_ops_options.emplace_back("NaSUTPO");
     previous_ops_options.emplace_back("NeLUSPO");
     previous_ops_options.emplace_back("NeLUTPO");
+    previous_ops_options.emplace_back("BDDDOLM");
     parser.add_enum_option<PreviousOpsOption>(
             "use_previous_ops",
             previous_ops_options,

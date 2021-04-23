@@ -79,6 +79,12 @@ private:
             const unordered_set<OpMutex> &label_group_mutexes);
 };
 
+class BDDDOLMPO : public UnreachableTransitionsPreviousOps {
+protected :
+    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+
+};
+
 }
 
 
