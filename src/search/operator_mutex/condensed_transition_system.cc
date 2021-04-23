@@ -25,6 +25,11 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<LabeledTransiti
     concrete_to_abstract_state = std::vector<int>(num_concrete_states, -1);
 
     // Discover strongly connected components
+    utils::g_log << "Number of concrete transitions " << this->concrete_transitions.size() << endl;
+    for (auto t : this->concrete_transitions) {
+        utils::g_log << t.src << " -> " << t.target << endl;
+    }
+
     discover_sccs();
 
     // Create initial states for the abstract transition system
@@ -68,6 +73,7 @@ std::vector<std::pair<int, int>> CondensedTransitionSystem::depth_first_search()
     // Sort concrete transitions by source then by target
     std::sort(concrete_transitions.begin(), concrete_transitions.end());
 
+
     // Visit every state in turn unless it has already been visited
     int time = 0;
     for (int s = 0; s < num_concrete_states; s++) {
@@ -85,6 +91,7 @@ void CondensedTransitionSystem::dfs_visit(int s, int *time, const std::vector<La
     // Increase timer and set current state to visited
     (*time)++;
     has_visited->at(s) = true;
+
 
     // Find the first index i in the vector ts where the source = s
     size_t i = lower_bound(ts.begin(), ts.end(), s, [](Transition t, int s) { return t.src < s; }) - ts.begin();
