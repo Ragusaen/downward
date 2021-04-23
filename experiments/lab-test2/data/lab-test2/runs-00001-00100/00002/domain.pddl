@@ -1,1 +1,1 @@
-../../../../../../../benchmarks/freecell/domain.pddl
+../../../../../../../benchmarks/gripper/domain.pddl

@@ -12,7 +12,6 @@ class CommonParser(Parser):
     ):
         def find_all_occurences(content, props):
             matches = re.findall(regex, content)
-            print(matches)
             if required and not matches:
                 logging.error(f"Pattern {regex} not found in file {file}")
             props[name] = [type(m) for m in matches]
@@ -50,25 +49,10 @@ def main():
         r"f = (\d+) \[1 evaluated, 0 expanded, t=.+s, \d+ KB\]",
         type=int,
     )
-    parser.add_pattern(
-        "operator_mutexes_num",
-        r"Total number of operator mutexes: (\d+)\n",
-        type=int,
-    )
-    parser.add_pattern(
-        "operator_mutex_time",
-        r"Operator Mutex total time: (.+)s\n",
-        type=float,
-    )
     parser.add_repeated_pattern(
         "h_values",
         r"New best heuristic value for .+: (\d+)\n",
         type=int,
-    )
-    parser.add_repeated_pattern(
-        "new op-mutexes",
-        r"In (ts_\d+_\d+) of size \d+ found num new op-mutexes ([1-9][0-9]*)\n",
-        type=[str, int],
     )
     parser.parse()
 

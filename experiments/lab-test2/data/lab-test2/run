@@ -11,7 +11,7 @@ from lab import tools
 
 tools.configure_logging()
 
-SHUFFLED_TASK_IDS = [2, 1]
+SHUFFLED_TASK_IDS = [2, 1, 4, 3, 6, 5]
 
 # Make sure we're in the experiment directory.
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -43,7 +43,7 @@ def process_task(task_id):
 
 
 def main():
-    pool = multiprocessing.Pool(processes=4)
+    pool = multiprocessing.Pool(processes=2)
     num_tasks = len(SHUFFLED_TASK_IDS)
     result = pool.map_async(process_task, range(1, num_tasks + 1))
     try:
