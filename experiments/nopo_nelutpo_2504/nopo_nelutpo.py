@@ -13,7 +13,7 @@ from downward.reports.absolute import AbsoluteReport
 from downward.reports.scatter import ScatterPlotReport
 
 
-env = LocalEnvironment(processes=1)
+env = LocalEnvironment(processes=4)
 exp = FastDownwardExperiment(environment=env)
 
 # Build
@@ -27,7 +27,7 @@ exp.add_step("start", exp.start_runs)
 # Search algorithms
 
 REPO = project.get_repo_base()
-REV = "main"
+REV = "lab-test"
 
 CONFIGS = [
     (f"{index:02d}-{h_nick}", ["--search", f"astar(merge_and_shrink(op_mutex=op_mutex({h}), stop_early=true))"])
