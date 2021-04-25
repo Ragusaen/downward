@@ -57,6 +57,7 @@ MergeAndShrinkAlgorithm::MergeAndShrinkAlgorithm(const Options &opts) :
     prune_irrelevant_states(opts.get<bool>("prune_irrelevant_states")),
     verbosity(opts.get<utils::Verbosity>("verbosity")),
     main_loop_max_time(opts.get<double>("main_loop_max_time")),
+    stop_early(opts.get<bool>("stop_early")),
     starting_peak_memory(0) {
     assert(max_states_before_merge > 0);
     assert(max_states >= max_states_before_merge);
@@ -408,7 +409,8 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
 
     if (operator_mutex_pruning) {
         operator_mutex_pruning->finalize(fts);
-        std::exit(0);
+        if (stop_early)
+            std::exit(0);
     }
 
     return fts;
@@ -476,6 +478,11 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
         "transformation is runtime-intense.",
         "infinity",
         Bounds("0.0", "infinity"));
+
+    parser.add_option<bool>(
+            "stop_early",
+            "If true, will stop after operator_mutex_pruning->finalize",
+            "false");
 }
 
 void add_transition_system_size_limit_options_to_parser(OptionParser &parser) {

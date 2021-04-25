@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>test-abs</title>
+<meta name="generator" content="https://txt2tags.org">
+<style type="text/css">
+blockquote{margin: 1em 2em; border-left: 2px solid #999;
+  font-style: oblique; padding-left: 1em;}
+blockquote:first-letter{margin: .2em .1em .1em 0; font-size: 160%; font-weight: bold;}
+blockquote:first-line{font-weight: bold;}
+body{font-family: sans-serif;}
+hr{background-color:#000;border:0;color:#000;}
+hr.heavy{height:2px;}
+hr.light{height:1px;}
+img{border:0;display:block;}
+img.right{margin:0 0 0 auto;}
+img.center{border:0;margin:0 auto;}
+table{border-collapse: collapse;}
+table th,table td{padding: 3px 7px 2px 7px;}
+table th{background-color: lightgrey;}
+table.center{margin-left:auto; margin-right:auto;}
+.center{text-align:center;}
+.right{text-align:right;}
+.left{text-align:left;}
+.tableborder,.tableborder td,.tableborder th{border:1px solid #000;}
+.underline{text-decoration:underline;}
+</style>
+<style type="text/css">
+    body {
+        font-family: Ubuntu, Helvetica, Arial, sans-serif;
+    }
+    table {
+        border-collapse: collapse;
+    }
+    table th {
+        text-align: left;
+        padding-top: 5px;
+        padding-bottom: 4px;
+        background-color: #aaa;
+        color: #ffffff;
+    }
+</style>
+<script type="text/javascript">
+function toggle_element(element) {
+    if (element.style.display == "none") {
+        element.style.display = "";
+    } else {
+        element.style.display = "none";
+    }
+}
+
+function find_next(element, classname) {
+    element = element.nextSibling;
+    while(element.nodeName != classname)
+        element = element.nextSibling;
+    return element;
+}
+
+function toggle_table(toggle_button) {
+    var table = find_next(toggle_button, "TABLE");
+    toggle_element(table);
+    if (toggle_button.innerHTML == "Show table") {
+        toggle_button.innerHTML = "Hide table";
+    } else {
+        toggle_button.innerHTML = "Show table";
+    }
+}
+
+function show_table(section) {
+    heading = section.children[0];
+    var toggle_button = find_next(heading, "BUTTON");
+    var table = find_next(toggle_button, "TABLE");
+    table.style.display = "";
+    toggle_button.innerHTML = "Hide table";
+}
+
+function show_main_tables() {
+    var names = ["unexplained-errors", "info", "summary"];
+    for (var i = 0; i < names.length; i++) {
+        var section = document.getElementById(names[i]);
+        try {
+            show_table(section);
+        } catch (e) {
+            console.log("No table found for " + names[i]);
+        }
+    }
+
+    // If there is only one table, show it and hide the button.
+    var buttons = document.getElementsByTagName('button');
+    var tables = document.getElementsByTagName('table');
+    if (buttons.length == 1 && tables.length == 1) {
+        tables[0].style.display = "";
+        buttons[0].style.display = "none";
+    }
+}
+
+document.addEventListener("DOMContentLoaded", show_main_tables);
+</script>
+</head>
+<body>
+<header>
+<hgroup>
+<h1>test-abs</h1>
+<h3>2021-04-06</h3>
+</hgroup>
+</header>
+<article>
+
+<div class="body" id="body">
+
+<ul>
+<li><strong><a href="#info" onclick="show_table(document.getElementById('info'));">Info</a></strong>
+</li>
+<li><strong><a href="#summary" onclick="show_table(document.getElementById('summary'));">Summary</a></strong>
+</li>
+<li><strong><a href="#operator_mutex_time" onclick="show_table(document.getElementById('operator_mutex_time'));">operator_mutex_time</a></strong>
+  <ul>
+  <li><a href="#operator_mutex_time-agricola-opt18-strips" onclick="show_table(document.getElementById('operator_mutex_time-agricola-opt18-strips'));">agricola-opt18-strips</a> <a href="#operator_mutex_time-airport" onclick="show_table(document.getElementById('operator_mutex_time-airport'));">airport</a> <a href="#operator_mutex_time-barman-opt11-strips" onclick="show_table(document.getElementById('operator_mutex_time-barman-opt11-strips'));">barman-opt11-strips</a> <a href="#operator_mutex_time-barman-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-barman-opt14-strips'));">barman-opt14-strips</a> <a href="#operator_mutex_time-childsnack-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-childsnack-opt14-strips'));">childsnack-opt14-strips</a> <a href="#operator_mutex_time-freecell" onclick="show_table(document.getElementById('operator_mutex_time-freecell'));">freecell</a> <a href="#operator_mutex_time-grid" onclick="show_table(document.getElementById('operator_mutex_time-grid'));">grid</a> <a href="#operator_mutex_time-hiking-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-hiking-opt14-strips'));">hiking-opt14-strips</a> <a href="#operator_mutex_time-mystery" onclick="show_table(document.getElementById('operator_mutex_time-mystery'));">mystery</a> <a href="#operator_mutex_time-nomystery-opt11-strips" onclick="show_table(document.getElementById('operator_mutex_time-nomystery-opt11-strips'));">nomystery-opt11-strips</a> <a href="#operator_mutex_time-openstacks-opt08-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-opt08-strips'));">openstacks-opt08-strips</a> <a href="#operator_mutex_time-openstacks-opt11-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-opt11-strips'));">openstacks-opt11-strips</a> <a href="#operator_mutex_time-openstacks-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-opt14-strips'));">openstacks-opt14-strips</a> <a href="#operator_mutex_time-openstacks-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-strips'));">openstacks-strips</a> <a href="#operator_mutex_time-organic-synthesis-opt18-strips" onclick="show_table(document.getElementById('operator_mutex_time-organic-synthesis-opt18-strips'));">organic-synthesis-opt18-strips</a>
+  </li>
+  </ul>
+</li>
+<li><strong><a href="#operator_mutexes_num" onclick="show_table(document.getElementById('operator_mutexes_num'));">operator_mutexes_num</a></strong>
+  <ul>
+  <li><a href="#operator_mutexes_num-agricola-opt18-strips" onclick="show_table(document.getElementById('operator_mutexes_num-agricola-opt18-strips'));">agricola-opt18-strips</a> <a href="#operator_mutexes_num-airport" onclick="show_table(document.getElementById('operator_mutexes_num-airport'));">airport</a> <a href="#operator_mutexes_num-barman-opt11-strips" onclick="show_table(document.getElementById('operator_mutexes_num-barman-opt11-strips'));">barman-opt11-strips</a> <a href="#operator_mutexes_num-barman-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-barman-opt14-strips'));">barman-opt14-strips</a> <a href="#operator_mutexes_num-childsnack-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-childsnack-opt14-strips'));">childsnack-opt14-strips</a> <a href="#operator_mutexes_num-freecell" onclick="show_table(document.getElementById('operator_mutexes_num-freecell'));">freecell</a> <a href="#operator_mutexes_num-grid" onclick="show_table(document.getElementById('operator_mutexes_num-grid'));">grid</a> <a href="#operator_mutexes_num-hiking-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-hiking-opt14-strips'));">hiking-opt14-strips</a> <a href="#operator_mutexes_num-mystery" onclick="show_table(document.getElementById('operator_mutexes_num-mystery'));">mystery</a> <a href="#operator_mutexes_num-nomystery-opt11-strips" onclick="show_table(document.getElementById('operator_mutexes_num-nomystery-opt11-strips'));">nomystery-opt11-strips</a> <a href="#operator_mutexes_num-openstacks-opt08-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-opt08-strips'));">openstacks-opt08-strips</a> <a href="#operator_mutexes_num-openstacks-opt11-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-opt11-strips'));">openstacks-opt11-strips</a> <a href="#operator_mutexes_num-openstacks-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-opt14-strips'));">openstacks-opt14-strips</a> <a href="#operator_mutexes_num-openstacks-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-strips'));">openstacks-strips</a> <a href="#operator_mutexes_num-organic-synthesis-opt18-strips" onclick="show_table(document.getElementById('operator_mutexes_num-organic-synthesis-opt18-strips'));">organic-synthesis-opt18-strips</a>
+  </li>
+  </ul>
+</li>
+</ul>
+
+<section id="info">
+<h1>info</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>algorithm</th>
+<th>local_<wbr>revision</th>
+<th>global_<wbr>revision</th>
+<th>driver_<wbr>options</th>
+<th>component_<wbr>options</th>
+</tr>
+<tr>
+<td>01-sccs(selector)_top</td>
+<td>main</td>
+<td>fcf92590896f2fdd509c43e9640ed866127f4370</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '10m', '--overall-memory-limit', '5000M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(), merge_strategy=merge_sccs(order_of_sccs=topological, merge_selector=score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order()]))))']</td>
+</tr>
+<tr>
+<td>02-sccs(selector)_rev-top</td>
+<td>main</td>
+<td>fcf92590896f2fdd509c43e9640ed866127f4370</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '10m', '--overall-memory-limit', '5000M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(), merge_strategy=merge_sccs(order_of_sccs=reverse_topological, merge_selector=score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order()]))))']</td>
+</tr>
+<tr>
+<td>03-sccs(selector)_dec</td>
+<td>main</td>
+<td>fcf92590896f2fdd509c43e9640ed866127f4370</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '10m', '--overall-memory-limit', '5000M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(), merge_strategy=merge_sccs(order_of_sccs=decreasing, merge_selector=score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order()]))))']</td>
+</tr>
+<tr>
+<td>04-sccs(selector)_inc</td>
+<td>main</td>
+<td>fcf92590896f2fdd509c43e9640ed866127f4370</td>
+<td>['--validate', '--overall-time-limit', '30m', '--overall-memory-limit', '3584M', '--validate', '--overall-time-limit', '10m', '--overall-memory-limit', '5000M']</td>
+<td>['--search', 'astar(merge_and_shrink(op_mutex=op_mutex(), merge_strategy=merge_sccs(order_of_sccs=increasing, merge_selector=score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order()]))))']</td>
+</tr>
+</table>
+
+<p>
+Used nodes: {LassePC}
+</p>
+
+</section>
+<section id="summary">
+<h1>summary</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>Summary</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time" onclick="show_table(document.getElementById('operator_mutex_time'));">operator_mutex_time - Sum</a></td>
+<td class="right"><span style="color:rgb(0,178,153)">87.94</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">89.43</span></td>
+<td class="right"><span style="color:rgb(0,133,178)">88.45</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">86.81</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num" onclick="show_table(document.getElementById('operator_mutexes_num'));">operator_mutexes_num - Sum</a></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time">
+<h1>operator_mutex_time</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-airport" onclick="show_table(document.getElementById('operator_mutex_time-airport'));">airport</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,0)">0.01</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.02</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.02</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.02</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-barman-opt11-strips" onclick="show_table(document.getElementById('operator_mutex_time-barman-opt11-strips'));">barman-opt11-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,97)">2.44</span></td>
+<td class="right"><span style="color:rgb(0,97,178)">2.49</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.52</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.41</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-barman-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-barman-opt14-strips'));">barman-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,162,178)">1.91</span></td>
+<td class="right"><span style="color:rgb(0,178,129)">1.89</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">1.96</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1.85</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-childsnack-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-childsnack-opt14-strips'));">childsnack-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,104)">11.58</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">11.46</span></td>
+<td class="right"><span style="color:rgb(0,178,113)">11.59</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">11.87</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-freecell" onclick="show_table(document.getElementById('operator_mutex_time-freecell'));">freecell</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,152)">14.50</span></td>
+<td class="right"><span style="color:rgb(0,178,127)">14.48</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">14.38</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">14.66</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-grid" onclick="show_table(document.getElementById('operator_mutex_time-grid'));">grid</a> (1)</td>
+<td class="right"><span style="color:rgb(0,0,178)">0.38</span></td>
+<td class="right"><span style="color:rgb(0,119,178)">0.37</span></td>
+<td class="right"><span style="color:rgb(0,119,178)">0.37</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">0.35</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-hiking-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-hiking-opt14-strips'));">hiking-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,0,178)">2.83</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.83</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.83</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-mystery" onclick="show_table(document.getElementById('operator_mutex_time-mystery'));">mystery</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,0)">4.46</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6.13</span></td>
+<td class="right"><span style="color:rgb(0,61,178)">5.84</span></td>
+<td class="right"><span style="color:rgb(0,178,2)">4.47</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-nomystery-opt11-strips" onclick="show_table(document.getElementById('operator_mutex_time-nomystery-opt11-strips'));">nomystery-opt11-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,66,178)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,66,178)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.81</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.65</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-openstacks-opt08-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-opt08-strips'));">openstacks-opt08-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,0)">1.50</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1.50</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">1.57</span></td>
+<td class="right"><span style="color:rgb(0,178,101)">1.52</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-openstacks-opt11-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-opt11-strips'));">openstacks-opt11-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,178,178)">0.74</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">0.70</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.78</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">0.70</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-openstacks-opt14-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-opt14-strips'));">openstacks-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,158,178)">11.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">12.09</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">11.39</span></td>
+<td class="right"><span style="color:rgb(0,178,61)">11.51</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutex_time-openstacks-strips" onclick="show_table(document.getElementById('operator_mutex_time-openstacks-strips'));">openstacks-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(0,0,178)">33.05</span></td>
+<td class="right"><span style="color:rgb(0,113,178)">32.71</span></td>
+<td class="right"><span style="color:rgb(0,178,143)">32.41</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">31.98</span></td>
+</tr>
+<tr>
+<td><strong>Sum (13)</strong></td>
+<td class="right"><span style="color:rgb(0,178,153)">87.94</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">89.43</span></td>
+<td class="right"><span style="color:rgb(0,133,178)">88.45</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">86.81</span></td>
+</tr>
+</table>
+
+<p>
+Only instances where all algorithms have a value for "operator_mutex_time" are considered. Each table entry gives the sum of "operator_mutex_time" for that domain. The bottom row reports the sum across all domains.
+</p>
+
+<section id="operator_mutex_time-agricola-opt18-strips">
+<h2>agricola-opt18-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p06.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-airport">
+<h2>airport</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p10-airport3-p1.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">0.01</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.02</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.02</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.02</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-barman-opt11-strips">
+<h2>barman-opt11-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>pfile01-003.pddl</td>
+<td class="right"><span style="color:rgb(0,178,97)">2.44</span></td>
+<td class="right"><span style="color:rgb(0,97,178)">2.49</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.52</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.41</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-barman-opt14-strips">
+<h2>barman-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p536-3.pddl</td>
+<td class="right"><span style="color:rgb(0,162,178)">1.91</span></td>
+<td class="right"><span style="color:rgb(0,178,129)">1.89</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">1.96</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1.85</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-childsnack-opt14-strips">
+<h2>childsnack-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>child-snack_pfile03-2.pddl</td>
+<td class="right"><span style="color:rgb(0,178,104)">11.58</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">11.46</span></td>
+<td class="right"><span style="color:rgb(0,178,113)">11.59</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">11.87</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-freecell">
+<h2>freecell</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>probfreecell-9-1.pddl</td>
+<td class="right"><span style="color:rgb(0,178,152)">14.50</span></td>
+<td class="right"><span style="color:rgb(0,178,127)">14.48</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">14.38</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">14.66</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-grid">
+<h2>grid</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>prob01.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">0.38</span></td>
+<td class="right"><span style="color:rgb(0,119,178)">0.37</span></td>
+<td class="right"><span style="color:rgb(0,119,178)">0.37</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">0.35</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-hiking-opt14-strips">
+<h2>hiking-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>ptesting-2-3-6.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">2.83</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.83</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.83</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-mystery">
+<h2>mystery</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>prob22.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">4.46</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">6.13</span></td>
+<td class="right"><span style="color:rgb(0,61,178)">5.84</span></td>
+<td class="right"><span style="color:rgb(0,178,2)">4.47</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-nomystery-opt11-strips">
+<h2>nomystery-opt11-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p07.pddl</td>
+<td class="right"><span style="color:rgb(0,66,178)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,66,178)">2.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">2.81</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">2.65</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-openstacks-opt08-strips">
+<h2>openstacks-opt08-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p07.pddl</td>
+<td class="right"><span style="color:rgb(0,178,0)">1.50</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">1.50</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">1.57</span></td>
+<td class="right"><span style="color:rgb(0,178,101)">1.52</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-openstacks-opt11-strips">
+<h2>openstacks-opt11-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p05.pddl</td>
+<td class="right"><span style="color:rgb(0,178,178)">0.74</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">0.70</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">0.78</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">0.70</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-openstacks-opt14-strips">
+<h2>openstacks-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p45_3.pddl</td>
+<td class="right"><span style="color:rgb(0,158,178)">11.78</span></td>
+<td class="right"><span style="color:rgb(0,0,178)">12.09</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">11.39</span></td>
+<td class="right"><span style="color:rgb(0,178,61)">11.51</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-openstacks-strips">
+<h2>openstacks-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p10.pddl</td>
+<td class="right"><span style="color:rgb(0,0,178)">33.05</span></td>
+<td class="right"><span style="color:rgb(0,113,178)">32.71</span></td>
+<td class="right"><span style="color:rgb(0,178,143)">32.41</span></td>
+<td class="right"><span style="color:rgb(0,178,0)">31.98</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutex_time-organic-synthesis-opt18-strips">
+<h2>organic-synthesis-opt18-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutex_<wbr>time</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p04.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+</table>
+
+</section>
+</section>
+<section id="operator_mutexes_num">
+<h1>operator_mutexes_num</h1>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-airport" onclick="show_table(document.getElementById('operator_mutexes_num-airport'));">airport</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-barman-opt11-strips" onclick="show_table(document.getElementById('operator_mutexes_num-barman-opt11-strips'));">barman-opt11-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-barman-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-barman-opt14-strips'));">barman-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-childsnack-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-childsnack-opt14-strips'));">childsnack-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-freecell" onclick="show_table(document.getElementById('operator_mutexes_num-freecell'));">freecell</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-grid" onclick="show_table(document.getElementById('operator_mutexes_num-grid'));">grid</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-hiking-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-hiking-opt14-strips'));">hiking-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-mystery" onclick="show_table(document.getElementById('operator_mutexes_num-mystery'));">mystery</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-nomystery-opt11-strips" onclick="show_table(document.getElementById('operator_mutexes_num-nomystery-opt11-strips'));">nomystery-opt11-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-openstacks-opt08-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-opt08-strips'));">openstacks-opt08-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-openstacks-opt11-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-opt11-strips'));">openstacks-opt11-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-openstacks-opt14-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-opt14-strips'));">openstacks-opt14-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+</tr>
+<tr>
+<td><a href="#operator_mutexes_num-openstacks-strips" onclick="show_table(document.getElementById('operator_mutexes_num-openstacks-strips'));">openstacks-strips</a> (1)</td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+</tr>
+<tr>
+<td><strong>Sum (13)</strong></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">10392329</span></td>
+</tr>
+</table>
+
+<p>
+Only instances where all algorithms have a value for "operator_mutexes_num" are considered. Each table entry gives the sum of "operator_mutexes_num" for that domain. The bottom row reports the sum across all domains.
+</p>
+
+<section id="operator_mutexes_num-agricola-opt18-strips">
+<h2>agricola-opt18-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p06.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-airport">
+<h2>airport</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p10-airport3-p1.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3663</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-barman-opt11-strips">
+<h2>barman-opt11-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>pfile01-003.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">592</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-barman-opt14-strips">
+<h2>barman-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p536-3.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">3188</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-childsnack-opt14-strips">
+<h2>childsnack-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>child-snack_pfile03-2.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">183381</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-freecell">
+<h2>freecell</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>probfreecell-9-1.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">51831</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-grid">
+<h2>grid</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>prob01.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">96</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-hiking-opt14-strips">
+<h2>hiking-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>ptesting-2-3-6.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">40</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-mystery">
+<h2>mystery</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>prob22.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">526850</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-nomystery-opt11-strips">
+<h2>nomystery-opt11-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p07.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">9416237</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-openstacks-opt08-strips">
+<h2>openstacks-opt08-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p07.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">2670</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-openstacks-opt11-strips">
+<h2>openstacks-opt11-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p05.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">5497</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-openstacks-opt14-strips">
+<h2>openstacks-opt14-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p45_3.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">182284</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-openstacks-strips">
+<h2>openstacks-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p10.pddl</td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+<td class="right"><span style="color:rgb(127,127,127)">16000</span></td>
+</tr>
+</table>
+
+</section>
+<section id="operator_mutexes_num-organic-synthesis-opt18-strips">
+<h2>organic-synthesis-opt18-strips</h2>
+
+<button type="button" class="toggle-table" onclick="toggle_table(this)">Show table</button><p></p>
+
+<table class="tableborder" style="display:none">
+<tr>
+<th>operator_<wbr>mutexes_<wbr>num</th>
+<th>01-sccs(selector)_<wbr>top</th>
+<th>02-sccs(selector)_<wbr>rev-top</th>
+<th>03-sccs(selector)_<wbr>dec</th>
+<th>04-sccs(selector)_<wbr>inc</th>
+</tr>
+<tr>
+<td>p04.pddl</td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+<td><span style="color:rgb(127,127,127)">None</span></td>
+</tr>
+</table>
+
+</section>
+</section>
+</div>
+</article></body></html>
