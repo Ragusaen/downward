@@ -1,5 +1,6 @@
 #include "previous_ops.h"
 #include "../utils/logging.h"
+#include "operator_mutex_searcher.h"
 
 #include "../merge_and_shrink/label_equivalence_relation.h"
 #include "../merge_and_shrink/labels.h"
@@ -340,9 +341,10 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
     return true;
 }
 
-vector<LabeledTransition> BDDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
-                                                             const unordered_set<OpMutex> &label_group_mutexes,
-                                                             int num_label_groups) {
+vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
+                                                            const unordered_set<OpMutex> &label_group_mutexes,
+                                                            int num_label_groups) {
+
 
     utils::g_log << "hello from BDD" << endl;
 
