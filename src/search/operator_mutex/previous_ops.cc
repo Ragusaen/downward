@@ -346,6 +346,8 @@ vector<LabeledTransition> BDDDOLMPO::find_usable_transitions(CondensedTransition
 
     utils::g_log << "hello from BDD" << endl;
 
+
+
     return vector<LabeledTransition>();
 }
 }
