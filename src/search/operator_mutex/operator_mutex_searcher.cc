@@ -290,17 +290,17 @@ void add_algo_options_to_parser(OptionParser &parser) {
     previous_ops_options.emplace_back("NaSUTPO");
     previous_ops_options.emplace_back("NeLUSPO");
     previous_ops_options.emplace_back("NeLUTPO");
-    previous_ops_options.emplace_back("BDDDOLM");
+    previous_ops_options.emplace_back("BDDDOLMPO");
     parser.add_enum_option<PreviousOpsOption>(
             "use_previous_ops",
             previous_ops_options,
             "Use previous operator mutexes to find unreachable states. "
-            "The default strategy is 'NoPO'. Other strategies are 'NaSUSPO', 'NaSUTPO' and 'NeLUSPO'. ",
+            "The default strategy is 'NoPO'. Other strategies are 'NaSUSPO', 'NaSUTPO', 'NeLUSPO', 'NeLUTPO' and 'BDDDOLMPO'.",
             "NoPO");
 
     parser.add_option<int>(
             "max_ts_size",
-            "Maximum number of states a transition system can have that will be considered",
+            "Maximum number of states a transition system can have that will be considered.",
             "5000"
             );
 
