@@ -58,8 +58,8 @@ OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
         previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
     } else if (previous_ops_option == PreviousOpsOption::NeLUTPO) {
         previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
-    } else if (previous_ops_option == PreviousOpsOption::BDDDOLMPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new BDDDOLMPO());
+    } else if (previous_ops_option == PreviousOpsOption::BDDOLMPO) {
+        previous_ops_strategy = unique_ptr<PreviousOps>(new BDDOLMPO());
     } else {
         utils::g_log << "No previous ops strategy found, this is an internal error";
         throw std::exception();
