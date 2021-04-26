@@ -290,7 +290,7 @@ void add_algo_options_to_parser(OptionParser &parser) {
     previous_ops_options.emplace_back("NaSUTPO");
     previous_ops_options.emplace_back("NeLUSPO");
     previous_ops_options.emplace_back("NeLUTPO");
-    previous_ops_options.emplace_back("BDDDOLMPO");
+    previous_ops_options.emplace_back("BDDOLMPO");
     parser.add_enum_option<PreviousOpsOption>(
             "use_previous_ops",
             previous_ops_options,
