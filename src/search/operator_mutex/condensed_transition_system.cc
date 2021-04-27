@@ -25,10 +25,10 @@ CondensedTransitionSystem::CondensedTransitionSystem(std::vector<LabeledTransiti
     concrete_to_abstract_state = std::vector<int>(num_concrete_states, -1);
 
     // Discover strongly connected components
-    utils::g_log << "Number of concrete transitions " << this->concrete_transitions.size() << endl;
-    for (auto t : this->concrete_transitions) {
-        utils::g_log << t.src << " -> " << t.target << endl;
-    }
+//    utils::g_log << "Number of concrete transitions " << this->concrete_transitions.size() << endl;
+//    for (auto t : this->concrete_transitions) {
+//        utils::g_log << t.src << " -> " << t.target << endl;
+//    }
 
     discover_sccs();
 
