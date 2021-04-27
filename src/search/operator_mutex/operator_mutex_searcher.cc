@@ -80,15 +80,26 @@ bool transition_comparison(LabeledTransition a, int b) { return a.src < b; }
 void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
     double start_time = utils::g_timer();
     utils::g_log << "Operator mutex starting iteration " << iteration << endl;
-    int num_opmutex_before = label_mutexes.size();
+    size_t num_opmutex_before = label_mutexes.size();
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
+        bool mustrun = false;
+        if (num_op_mutex_in_previous_run_of_fts_i.size() <= fts_i) {
+            num_op_mutex_in_previous_run_of_fts_i.resize(fts_i + 1);
+            mustrun = true;
+        }
+
+        if (!mustrun && num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
+            continue;
+
         TransitionSystem ts = fts.get_transition_system(fts_i);
         if (ts.get_num_states() <= max_ts_size) {
-            int before_label_mutexes = label_mutexes.size();
+            size_t before_label_mutexes = label_mutexes.size();
             infer_label_group_mutex_in_ts(fts, fts_i);
-            utils::g_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes) << endl;
+            utils::g_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes)  << " Total op-mutexes: " << label_mutexes.size() << endl;
+
+            num_op_mutex_in_previous_run_of_fts_i[fts_i] = label_mutexes.size();
         }
     }
 
@@ -157,7 +168,7 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
     auto ts2 = fts.get_transition_system(fts_index);
     auto tbg2 = ts2.get_transitions();
     for (size_t og = 0; og < tbg2.size(); og++) {
-        if (tbg2[og].size() == 0) {
+        if (tbg2[og].empty()) {
             for (size_t ig = 0; ig < tbg2.size(); ig++) {
                 label_group_mutexes.emplace_back(og, ig);
             }

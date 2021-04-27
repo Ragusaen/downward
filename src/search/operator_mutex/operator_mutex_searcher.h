@@ -41,6 +41,10 @@ private:
 
     unordered_set<OpMutex> label_mutexes;
 
+    bool label_mutexes_has_changed = true;
+
+    vector<int> num_op_mutex_in_previous_run_of_fts_i = vector<int>(1, 0);
+
     // This adds both symmetric op-mutexes
     void add_opmutex(int label1, int label2) {
         label_mutexes.emplace(label1, label2);

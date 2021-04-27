@@ -237,12 +237,6 @@ void NaSUTPO::usable_transitions_dfs(
     vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
 
     for(LabeledTransition &t : outgoing_transitions) {
-        if(t.target == state) {
-            // Self loops are trivially usable, even though they might be op-mutex with a something in the path, because
-            // removing them can NEVER cause more op-mutexes, so we might as well not bother
-            usable_transitions.insert(t);
-            continue;
-        }
 
         // Check that this path is valid (i.e. it contains no two operators that are op-mutex)
         DynamicBitset<> labels_in_path(path.size());
@@ -264,6 +258,10 @@ void NaSUTPO::usable_transitions_dfs(
             continue;
         else
             usable_transitions.insert(t);
+
+        if (t.src == t.target) {
+            continue;
+        }
 
         bool prev_bit = path[t.label_group];
         path.set(t.label_group);
@@ -344,12 +342,79 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
 vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
                                                             const unordered_set<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
+    Cudd bdd_manager(num_label_groups);
 
+    if (label_group_mutexes.empty())
+        return cts.abstract_transitions;
 
-    utils::g_log << "hello from BDD" << endl;
+    // Create op-mutex BDD
+    utils::g_log << "Label group mutexes size: " << label_group_mutexes.size() << endl;
 
+    vector<BDD> lgm_bdds(label_group_mutexes.size());
+    int i = 0;
+    for (const OpMutex &m : label_group_mutexes) {
+        lgm_bdds[i] = !(bdd_manager.bddVar(m.label1) * bdd_manager.bddVar(m.label2));
+        i++;
+    }
 
+    while (lgm_bdds.size() > 1) {
+        size_t a = 1, b = 0;
+        for (; a < lgm_bdds.size(); a += 2, b++) {
+            lgm_bdds[b] = lgm_bdds[a] * lgm_bdds[a - 1];
+        }
+        if (a == lgm_bdds.size()) {
+            lgm_bdds[b++] = lgm_bdds[a - 1];
+        }
 
-    return vector<LabeledTransition>();
+        lgm_bdds.resize(b);
+    }
+
+    BDD op_mutex_bdd = lgm_bdds.front();
+
+    utils::g_log << "op_mutex_bdd node count after: " << op_mutex_bdd.nodeCount() << endl;
+
+    std::vector<int> remaining_parents(cts.num_abstract_states);
+    count_parents(cts, remaining_parents, cts.initial_abstract_state);
+
+    // Initialize the ready_states to be the initial state (we do not care about any other states that start with indegree
+    // 0, if they should exist.
+    std::unordered_set<int> ready_states;
+    assert(remaining_parents[cts.initial_abstract_state] == 0);
+    ready_states.insert(cts.initial_abstract_state);
+
+    std::vector<BDD> state_bdd(cts.num_abstract_states, bdd_manager.bddZero());
+    state_bdd[cts.initial_abstract_state] = bdd_manager.bddOne();
+
+    //utils::g_log << "Initial state: " << cts.initial_abstract_state << endl;
+
+    vector<LabeledTransition> usable_transitions;
+
+    while (!ready_states.empty()) {
+        int state = *ready_states.begin();
+        ready_states.erase(state);
+        //utils::g_log << "State " << state << endl;
+
+        std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
+        for (LabeledTransition t  : outgoing_transitions) {
+            //utils::g_log << to_string(t) << endl;
+
+             state_bdd[state].nodeCount();
+
+            remaining_parents[t.target]--;
+            if (remaining_parents[t.target] == 0)
+                ready_states.insert(t.target);
+
+            if (!(state_bdd[state] * bdd_manager.bddVar(t.label_group) * op_mutex_bdd).IsZero()) {
+                //utils::g_log << "Node count - " << "t.target: " << state_bdd[t.target].nodeCount() << " + (state: " << state_bdd[state].nodeCount() << " * bddVar: " << bdd_manager.bddVar(t.label_group).nodeCount() << ")" << endl;
+                if (t.src != t.target) {
+                    state_bdd[t.target] = state_bdd[t.target] + (state_bdd[state] * bdd_manager.bddVar(t.label_group));
+                }
+
+                usable_transitions.push_back(t);
+            }
+        }
+    }
+
+    return usable_transitions;
 }
 }
