@@ -7,6 +7,8 @@
 #include "condensed_transition_system.h"
 #include "../algorithms/dynamic_bitset.h"
 #include "op_mutex.h"
+#include "../option_parser.h"
+#include "../plugin.h"
 #include "cuddObj.hh"
 
 using namespace dynamic_bitset;
@@ -29,6 +31,9 @@ protected:
 class NoPO : public PreviousOps {
 public:
     void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) override;
+    NoPO(options::Options opts){
+
+    }
 };
 
 class UnreachableTransitionsPreviousOps : public PreviousOps {
@@ -41,18 +46,22 @@ protected:
 };
 
 class NaSUTPO : public UnreachableTransitionsPreviousOps {
-
-protected:
+public:
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+    NaSUTPO(options::Options opts) {
 
+    }
 private:
     void usable_transitions_dfs(const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path,
                                  unordered_set<LabeledTransition> &usable_transitions, const unordered_set<OpMutex> &label_group_mutexes);
 };
 
 class NeLUTPO : public UnreachableTransitionsPreviousOps {
+public:
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+    NeLUTPO(options::Options opts){
 
+    }
 private:
     static bool is_usable(const DynamicBitset<> &label_landmarks, LabeledTransition transition, const unordered_set<OpMutex> &label_group_mutexes);
 };
@@ -67,11 +76,19 @@ protected:
 };
 
 class NeLUSPO : public UnreachableStatesPreviousOps {
+public:
+    NeLUSPO(options::Options opts){
+
+    }
 protected:
     DynamicBitset<> find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 };
 
 class NaSUSPO : public UnreachableStatesPreviousOps {
+public:
+    NaSUSPO(options::Options opts){
+
+    }
 protected:
     DynamicBitset<> find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 private:
@@ -81,6 +98,15 @@ private:
 };
 
 class BDDOLMPO : public UnreachableTransitionsPreviousOps {
+public:
+    BDDOLMPO(options::Options opts){
+        max_bdd_size = opts.get<int>("max_bdd_size");
+        max_bdd_time = opts.get<int>("max_bdd_time");
+    }
+
+private:
+    int max_bdd_size;
+    int max_bdd_time;
 protected :
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 };

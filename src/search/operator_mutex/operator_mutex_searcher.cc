@@ -37,40 +37,11 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
 
 namespace op_mutex {
 OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
-    auto reachability_option = opts.get<ReachabilityOption>("reachability_strategy");
-    switch(reachability_option){
-        case ReachabilityOption::GOAL_REACHABILITY:
-            reachability_strategy = unique_ptr<ReachabilityStrategy>(new GoalReachability());
-            break;
-        case ReachabilityOption::NO_GOAL_REACHABILITY:
-            reachability_strategy = unique_ptr<ReachabilityStrategy>(new NoGoalReachability());
-            break;
-    }
-
-    auto previous_ops_option = opts.get<PreviousOpsOption>("use_previous_ops");
-    if (previous_ops_option == PreviousOpsOption::NoPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NoPO());
-    } else if (previous_ops_option == PreviousOpsOption::NeLUSPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUSPO());
-    } else if (previous_ops_option == PreviousOpsOption::NaSUSPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUSPO());
-    } else if (previous_ops_option == PreviousOpsOption::NaSUTPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
-    } else if (previous_ops_option == PreviousOpsOption::NeLUTPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
-    } else if (previous_ops_option == PreviousOpsOption::BDDOLMPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new BDDOLMPO());
-    } else {
-        utils::g_log << "No previous ops strategy found, this is an internal error";
-        throw std::exception();
-    }
+    reachability_strategy = opts.get<shared_ptr<ReachabilityStrategy>>("reachability");
+    previous_ops_strategy = opts.get<shared_ptr<PreviousOps>>("previous_ops");
 
     max_ts_size = opts.get<int>("max_ts_size");
     run_on_intermediate = opts.get<bool>("use_intermediate");
-
-    if (previous_ops_option == PreviousOpsOption::NoPO && !run_on_intermediate) {
-        utils::g_log << "Warning: Running previous ops has no effect when use_intermediate is false" << endl;
-    }
 }
 
 bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
@@ -285,41 +256,27 @@ void OperatorMutexSearcher::finalize(FactoredTransitionSystem &fts) {
 }
 
 void add_algo_options_to_parser(OptionParser &parser) {
-    vector<string> reachability_options;
-    reachability_options.emplace_back("goal");
-    reachability_options.emplace_back("no_goal");
-    parser.add_enum_option<ReachabilityOption>(
-            "reachability_strategy",
-            reachability_options,
+    parser.add_option<shared_ptr<ReachabilityStrategy>>(
+            "reachability",
             "This option is used for determining the strategy used for computing which states are reachable. "
-            "The default strategy is 'goal'. Other strategies are 'no_goal'.",
-            "goal");
+            "The default strategy is 'Goal()'. Other strategies are 'NoGoal()'.",
+            "Goal()");
 
-    vector<string> previous_ops_options;
-    previous_ops_options.emplace_back("NoPO");
-    previous_ops_options.emplace_back("NaSUSPO");
-    previous_ops_options.emplace_back("NaSUTPO");
-    previous_ops_options.emplace_back("NeLUSPO");
-    previous_ops_options.emplace_back("NeLUTPO");
-    previous_ops_options.emplace_back("BDDOLMPO");
-    parser.add_enum_option<PreviousOpsOption>(
-            "use_previous_ops",
-            previous_ops_options,
+    parser.add_option<shared_ptr<PreviousOps>>(
+            "previous_ops",
             "Use previous operator mutexes to find unreachable states. "
-            "The default strategy is 'NoPO'. Other strategies are 'NaSUSPO', 'NaSUTPO', 'NeLUSPO', 'NeLUTPO' and 'BDDDOLMPO'.",
-            "NoPO");
+            "The default strategy is 'NoPO()'. Other strategies are 'NaSUSPO()', 'NaSUTPO()', 'NeLUSPO()', 'NeLUTPO()' and 'BDDOLMPO()'.",
+            "NoPO()");
 
     parser.add_option<int>(
             "max_ts_size",
             "Maximum number of states a transition system can have that will be considered.",
-            "5000"
-            );
+            "5000");
 
     parser.add_option<bool>(
             "use_intermediate",
             "Whether or not intermediate factors of MAS should be used.",
-            "true"
-            );
+            "true");
 }
 
 static shared_ptr<OperatorMutexSearcher> _parse(OptionParser &parser) {

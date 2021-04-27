@@ -5,6 +5,8 @@
 
 
 #include "condensed_transition_system.h"
+#include "../option_parser.h"
+#include "../plugin.h"
 #include <unordered_set>
 
 namespace op_mutex {
@@ -14,17 +16,24 @@ public:
     virtual std::vector<bool> run(const CondensedTransitionSystem &cts) = 0;
 };
 
-class GoalReachability : public ReachabilityStrategy {
+class Goal : public ReachabilityStrategy {
 public:
     std::vector<bool> run(const CondensedTransitionSystem &cts) override;
+    Goal(options::Options opts) {
+
+    }
 private:
     bool reachability(const CondensedTransitionSystem &cts, std::vector<bool> &reach, std::vector<bool> &has_visited, int state);
 
 };
 
-class NoGoalReachability : public ReachabilityStrategy {
+class NoGoal : public ReachabilityStrategy {
 public:
     std::vector<bool> run(const CondensedTransitionSystem &cts) override;
+
+    NoGoal(options::Options opts) {
+
+    }
 private:
     void reachability(const CondensedTransitionSystem &cts, std::vector<bool> &reach, int state);
 

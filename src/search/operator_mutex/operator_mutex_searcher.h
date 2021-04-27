@@ -21,18 +21,9 @@ enum class ReachabilityOption {
     NO_GOAL_REACHABILITY
 };
 
-enum class PreviousOpsOption{
-    NoPO,
-    NaSUSPO,
-    NaSUTPO,
-    NeLUSPO,
-    NeLUTPO,
-    BDDOLMPO
-};
-
 class OperatorMutexSearcher {
-    unique_ptr<ReachabilityStrategy> reachability_strategy;
-    unique_ptr<PreviousOps> previous_ops_strategy;
+    shared_ptr<ReachabilityStrategy> reachability_strategy;
+    shared_ptr<PreviousOps> previous_ops_strategy;
 
 private:
     int max_ts_size;

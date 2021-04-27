@@ -1,11 +1,14 @@
 #include "previous_ops.h"
 #include "../utils/logging.h"
 #include "operator_mutex_searcher.h"
+#include "../option_parser.h"
+#include "../plugin.h"
 
 #include "../merge_and_shrink/label_equivalence_relation.h"
 #include "../merge_and_shrink/labels.h"
 #include "reachability_strategy.h"
 #include "labeled_transition.h"
+#include "bdd_utils.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -342,7 +345,7 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
 vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
                                                             const unordered_set<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
-    Cudd bdd_manager(num_label_groups);
+    Cudd bdd_manager = init_bdd_manager(num_label_groups);
 
     if (label_group_mutexes.empty())
         return cts.abstract_transitions;
@@ -357,21 +360,10 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
         i++;
     }
 
-    while (lgm_bdds.size() > 1) {
-        size_t a = 1, b = 0;
-        for (; a < lgm_bdds.size(); a += 2, b++) {
-            lgm_bdds[b] = lgm_bdds[a] * lgm_bdds[a - 1];
-        }
-        if (a == lgm_bdds.size()) {
-            lgm_bdds[b++] = lgm_bdds[a - 1];
-        }
+    merge(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_size, max_bdd_time);
 
-        lgm_bdds.resize(b);
-    }
-
-    BDD op_mutex_bdd = lgm_bdds.front();
-
-    utils::g_log << "op_mutex_bdd node count after: " << op_mutex_bdd.nodeCount() << endl;
+    utils::g_log << "op_mutex_bdd node count after: " << endl;
+    //for (std::size_t i = 0; )
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -404,17 +396,117 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
             if (remaining_parents[t.target] == 0)
                 ready_states.insert(t.target);
 
-            if (!(state_bdd[state] * bdd_manager.bddVar(t.label_group) * op_mutex_bdd).IsZero()) {
-                //utils::g_log << "Node count - " << "t.target: " << state_bdd[t.target].nodeCount() << " + (state: " << state_bdd[state].nodeCount() << " * bddVar: " << bdd_manager.bddVar(t.label_group).nodeCount() << ")" << endl;
-                if (t.src != t.target) {
-                    state_bdd[t.target] = state_bdd[t.target] + (state_bdd[state] * bdd_manager.bddVar(t.label_group));
-                }
+            auto state_and_var_bdd = state_bdd[state] * bdd_manager.bddVar(t.label_group);
 
-                usable_transitions.push_back(t);
+            for (const auto& lgm_bdd : lgm_bdds) {
+                if ((lgm_bdd * state_and_var_bdd).IsZero())
+                    goto not_usable;
             }
+
+            if (t.src != t.target) {
+                state_bdd[t.target] = state_bdd[t.target] + state_and_var_bdd;
+            }
+
+            usable_transitions.push_back(t);
+
+            not_usable:;
         }
     }
 
     return usable_transitions;
 }
+
+void add_bbdolmpo_ops_to_parser(OptionParser &parser) {
+    parser.add_option<int>(
+            "max_bdd_size",
+            "maximum size of mutex BDDs",
+            "10000");
+
+    parser.add_option<int>(
+            "max_bdd_time",
+            "maximum time (ms) to generate mutex BDDs",
+            "10000");
 }
+
+shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {
+    parser.document_synopsis(
+            "NeLUSPO",
+            "Reachability strategy");
+
+    options::Options opts = parser.parse();
+    if (parser.dry_run()) {
+        return nullptr;
+    }
+
+    return make_shared<NeLUSPO>(opts);
+}
+static Plugin<PreviousOps> _plugin_neluspo("neluspo", _parse_neluspo);
+
+shared_ptr<NeLUTPO> _parse_nelutpo(OptionParser &parser) {
+    parser.document_synopsis(
+            "NeLUTPO",
+            "Reachability strategy");
+
+    options::Options opts = parser.parse();
+    if (parser.dry_run()) {
+        return nullptr;
+    }
+
+    return make_shared<NeLUTPO>(opts);
+}
+static Plugin<PreviousOps> _plugin_nelutpo("nelutpo", _parse_nelutpo);
+
+shared_ptr<BDDOLMPO> _parse_bddolmpo(OptionParser &parser) {
+    parser.document_synopsis(
+            "BDDOLMPO",
+            "Reachability strategy");
+
+    parser.add_option<int> (
+            "max_bdd_size",
+            "maximum size of mutex BDDs",
+            "10000");
+    parser.add_option<int> (
+            "max_mutex_time",
+            "maximum time (ms) to generate mutex BDDs",
+            "10000");
+
+    options::Options opts = parser.parse();
+    if (parser.dry_run()) {
+        return nullptr;
+    }
+
+    return make_shared<BDDOLMPO>(opts);
+}
+static Plugin<PreviousOps> _plugin_bddolmpo("bddolmpo", _parse_bddolmpo);
+
+shared_ptr<NaSUSPO> _parse_nasuspo(OptionParser &parser) {
+    parser.document_synopsis(
+            "NaSUSPO",
+            "Reachability strategy");
+
+    options::Options opts = parser.parse();
+    if (parser.dry_run()) {
+        return nullptr;
+    }
+
+    return make_shared<NaSUSPO>(opts);
+}
+static Plugin<PreviousOps> _plugin_nasuspo("nasuspo", _parse_bddolmpo);
+
+shared_ptr<NaSUTPO> _parse_nasutpo(OptionParser &parser) {
+    parser.document_synopsis(
+            "NaSUTPO",
+            "Reachability strategy");
+
+    options::Options opts = parser.parse();
+    if (parser.dry_run()) {
+        return nullptr;
+    }
+
+    return make_shared<NaSUTPO>(opts);
+}
+static Plugin<PreviousOps> _plugin_nasutpo("nasutpo", _parse_nasutpo);
+
+static PluginTypePlugin<PreviousOps> _type_plugin("previous_ops", "The strategy for which to use previously found op-mutexes to find more.");
+}
+
