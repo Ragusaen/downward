@@ -13,7 +13,7 @@ from downward.reports.absolute import AbsoluteReport
 from downward.reports.scatter import ScatterPlotReport
 
 
-env = LocalEnvironment(processes=1)
+env = LocalEnvironment(processes=4)
 exp = FastDownwardExperiment(environment=env)
 
 # Build
