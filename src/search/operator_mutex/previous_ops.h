@@ -107,6 +107,10 @@ public:
 private:
     int max_bdd_size;
     int max_bdd_time;
+
+    // Vector of bdds for each state for each fts
+    vector<vector<vector<BDD>>> fts_state_bdd;
+
 protected :
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 };

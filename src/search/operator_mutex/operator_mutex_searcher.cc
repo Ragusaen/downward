@@ -42,6 +42,7 @@ OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
 
     max_ts_size = opts.get<int>("max_ts_size");
     run_on_intermediate = opts.get<bool>("use_intermediate");
+    utils::d_log.is_debug = opts.get<bool>("debug");
 }
 
 bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
@@ -50,25 +51,25 @@ bool transition_comparison(LabeledTransition a, int b) { return a.src < b; }
 
 void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
     double start_time = utils::g_timer();
-    utils::g_log << "Operator mutex starting iteration " << iteration << endl;
+    utils::d_log << "Operator mutex starting iteration " << iteration << endl;
     size_t num_opmutex_before = label_mutexes.size();
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
-        bool mustrun = false;
         if (num_op_mutex_in_previous_run_of_fts_i.size() <= fts_i) {
             num_op_mutex_in_previous_run_of_fts_i.resize(fts_i + 1);
-            mustrun = true;
+            goto must_run;
         }
-
-        if (!mustrun && num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
+        if (num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
             continue;
+
+        must_run:
 
         TransitionSystem ts = fts.get_transition_system(fts_i);
         if (ts.get_num_states() <= max_ts_size) {
             size_t before_label_mutexes = label_mutexes.size();
             infer_label_group_mutex_in_ts(fts, fts_i);
-            utils::g_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes)  << " Total op-mutexes: " << label_mutexes.size() << endl;
+            utils::d_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes)  << " Total op-mutexes: " << label_mutexes.size() << endl;
 
             num_op_mutex_in_previous_run_of_fts_i[fts_i] = label_mutexes.size();
         }
@@ -101,7 +102,7 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
 
     //tils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(labeled_transitions, ts.get_num_states(),
+    CondensedTransitionSystem cts = CondensedTransitionSystem(fts_index, labeled_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);
 
     //utils::g_log << cts_to_dot(cts) << endl;
@@ -277,6 +278,11 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "use_intermediate",
             "Whether or not intermediate factors of MAS should be used.",
             "true");
+
+    parser.add_option<bool>(
+            "debug",
+            "Extra prints that contains extra information and debug details.",
+            "false");
 }
 
 static shared_ptr<OperatorMutexSearcher> _parse(OptionParser &parser) {

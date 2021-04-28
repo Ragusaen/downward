@@ -1,9 +1,5 @@
 #include "previous_ops.h"
 #include "../utils/logging.h"
-#include "operator_mutex_searcher.h"
-#include "../option_parser.h"
-#include "../plugin.h"
-
 #include "../merge_and_shrink/label_equivalence_relation.h"
 #include "../merge_and_shrink/labels.h"
 #include "reachability_strategy.h"
@@ -350,63 +346,77 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     if (label_group_mutexes.empty())
         return cts.abstract_transitions;
 
-    // Create op-mutex BDD
-    utils::g_log << "Label group mutexes size: " << label_group_mutexes.size() << endl;
-
     vector<BDD> lgm_bdds(label_group_mutexes.size());
-    int i = 0;
-    for (const OpMutex &m : label_group_mutexes) {
-        lgm_bdds[i] = !(bdd_manager.bddVar(m.label1) * bdd_manager.bddVar(m.label2));
-        i++;
+
+    // Create op-mutex BDD
+    utils::d_log << "lgm_bdds size before merge:" << lgm_bdds.size() << endl;
+    {
+        size_t i = 0;
+        for (const OpMutex &m : label_group_mutexes) {
+            //utils::g_log << to_string(m) << endl;
+            lgm_bdds[i] = !(bdd_manager.bddVar(m.label1) * bdd_manager.bddVar(m.label2));
+            i++;
+        }
     }
 
-    merge(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_size, max_bdd_time);
+    merge(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
 
-    utils::g_log << "op_mutex_bdd node count after: " << endl;
-    //for (std::size_t i = 0; )
+    utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
 
     // Initialize the ready_states to be the initial state (we do not care about any other states that start with indegree
-    // 0, if they should exist.
+    // 0, if they should exist).
     std::unordered_set<int> ready_states;
     assert(remaining_parents[cts.initial_abstract_state] == 0);
     ready_states.insert(cts.initial_abstract_state);
 
-    std::vector<BDD> state_bdd(cts.num_abstract_states, bdd_manager.bddZero());
-    state_bdd[cts.initial_abstract_state] = bdd_manager.bddOne();
+    vector<vector<BDD>> state_bdds(cts.num_abstract_states, vector<BDD>(1, bdd_manager.bddZero()));
+    state_bdds[cts.initial_abstract_state].push_back(bdd_manager.bddOne());
 
-    //utils::g_log << "Initial state: " << cts.initial_abstract_state << endl;
+    utils::d_log << "Initial state: " << cts.initial_abstract_state << endl;
 
     vector<LabeledTransition> usable_transitions;
 
     while (!ready_states.empty()) {
         int state = *ready_states.begin();
         ready_states.erase(state);
-        //utils::g_log << "State " << state << endl;
+        utils::d_log << "State " << state << endl;
 
         std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
         for (LabeledTransition t  : outgoing_transitions) {
-            //utils::g_log << to_string(t) << endl;
+            utils::d_log << to_string(t) << endl;
 
-             state_bdd[state].nodeCount();
+            if (t.src != t.target) { // only decrement if the transition is not a self-loop
+                remaining_parents[t.target]--;
+                if (remaining_parents[t.target] == 0)
+                    ready_states.insert(t.target);
+            }
 
-            remaining_parents[t.target]--;
-            if (remaining_parents[t.target] == 0)
-                ready_states.insert(t.target);
+            vector<BDD> target_bdd_transition(state_bdds[state].size());
+            for (size_t i = 0; i < state_bdds[state].size(); i++) {
+                target_bdd_transition[i] = state_bdds[state][i] * bdd_manager.bddVar(t.label_group);
+            }
+            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds[state].size() << endl;
+            merge(bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
+            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
 
-            auto state_and_var_bdd = state_bdd[state] * bdd_manager.bddVar(t.label_group);
 
-            for (const auto& lgm_bdd : lgm_bdds) {
-                if ((lgm_bdd * state_and_var_bdd).IsZero())
-                    goto not_usable;
+            for (const BDD &lgm_bdd : lgm_bdds) {
+                for (const BDD &tbddt : target_bdd_transition)
+                    if ((lgm_bdd * tbddt).IsZero())
+                        goto not_usable;
             }
 
             if (t.src != t.target) {
-                state_bdd[t.target] = state_bdd[t.target] + state_and_var_bdd;
+                utils::d_log << "state_bdds.insert" << endl;
+                state_bdds[t.target].insert(state_bdds[t.target].end(), target_bdd_transition.begin(), target_bdd_transition.end());
+                merge(bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
             }
 
+            utils::d_log << "state_bdds[t.target] size: " << state_bdds[t.target].size() << endl;
+            utils::d_log << "Found usable transition: " << to_string(t) << endl;
             usable_transitions.push_back(t);
 
             not_usable:;
@@ -414,18 +424,6 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     }
 
     return usable_transitions;
-}
-
-void add_bbdolmpo_ops_to_parser(OptionParser &parser) {
-    parser.add_option<int>(
-            "max_bdd_size",
-            "maximum size of mutex BDDs",
-            "10000");
-
-    parser.add_option<int>(
-            "max_bdd_time",
-            "maximum time (ms) to generate mutex BDDs",
-            "10000");
 }
 
 shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {
@@ -464,11 +462,11 @@ shared_ptr<BDDOLMPO> _parse_bddolmpo(OptionParser &parser) {
     parser.add_option<int> (
             "max_bdd_size",
             "maximum size of mutex BDDs",
-            "10000");
+            "2");
     parser.add_option<int> (
-            "max_mutex_time",
+            "max_bdd_time",
             "maximum time (ms) to generate mutex BDDs",
-            "10000");
+            "2");
 
     options::Options opts = parser.parse();
     if (parser.dry_run()) {
@@ -506,6 +504,20 @@ shared_ptr<NaSUTPO> _parse_nasutpo(OptionParser &parser) {
     return make_shared<NaSUTPO>(opts);
 }
 static Plugin<PreviousOps> _plugin_nasutpo("nasutpo", _parse_nasutpo);
+
+shared_ptr<NoPO> _parse_nopo(OptionParser &parser) {
+    parser.document_synopsis(
+            "NoPO",
+            "Reachability strategy");
+
+    options::Options opts = parser.parse();
+    if (parser.dry_run()) {
+        return nullptr;
+    }
+
+    return make_shared<NoPO>(opts);
+}
+static Plugin<PreviousOps> _plugin_nopo("nopo", _parse_nopo);
 
 static PluginTypePlugin<PreviousOps> _type_plugin("previous_ops", "The strategy for which to use previously found op-mutexes to find more.");
 }

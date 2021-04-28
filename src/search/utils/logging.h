@@ -5,6 +5,7 @@
 #include "timer.h"
 
 #include <ostream>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -20,11 +21,13 @@ namespace utils {
   Usage:
         utils::g_log << "States: " << num_states << endl;
 */
+
 class Log {
 private:
     bool line_has_started = false;
 
 public:
+
     template<typename T>
     Log &operator<<(const T &elem) {
         if (!line_has_started) {
@@ -48,7 +51,39 @@ public:
     }
 };
 
+class DLog {
+private:
+    bool line_has_started = false;
+public:
+    bool is_debug = false;
+
+    template<typename T>
+    DLog &operator << (const T &elem) {
+        if (is_debug) {
+            if (!line_has_started) {
+                line_has_started = true;
+                std::cout << "[t=" << g_timer << ", "
+                          << get_peak_memory_in_kb() << " KB]' ";
+            }
+            std::cout << elem;
+        }
+        return *this;
+    }
+
+    using manip_function = std::ostream &(*)(std::ostream &);
+    DLog &operator<<(manip_function f) {
+        if (f == static_cast<manip_function>(&std::endl)) {
+            line_has_started = false;
+        }
+
+        if (is_debug)
+            std::cout << f;
+        return *this;
+    }
+};
+
 extern Log g_log;
+extern DLog d_log;
 
 // See add_verbosity_option_to_parser for documentation.
 enum class Verbosity {

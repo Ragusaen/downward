@@ -15,9 +15,10 @@ bool finishing_time_pair_comparison(std::pair<int, int> a, std::pair<int, int> b
     return a.second > b.second;
 }
 
-CondensedTransitionSystem::CondensedTransitionSystem(std::vector<LabeledTransition> concrete_transitions,
+CondensedTransitionSystem::CondensedTransitionSystem(int fts_index, std::vector<LabeledTransition> concrete_transitions,
                                                      int num_concrete_states, int initial_concrete_state,
                                                      const unordered_set<int> &goal_states) :
+        fts_index(fts_index),
         concrete_transitions(std::move(concrete_transitions)),
         num_abstract_states(0),
         num_concrete_states(num_concrete_states) {
