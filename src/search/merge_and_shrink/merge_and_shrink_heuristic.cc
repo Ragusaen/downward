@@ -127,6 +127,17 @@ int MergeAndShrinkHeuristic::compute_heuristic(const State &ancestor_state) {
     return heuristic;
 }
 
+void MergeAndShrinkHeuristic::notify_initial_state(const State &initial_state) {
+}
+
+void MergeAndShrinkHeuristic::notify_state_transition(
+        const State &parent_state, OperatorID op_id, const State &state) {
+}
+
+bool MergeAndShrinkHeuristic::dead_ends_are_reliable() const {
+    return false;
+}
+
 static shared_ptr<Heuristic> _parse(options::OptionParser &parser) {
     parser.document_synopsis(
         "Merge-and-shrink heuristic",
