@@ -341,7 +341,8 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
 vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
                                                             const unordered_set<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
-    Cudd bdd_manager = init_bdd_manager(num_label_groups);
+    if (bdd_manager == nullptr)
+        bdd_manager = init_bdd_manager(num_label_groups);
 
     if (label_group_mutexes.empty())
         return cts.abstract_transitions;
@@ -349,19 +350,19 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     vector<BDD> lgm_bdds(label_group_mutexes.size());
 
     // Create op-mutex BDD
-    utils::d_log << "lgm_bdds size before merge:" << lgm_bdds.size() << endl;
+//    utils::d_log << "lgm_bdds size before merge:" << lgm_bdds.size() << endl;
     {
         size_t i = 0;
         for (const OpMutex &m : label_group_mutexes) {
             //utils::g_log << to_string(m) << endl;
-            lgm_bdds[i] = !(bdd_manager.bddVar(m.label1) * bdd_manager.bddVar(m.label2));
+            lgm_bdds[i] = !(bdd_manager->bddVar(m.label1) * bdd_manager->bddVar(m.label2));
             i++;
         }
     }
 
-    merge(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
+    merge(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
 
-    utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
+//    utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -372,21 +373,42 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     assert(remaining_parents[cts.initial_abstract_state] == 0);
     ready_states.insert(cts.initial_abstract_state);
 
-    vector<vector<BDD>> state_bdds(cts.num_abstract_states, vector<BDD>(1, bdd_manager.bddZero()));
-    state_bdds[cts.initial_abstract_state].push_back(bdd_manager.bddOne());
+    if (cts.fts_index >= fts_state_bdd.size()) {
+        fts_state_bdd.resize(cts.fts_index + 1);
+    }
 
-    utils::d_log << "Initial state: " << cts.initial_abstract_state << endl;
+    shared_ptr<vector<vector<BDD>>> state_bdds;
+    bool state_bdds_precomputed;
+    if (fts_state_bdd[cts.fts_index] != nullptr) {
+        state_bdds = fts_state_bdd[cts.fts_index];
+        state_bdds_precomputed = true;
+
+//        utils::d_log << "state_bdds size: " << state_bdds->size() << endl;
+//        for (auto v: *state_bdds) {
+//            utils::d_log << v.size() << " ,";
+//        }
+//        utils::d_log << endl;
+    } else {
+        state_bdds = make_shared<vector<vector<BDD>>>(cts.num_abstract_states, vector<BDD>(1, bdd_manager->bddZero()));
+        state_bdds_precomputed = false;
+
+        state_bdds->at(cts.initial_abstract_state).push_back(bdd_manager->bddOne());
+    }
+//    utils::d_log << "state bdds precomputed: " << state_bdds_precomputed << endl;
+
+//    utils::d_log << "Initial state: " << cts.initial_abstract_state << endl;
 
     vector<LabeledTransition> usable_transitions;
+    bool found_unusable_transition = false;
 
     while (!ready_states.empty()) {
         int state = *ready_states.begin();
         ready_states.erase(state);
-        utils::d_log << "State " << state << endl;
+//        utils::d_log << "State " << state << endl;
 
         std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
         for (LabeledTransition t  : outgoing_transitions) {
-            utils::d_log << to_string(t) << endl;
+//            utils::d_log << to_string(t) << endl;
 
             if (t.src != t.target) { // only decrement if the transition is not a self-loop
                 remaining_parents[t.target]--;
@@ -394,34 +416,41 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
                     ready_states.insert(t.target);
             }
 
-            vector<BDD> target_bdd_transition(state_bdds[state].size());
-            for (size_t i = 0; i < state_bdds[state].size(); i++) {
-                target_bdd_transition[i] = state_bdds[state][i] * bdd_manager.bddVar(t.label_group);
+            vector<BDD> target_bdd_transition(state_bdds->at(state).size());
+            for (size_t i = 0; i < state_bdds->at(state).size(); i++) {
+                target_bdd_transition[i] = state_bdds->at(state)[i] * bdd_manager->bddVar(t.label_group);
             }
-            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds[state].size() << endl;
-            merge(bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
-            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
+//            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds->at(state).size() << endl;
+            merge(*bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
+//            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
 
 
             for (const BDD &lgm_bdd : lgm_bdds) {
                 for (const BDD &tbddt : target_bdd_transition)
-                    if ((lgm_bdd * tbddt).IsZero())
+                    if ((lgm_bdd * tbddt).IsZero()) {
+                        found_unusable_transition = true;
                         goto not_usable;
+                    }
             }
 
-            if (t.src != t.target) {
-                utils::d_log << "state_bdds.insert" << endl;
-                state_bdds[t.target].insert(state_bdds[t.target].end(), target_bdd_transition.begin(), target_bdd_transition.end());
-                merge(bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
+            if (t.src != t.target && !state_bdds_precomputed) {
+//                utils::d_log << "state_bdds.insert" << endl;
+                state_bdds->at(t.target).insert(state_bdds->at(t.target).end(), target_bdd_transition.begin(), target_bdd_transition.end());
+                merge(*bdd_manager, state_bdds->at(t.target), mergeOrBDD, max_bdd_time, max_bdd_size);
             }
 
-            utils::d_log << "state_bdds[t.target] size: " << state_bdds[t.target].size() << endl;
-            utils::d_log << "Found usable transition: " << to_string(t) << endl;
+//            utils::d_log << "state_bdds[t.target] size: " << state_bdds->at(t.target).size() << endl;
+//            utils::d_log << "Found usable transition: " << to_string(t) << endl;
             usable_transitions.push_back(t);
 
             not_usable:;
         }
     }
+
+    if (!found_unusable_transition)
+        fts_state_bdd[cts.fts_index] = state_bdds;
+    else
+        fts_state_bdd[cts.fts_index] = nullptr;
 
     return usable_transitions;
 }
@@ -462,11 +491,11 @@ shared_ptr<BDDOLMPO> _parse_bddolmpo(OptionParser &parser) {
     parser.add_option<int> (
             "max_bdd_size",
             "maximum size of mutex BDDs",
-            "2");
+            "100");
     parser.add_option<int> (
             "max_bdd_time",
             "maximum time (ms) to generate mutex BDDs",
-            "2");
+            "1");
 
     options::Options opts = parser.parse();
     if (parser.dry_run()) {
