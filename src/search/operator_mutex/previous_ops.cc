@@ -342,6 +342,8 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
                                                             const unordered_set<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
     bdd_manager = init_bdd_manager(num_label_groups);
+    bdd_manager->AutodynEnable(CUDD_REORDER_SYMM_SIFT);
+    bdd_manager->ReduceHeap(CUDD_REORDER_SYMM_SIFT, 3000);
 
     if (label_group_mutexes.empty())
         return cts.abstract_transitions;
