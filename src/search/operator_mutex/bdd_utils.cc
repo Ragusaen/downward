@@ -3,7 +3,7 @@
 
 namespace op_mutex {
 
-void exceptionError(const std::string msg) {
+void exceptionError(const std::string) {
     throw BDDError();
 }
 

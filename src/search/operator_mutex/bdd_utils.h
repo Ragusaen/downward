@@ -32,11 +32,11 @@ std::shared_ptr<Cudd> init_bdd_manager(int num_vars);
 
 template <class T>
 T getData(std::string line, const std::string &separator, const std::string &separator_end) {
-    if (separator != "") {
+    if (!separator.empty()) {
         line.erase(line.begin(), line.begin() + line.find(separator) + 1);
     }
 
-    if (separator_end != "") {
+    if (!separator_end.empty()) {
         line.erase(line.begin() + line.find(separator_end), line.end());
     }
 

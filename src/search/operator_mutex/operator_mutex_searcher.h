@@ -16,11 +16,6 @@ using merge_and_shrink::FactoredTransitionSystem;
 using merge_and_shrink::Transition;
 
 namespace op_mutex {
-enum class ReachabilityOption {
-    GOAL_REACHABILITY,
-    NO_GOAL_REACHABILITY
-};
-
 class OperatorMutexSearcher {
     shared_ptr<ReachabilityStrategy> reachability_strategy;
     shared_ptr<PreviousOps> previous_ops_strategy;
@@ -31,8 +26,6 @@ private:
     int iteration = 0;
 
     unordered_set<OpMutex> label_mutexes;
-
-    bool label_mutexes_has_changed = true;
 
     vector<int> num_op_mutex_in_previous_run_of_fts_i = vector<int>(1, 0);
 

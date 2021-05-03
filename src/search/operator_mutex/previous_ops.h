@@ -1,5 +1,3 @@
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnon-virtual-dtor"
 #ifndef FAST_DOWNWARD_PREVIOUS_OPS_H
 #define FAST_DOWNWARD_PREVIOUS_OPS_H
 
@@ -22,6 +20,7 @@ public:
     virtual bool will_prune() {
         return false;
     }
+    virtual ~PreviousOps() = default;
 protected:
     void count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state);
 
@@ -31,9 +30,8 @@ protected:
 class NoPO : public PreviousOps {
 public:
     void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) override;
-    NoPO(options::Options opts){
-
-    }
+    explicit NoPO(const options::Options&) { }
+    ~NoPO() override = default;
 };
 
 class UnreachableTransitionsPreviousOps : public PreviousOps {
@@ -48,9 +46,8 @@ protected:
 class NaSUTPO : public UnreachableTransitionsPreviousOps {
 public:
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
-    NaSUTPO(options::Options opts) {
-
-    }
+    explicit NaSUTPO(const options::Options&) { }
+    ~NaSUTPO() override = default;
 private:
     void usable_transitions_dfs(const CondensedTransitionSystem &cts, int state, DynamicBitset<> &path,
                                  unordered_set<LabeledTransition> &usable_transitions, const unordered_set<OpMutex> &label_group_mutexes);
@@ -59,9 +56,8 @@ private:
 class NeLUTPO : public UnreachableTransitionsPreviousOps {
 public:
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
-    NeLUTPO(options::Options opts){
-
-    }
+    explicit NeLUTPO(const options::Options&){ }
+    ~NeLUTPO() override = default;
 private:
     static bool is_usable(const DynamicBitset<> &label_landmarks, LabeledTransition transition, const unordered_set<OpMutex> &label_group_mutexes);
 };
@@ -77,18 +73,16 @@ protected:
 
 class NeLUSPO : public UnreachableStatesPreviousOps {
 public:
-    NeLUSPO(options::Options opts){
-
-    }
+    explicit NeLUSPO(const options::Options&) { }
+    ~NeLUSPO() override = default;
 protected:
     DynamicBitset<> find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 };
 
 class NaSUSPO : public UnreachableStatesPreviousOps {
 public:
-    NaSUSPO(options::Options opts){
-
-    }
+    explicit NaSUSPO(const options::Options&) { }
+    ~NaSUSPO() override = default;
 protected:
     DynamicBitset<> find_unreachable_states(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 private:
@@ -99,10 +93,11 @@ private:
 
 class BDDOLMPO : public UnreachableTransitionsPreviousOps {
 public:
-    BDDOLMPO(options::Options opts){
+    explicit BDDOLMPO(const options::Options& opts){
         max_bdd_size = opts.get<int>("max_bdd_size");
         max_bdd_time = opts.get<int>("max_bdd_time");
     }
+    ~BDDOLMPO() override = default;
 
 private:
     int max_bdd_size;
@@ -120,7 +115,5 @@ protected :
     static void SetOverApprox(vector<BDD> *BDDs, int numVars, int threshold = 0, bool safe = true, double quality = 1.0);
 };
 }
-
-
 
 #endif //FAST_DOWNWARD_PREVIOUS_OPS_H

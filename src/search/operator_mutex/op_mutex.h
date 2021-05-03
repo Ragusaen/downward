@@ -17,7 +17,8 @@ static inline bool operator==(const OpMutex a, const OpMutex b) {
     return a.label1 == b.label1 && a.label2 == b.label2;
 }
 
-static std::string to_string(OpMutex op_mutex) {
+
+    __attribute__((unused)) static std::string to_string(OpMutex op_mutex) {
     return "(" + std::to_string(op_mutex.label1) + ", " + std::to_string(op_mutex.label2) + ")";
 }
 }
