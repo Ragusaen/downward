@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <utility>
 #include <vector>
 #include <string>
 #include <map>
@@ -22,6 +23,8 @@
 #include <string>
 #include <map>
 #include "../utils/timer.h"
+
+#include "../algorithms/dynamic_bitset.h"
 
 namespace op_mutex {
 struct BDDError {};
@@ -114,8 +117,6 @@ void mergeAux(std::vector<T> &elems, FunctionMerge f, int maxTime, int maxSize) 
     //  cout << "Merged to " << elems.size() << ". Took "<< merge_timer << " seconds" << endl;
 }
 
-
-
 /*
  * Method that merges some elements,
  * Relays on several methods: T, int T.size() and bool T.merge(T, maxSize)
@@ -125,6 +126,90 @@ void merge(Cudd &manager,std::vector<T> &elems, FunctionMerge f, int maxTime, in
     manager.SetTimeLimit(maxTime);
     manager.ResetStartTime();
     mergeAux(elems, f, maxTime, maxSize);
+    manager.UnsetTimeLimit();
+}
+
+struct BitBDD {
+    BDD bdd;
+    dynamic_bitset::DynamicBitset<> used_vars;
+
+    BitBDD(const BitBDD& bit_bdd) = default;
+    BitBDD(BitBDD& bit_bdd) = default;
+    explicit BitBDD(std::size_t num_vars) : used_vars(num_vars) {
+    };
+
+    BitBDD(BDD bdd, dynamic_bitset::DynamicBitset<> used_vars)
+        : used_vars(std::move(used_vars)) {
+        this->bdd = bdd;
+    }
+
+    BitBDD operator*(const BitBDD& other) {
+        return BitBDD(bdd * other.bdd, used_vars | other.used_vars);
+    }
+};
+
+template <class FunctionMerge>
+void mergeAux2(std::vector<BitBDD> &elems, FunctionMerge f, int maxTime, int maxSize) {
+    std::vector <BitBDD> result;
+    if (maxSize <= 1 || elems.size() <= 1) {
+        return;
+    }
+    utils::Timer merge_timer;
+    //  cout << "Merging " << elems.size() << ", maxSize: " << maxSize << endl;
+
+    //Merge Elements
+    std::vector<BitBDD>aux;
+    while (elems.size() > 1 && (maxTime == 0 || merge_timer() * 1000 < maxTime)) {
+        if (elems.size() % 2 == 1) { //Ensure an even number
+            int last = elems.size() - 1;
+            try{
+                elems[last - 1] = BitBDD(f(elems[last - 1].bdd, elems[last].bdd, maxSize), elems[last].used_vars | elems[last].used_vars);
+            }catch (BDDError e) {
+                result.push_back(elems[last]);
+            }
+            elems.erase(elems.end() - 1);
+        }
+        //    cout << "Iteration: " << elems.size() << endl;
+        for (size_t i = 1; i < elems.size(); i += 2) {
+            try{
+                aux.push_back(BitBDD(f(elems[i - 1].bdd, elems[i].bdd, maxSize), elems[i - 1].used_vars | elems[i].used_vars));
+            }catch (BDDError e) {
+                if (elems[i].bdd.nodeCount() < elems[i - 1].bdd.nodeCount()) {
+                    result.push_back(elems[i - 1]);
+                    aux.push_back(elems[i]);
+                } else {
+                    result.push_back(elems[i]);
+                    aux.push_back(elems[i - 1]);
+                }
+            }
+        }
+        aux.swap(elems);
+        std::vector<BitBDD>().swap(aux);
+    }
+    //  cout << "Finished: " << elems.size() << endl;
+    if (!elems.empty()) {
+        result.insert(result.end(), elems.begin(), elems.end());
+    }
+    result.swap(elems);
+    //Add all the elements remaining in aux
+    if (!aux.empty()) {
+        elems.insert(elems.end(), aux.begin(), aux.end());
+    }
+    /*for(int i = 0; i < aux.size(); i++){
+      elems.push_back(aux[i]);
+      }*/
+
+    //  cout << "Merged to " << elems.size() << ". Took "<< merge_timer << " seconds" << endl;
+}
+
+/*
+ * Same as merge, but maintains a dynamic bitset of used variables.
+ */
+template <class FunctionMerge>
+void merge2(Cudd &manager,std::vector<BitBDD> &elems, FunctionMerge f, int maxTime, int maxSize) {
+    manager.SetTimeLimit(maxTime);
+    manager.ResetStartTime();
+    mergeAux2(elems, f, maxTime, maxSize);
     manager.UnsetTimeLimit();
 }
 
