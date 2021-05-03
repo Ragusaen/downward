@@ -349,19 +349,36 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     vector<BDD> lgm_bdds(label_group_mutexes.size());
 
     // Create op-mutex BDD
-//    utils::d_log << "lgm_bdds size before merge:" << lgm_bdds.size() << endl;
+    utils::d_log << "lgm_bdds size before merge:" << lgm_bdds.size() << endl;
     {
         size_t i = 0;
         for (const OpMutex &m : label_group_mutexes) {
-            //utils::g_log << to_string(m) << endl;
+
             lgm_bdds[i] = !(bdd_manager->bddVar(m.label1) * bdd_manager->bddVar(m.label2));
             i++;
         }
     }
 
     merge(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
+    utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
 
-//    utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
+    vector<BDD> subsets;
+    for (auto& bdd : lgm_bdds) {
+        BDD subset;
+        if (true) {
+            int before = bdd.nodeCount();
+            subset = bdd.OverApprox(num_label_groups, 0, true, 1.0);
+            utils::d_log << "Approx - before: " << before << ", after: " << bdd.nodeCount() << endl;
+        }
+        else
+            subset = bdd;
+
+        subsets.push_back(subset);
+    }
+
+    for (int i = 0; i < lgm_bdds.size(); ++i) {
+        lgm_bdds[i] = subsets[i];
+    }
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
