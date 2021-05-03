@@ -119,7 +119,7 @@ static Plugin<ReachabilityStrategy> _plugin_goal("goal", _parse_goal);
 
 shared_ptr<NoGoal> _parse_nogoal(OptionParser &parser) {
     parser.document_synopsis(
-            "Goal reachability strategy",
+            "NoGoal reachability strategy",
             "Reachability strategy");
 
     options::Options opts = parser.parse();

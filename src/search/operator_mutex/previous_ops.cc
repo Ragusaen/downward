@@ -509,7 +509,7 @@ shared_ptr<NaSUSPO> _parse_nasuspo(OptionParser &parser) {
 
     return make_shared<NaSUSPO>(opts);
 }
-static Plugin<PreviousOps> _plugin_nasuspo("nasuspo", _parse_bddolmpo);
+static Plugin<PreviousOps> _plugin_nasuspo("nasuspo", _parse_nasuspo);
 
 shared_ptr<NaSUTPO> _parse_nasutpo(OptionParser &parser) {
     parser.document_synopsis(
