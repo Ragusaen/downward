@@ -361,7 +361,6 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     {
         size_t i = 0;
         for (const OpMutex &m : lgm) {
-            //utils::g_log << to_string(m) << endl;
             lgm_bdds[i] = !(bdd_manager->bddVar(m.label1) * bdd_manager->bddVar(m.label2));
             i++;
         }
@@ -442,7 +441,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 
 void BDDOLMPO::SetOverApprox(vector<BDD> *BDDs, const int numVars, const int threshold, const bool safe, const double quality) {
     for (auto & BDD : *BDDs)
-        BDD = BDD.OverApprox(BDD.nodeCount(), threshold, safe, quality);
+        BDD = BDD.OverApprox(numVars, threshold, safe, quality);
 }
 
 shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {
