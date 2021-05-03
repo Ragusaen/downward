@@ -366,26 +366,12 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
             i++;
         }
     }
+    utils::d_log << "lgm_bdds size before merge: " << lgm_bdds.size() << endl;
+
+
     merge(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
     utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
-
-    vector<BDD> subsets;
-    for (auto& bdd : lgm_bdds) {
-        BDD subset;
-        if (true) {
-            int before = bdd.nodeCount();
-            subset = bdd.OverApprox(num_label_groups, 0, true, 1.0);
-            utils::d_log << "Approx - before: " << before << ", after: " << bdd.nodeCount() << endl;
-        }
-        else
-            subset = bdd;
-
-        subsets.push_back(subset);
-    }
-
-    for (int i = 0; i < lgm_bdds.size(); ++i) {
-        lgm_bdds[i] = subsets[i];
-    }
+    SetOverApprox(&lgm_bdds, num_label_groups);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -452,6 +438,11 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     }
 
     return usable_transitions;
+}
+
+void BDDOLMPO::SetOverApprox(vector<BDD> *BDDs, const int numVars, const int threshold, const bool safe, const double quality) {
+    for (auto & BDD : *BDDs)
+        BDD = BDD.OverApprox(BDD.nodeCount(), threshold, safe, quality);
 }
 
 shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {
