@@ -102,42 +102,6 @@ void NoGoal::reachability(const CondensedTransitionSystem &cts, std::vector<bool
     }
 }
 
-void reach_print(const CondensedTransitionSystem &cts, const std::vector<bool> &reach) {
-    utils::g_log << " ";
-    for (int i = 0; i < cts.num_abstract_states; ++i) {
-        utils::g_log << " " << i;
-    }
-    utils::g_log << std::endl;
-    for (int i = 0; i < cts.num_abstract_states; ++i) {
-        utils::g_log << i;
-        for (int j = 0; j < cts.num_abstract_states; ++j) {
-            utils::g_log << " " << REACH_XY(i, j);
-        }
-        utils::g_log << std::endl;
-    }
-}
-
-void reach_compare_prev(const CondensedTransitionSystem &cts, unique_ptr<ReachabilityStrategy> reachStrat) {
-    vector<bool> reach_prev = reachStrat->run(cts);
-    vector<bool> reach_no_prev = reachStrat->run(cts);
-
-//    utils::g_log << "Reach with previous op-mutexes considered" << endl;
-//    reach_print(cts, reach_prev);
-//    utils::g_log << "Reach with NO previous op-mutexes considered" << endl;
-//    reach_print(cts, reach_no_prev);
-
-    for (int i = 0; i < cts.num_abstract_states; i++) {
-        for (int j = 0; j < cts.num_abstract_states; j++) {
-            std::size_t idx = i * cts.num_abstract_states + j;
-            if (!reach_prev[idx] && reach_no_prev[idx])
-            {
-                utils::g_log << "Prev can reach " << i << "->" << j << " but no prev cannot" << endl;
-            }
-        }
-    }
-
-}
-
 shared_ptr<Goal> _parse_goal(OptionParser &parser) {
     parser.document_synopsis(
             "Goal reachability strategy",
@@ -169,6 +133,4 @@ shared_ptr<NoGoal> _parse_nogoal(OptionParser &parser) {
 static Plugin<ReachabilityStrategy> _plugin_no_goal("no_goal", _parse_nogoal);
 
 static PluginTypePlugin<ReachabilityStrategy> _type_plugin("ReachabilityStrategy", "This describes the strategy for computing reachability between states.");
-
-
 }

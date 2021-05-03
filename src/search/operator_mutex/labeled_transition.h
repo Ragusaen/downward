@@ -39,9 +39,9 @@ struct LabeledTransition : Transition {
     }
 };
 
-std::string to_string(LabeledTransition t);
+    __attribute__((unused)) std::string to_string(LabeledTransition t);
 
-static bool label_comparison(LabeledTransition a, LabeledTransition b) {
+    __attribute__((unused)) static bool label_comparison(LabeledTransition a, LabeledTransition b) {
     if (a.label_group != b.label_group)
         return a.label_group < b.label_group;
     else if (a.src != b.src)

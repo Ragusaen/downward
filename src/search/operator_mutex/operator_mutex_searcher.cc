@@ -45,9 +45,9 @@ OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
     utils::d_log.is_debug = opts.get<bool>("debug");
 }
 
-bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
+    __attribute__((unused)) bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
 
-bool transition_comparison(LabeledTransition a, int b) { return a.src < b; }
+    __attribute__((unused)) bool transition_comparison(LabeledTransition a, int b) { return a.src < b; }
 
 void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
     double start_time = utils::g_timer();
@@ -56,11 +56,11 @@ void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
-        if (num_op_mutex_in_previous_run_of_fts_i.size() <= fts_i) {
+        if (num_op_mutex_in_previous_run_of_fts_i.size() <= size_t(fts_i)) {
             num_op_mutex_in_previous_run_of_fts_i.resize(fts_i + 1);
             goto must_run;
         }
-        if (num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
+        if (size_t(num_op_mutex_in_previous_run_of_fts_i[fts_i]) == label_mutexes.size())
             continue;
 
         must_run:
@@ -71,7 +71,7 @@ void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
             infer_label_group_mutex_in_ts(fts, fts_i);
             utils::d_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes)  << " Total op-mutexes: " << label_mutexes.size() << endl;
 
-            num_op_mutex_in_previous_run_of_fts_i[fts_i] = label_mutexes.size();
+            num_op_mutex_in_previous_run_of_fts_i[fts_i] = int(label_mutexes.size());
         }
     }
 
@@ -107,7 +107,7 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
 
     //utils::g_log << cts_to_dot(cts) << endl;
 
-    if (cts.abstract_transitions.size() == 0) {
+    if (cts.abstract_transitions.empty()) {
         // This CTS is unusable
         utils::g_log << "The problem has NO transitions!" << endl;
         return;
@@ -122,8 +122,8 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
 
         for (size_t g = 0; g < tbg.size(); g++) {
             for (Transition &t : tbg[g]) {
-                LabeledTransition at(cts.concrete_to_abstract_state[t.src], cts.concrete_to_abstract_state[t.target], g);
-                int l = lower_bound(abstract_transitions.begin(), abstract_transitions.end(), at) - abstract_transitions.begin();
+                LabeledTransition at(cts.concrete_to_abstract_state[t.src], cts.concrete_to_abstract_state[t.target], int(g));
+                int l = int(lower_bound(abstract_transitions.begin(), abstract_transitions.end(), at) - abstract_transitions.begin());
 
                 if (abstract_transitions[l] == at) {
                     new_transitions[g].push_back(t);
@@ -195,7 +195,7 @@ OperatorMutexSearcher::infer_label_group_mutex_in_condensed_ts(CondensedTransiti
     */
     int last_label_group = cts.abstract_transitions.back().label_group;
     while (current_outer_label < last_label_group) { // Do not consider last label
-        int to_start = to_end; // End is exclusive
+        int to_start = int(to_end); // End is exclusive
 
         // Search for the next label, could be binary search, but not really worth it
         for (; TRANS_IDX(to_end).label_group <= current_outer_label &&
