@@ -346,19 +346,26 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     if (label_group_mutexes.empty())
         return cts.abstract_transitions;
 
-    vector<BDD> lgm_bdds(label_group_mutexes.size());
-
     // Create op-mutex BDD
-    utils::d_log << "lgm_bdds size before merge:" << lgm_bdds.size() << endl;
+    assert(label_group_mutexes.size() % 2 == 0);
+    vector<OpMutex> lgm; lgm.reserve(label_group_mutexes.size() / 2);
+    for (auto it = label_group_mutexes.begin(); it != label_group_mutexes.end(); ++(++it)) {
+        // Always choose the ordering where the smallest label group is first
+        lgm.emplace_back(min(it->label1, it->label2), max(it->label1, it->label2));
+    }
+    // Sort on the smallest label group (has to be the first), this means that all label group mutexes that includes
+    // label group 1 are group at the start, then all the remaining with label group 2 and so on...
+    sort(lgm.begin(), lgm.end(), [](OpMutex a, OpMutex b) { return a.label1 < b.label1; });
+
+    vector<BDD> lgm_bdds(lgm.size());
     {
         size_t i = 0;
-        for (const OpMutex &m : label_group_mutexes) {
-
+        for (const OpMutex &m : lgm) {
+            //utils::g_log << to_string(m) << endl;
             lgm_bdds[i] = !(bdd_manager->bddVar(m.label1) * bdd_manager->bddVar(m.label2));
             i++;
         }
     }
-
     merge(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
     utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
 
