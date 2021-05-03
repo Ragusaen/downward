@@ -117,7 +117,9 @@ private:
 protected :
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
 
-    static void SetOverApprox(vector<BDD> *BDDs, int numVars, int threshold = 0, bool safe = true, double quality = 1.0);
+    static void SetOverApprox(vector<BDD> *BDDs, int numVars, int threshold = 10, bool safe = true, double quality = 1.0);
+    static void SetUnderApprox(vector<BDD> *BDDs, int numVars, int threshold = 0, bool safe = true, double quality = 1.0);
+
 };
 }
 

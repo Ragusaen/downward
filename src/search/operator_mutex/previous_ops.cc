@@ -383,7 +383,6 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     assert(remaining_parents[cts.initial_abstract_state] == 0);
     ready_states.insert(cts.initial_abstract_state);
 
-
     vector<vector<BDD>> state_bdds(cts.num_abstract_states, vector<BDD>(1, bdd_manager->bddZero()));
 
     state_bdds[cts.initial_abstract_state].push_back(bdd_manager->bddOne());
@@ -444,6 +443,11 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 void BDDOLMPO::SetOverApprox(vector<BDD> *BDDs, const int numVars, const int threshold, const bool safe, const double quality) {
     for (auto & BDD : *BDDs)
         BDD = BDD.OverApprox(numVars, threshold, safe, quality);
+}
+
+void BDDOLMPO::SetUnderApprox(vector<BDD> *BDDs, const int numVars, const int threshold, const bool safe, const double quality) {
+    for (auto & BDD : *BDDs)
+        BDD = BDD.UnderApprox(numVars, threshold, safe, quality);
 }
 
 shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {
