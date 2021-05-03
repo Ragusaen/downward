@@ -3,6 +3,7 @@
 
 #include "../heuristic.h"
 #include "merge_and_shrink_algorithm.h"
+#include "../operator_mutex/op_mutex_status_manager.h"
 
 #include <memory>
 
@@ -19,6 +20,9 @@ class MergeAndShrinkHeuristic : public Heuristic {
 
     // The final merge-and-shrink representations, storing goal distances.
     std::vector<std::unique_ptr<MergeAndShrinkRepresentation>> mas_representations;
+
+    //op-mutex manager
+    op_mutex::OpMutexStatusManager op_mutex_manager;
 
     const std::shared_ptr<op_mutex::OperatorMutexSearcher> operator_mutex_pruning;
 
@@ -37,7 +41,7 @@ public:
     }
 
     virtual void notify_initial_state(const State &initial_state) override;
-    virtual void notify_state_transition(const State &parent_state,
+    virtual bool notify_state_transition(const State &parent_state,
                                          OperatorID op_id,
                                          const State &state) override;
     virtual bool dead_ends_are_reliable() const override;

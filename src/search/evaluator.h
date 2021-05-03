@@ -47,7 +47,7 @@ public:
     virtual void notify_initial_state(const State & /*initial_state*/) {
     }
 
-    virtual void notify_state_transition(
+    virtual bool notify_state_transition(
         const State & /*parent_state*/,
         OperatorID /*op_id*/,
         const State & /*state*/) {

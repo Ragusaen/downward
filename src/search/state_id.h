@@ -26,6 +26,10 @@ public:
     ~StateID() {
     }
 
+    int get_value(){
+        return value;
+    }
+
     static const StateID no_state;
 
     bool operator==(const StateID &other) const {

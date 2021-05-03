@@ -216,7 +216,7 @@ void LandmarkCountHeuristic::notify_initial_state(const State &initial_state) {
     lm_status_manager->set_landmarks_for_initial_state(initial_state);
 }
 
-void LandmarkCountHeuristic::notify_state_transition(
+bool LandmarkCountHeuristic::notify_state_transition(
     const State &parent_state, OperatorID op_id, const State &state) {
     lm_status_manager->update_reached_lms(parent_state, op_id, state);
     if (cache_evaluator_values) {
@@ -224,6 +224,7 @@ void LandmarkCountHeuristic::notify_state_transition(
            set has actually changed and only then mark the h value as dirty. */
         heuristic_cache[state].dirty = true;
     }
+    return false;
 }
 
 bool LandmarkCountHeuristic::dead_ends_are_reliable() const {

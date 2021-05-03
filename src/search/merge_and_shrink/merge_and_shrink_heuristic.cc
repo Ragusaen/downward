@@ -16,17 +16,21 @@
 #include "../utils/markup.h"
 #include "../utils/system.h"
 
+#include "../operator_mutex/op_mutex_status_manager.h"
+
 #include <cassert>
 #include <iostream>
 #include <utility>
 
 using namespace std;
+using namespace op_mutex;
 using utils::ExitCode;
 
 namespace merge_and_shrink {
 MergeAndShrinkHeuristic::MergeAndShrinkHeuristic(const options::Options &opts)
     : Heuristic(opts),
-      verbosity(opts.get<utils::Verbosity>("verbosity")) {
+      verbosity(opts.get<utils::Verbosity>("verbosity")),
+      op_mutex_manager(task->get_num_operators()){
     utils::g_log << "Initializing merge-and-shrink heuristic..." << endl;
     MergeAndShrinkAlgorithm algorithm(opts);
     FactoredTransitionSystem fts = algorithm.build_factored_transition_system(task_proxy);
@@ -128,10 +132,13 @@ int MergeAndShrinkHeuristic::compute_heuristic(const State &ancestor_state) {
 }
 
 void MergeAndShrinkHeuristic::notify_initial_state(const State &initial_state) {
+
 }
 
-void MergeAndShrinkHeuristic::notify_state_transition(
+bool MergeAndShrinkHeuristic::notify_state_transition(
         const State &parent_state, OperatorID op_id, const State &state) {
+    op_mutex_manager.update_operators(parent_state, op_id, state);
+    return false;
 }
 
 bool MergeAndShrinkHeuristic::dead_ends_are_reliable() const {

@@ -201,9 +201,12 @@ SearchStatus EagerSearch::step() {
 
         SearchNode succ_node = search_space.get_node(succ_state);
 
+        bool skip;
         for (Evaluator *evaluator : path_dependent_evaluators) {
-            evaluator->notify_state_transition(s, op_id, succ_state);
+            skip = evaluator->notify_state_transition(s, op_id, succ_state);
         }
+        if(skip)
+            continue;
 
         // Previously encountered dead end. Don't re-evaluate.
         if (succ_node.is_dead_end())
