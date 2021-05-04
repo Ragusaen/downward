@@ -7,14 +7,13 @@ void exceptionError(const std::string) {
     throw BDDError();
 }
 
-std::shared_ptr<Cudd> init_bdd_manager(int num_vars) {
-    std::shared_ptr<Cudd> manager = std::make_shared<Cudd>(num_vars);
+void init_bdd_manager(Cudd &bdd_manager) {
+    bdd_manager.setHandler(exceptionError);
+    bdd_manager.setTimeoutHandler(exceptionError);
+    bdd_manager.setNodesExceededHandler(exceptionError);
 
-    manager->setHandler(exceptionError);
-    manager->setTimeoutHandler(exceptionError);
-    manager->setNodesExceededHandler(exceptionError);
-
-    return manager;
+    bdd_manager.AutodynEnable(CUDD_REORDER_SYMM_SIFT);
+    bdd_manager.ReduceHeap(CUDD_REORDER_SYMM_SIFT, 3000);
 }
 
 

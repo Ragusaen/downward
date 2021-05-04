@@ -31,7 +31,7 @@ struct BDDError {};
 
 void exceptionError(const std::string);
 
-std::shared_ptr<Cudd> init_bdd_manager(int num_vars);
+void init_bdd_manager(Cudd &bdd_manager);
 
 template <class T>
 T getData(std::string line, const std::string &separator, const std::string &separator_end) {

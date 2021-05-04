@@ -26,9 +26,7 @@ protected:
     void count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state);
 
     static unordered_set<OpMutex> get_label_group_mutexes(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
-
-    unordered_set<OpMutex>
-    get_label_group_mutexes2(const shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
+    static vector<OpMutex> get_label_group_mutexes_vector(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
 };
 
 class NoPO : public PreviousOps {
@@ -95,23 +93,36 @@ private:
             const unordered_set<OpMutex> &label_group_mutexes);
 };
 
-class BDDOLMPO : public UnreachableTransitionsPreviousOps {
+typedef vector<BitBDD> BitBDDSet;
+typedef vector<BitBDDSet> StateBDDs;
+
+class BDDOLMPO : public PreviousOps {
+
 public:
     explicit BDDOLMPO(const options::Options& opts){
         max_bdd_size = opts.get<int>("max_bdd_size");
         max_bdd_time = opts.get<int>("max_bdd_time");
+
+
     }
     ~BDDOLMPO() override = default;
+
+    void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) override;
+
+    bool will_prune() override {
+        return true;
+    }
 
 private:
     int max_bdd_size;
     int max_bdd_time;
 
     // Vector of bdds for each state for each fts
-    vector<shared_ptr<vector<vector<BDD>>>> fts_state_bdd;
+    vector<StateBDDs> fts_state_bdd;
+    //Cudd bdd_manager;
 
 protected :
-    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, vector<OpMutex> &label_group_mutexes, int num_label_groups);
 
     static void SetOverApprox(vector<BitBDD>& bit_bdd, int numVars = 0, int threshold = 10, bool safe = true, double quality = 1.0);
     static void SetUnderApprox(vector<BitBDD>& bit_bdd, int numVars = 0, int threshold = 0, bool safe = true, double quality = 1.0);
