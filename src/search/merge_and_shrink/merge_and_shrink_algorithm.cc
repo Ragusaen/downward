@@ -46,19 +46,19 @@ static void log_progress(const utils::Timer &timer, string msg) {
 }
 
 MergeAndShrinkAlgorithm::MergeAndShrinkAlgorithm(const Options &opts) :
-    merge_strategy_factory(opts.get<shared_ptr<MergeStrategyFactory>>("merge_strategy")),
-    shrink_strategy(opts.get<shared_ptr<ShrinkStrategy>>("shrink_strategy")),
-    label_reduction(opts.get<shared_ptr<LabelReduction>>("label_reduction", nullptr)),
-    operator_mutex_pruning(opts.get<shared_ptr<op_mutex::OperatorMutexSearcher>>("op_mutex")),
-    max_states(opts.get<int>("max_states")),
-    max_states_before_merge(opts.get<int>("max_states_before_merge")),
-    shrink_threshold_before_merge(opts.get<int>("threshold_before_merge")),
-    prune_unreachable_states(opts.get<bool>("prune_unreachable_states")),
-    prune_irrelevant_states(opts.get<bool>("prune_irrelevant_states")),
-    verbosity(opts.get<utils::Verbosity>("verbosity")),
-    main_loop_max_time(opts.get<double>("main_loop_max_time")),
-    stop_early(opts.get<bool>("stop_early")),
-    starting_peak_memory(0) {
+        merge_strategy_factory(opts.get<shared_ptr<MergeStrategyFactory>>("merge_strategy")),
+        shrink_strategy(opts.get<shared_ptr<ShrinkStrategy>>("shrink_strategy")),
+        label_reduction(opts.get<shared_ptr<LabelReduction>>("label_reduction", nullptr)),
+        operator_mutex_pruning(opts.get<shared_ptr<op_mutex::OperatorMutexSearcher>>("op_mutex")),
+        max_states(opts.get<int>("max_states")),
+        max_states_before_merge(opts.get<int>("max_states_before_merge")),
+        shrink_threshold_before_merge(opts.get<int>("threshold_before_merge")),
+        prune_unreachable_states(opts.get<bool>("prune_unreachable_states")),
+        prune_irrelevant_states(opts.get<bool>("prune_irrelevant_states")),
+        verbosity(opts.get<utils::Verbosity>("verbosity")),
+        main_loop_max_time(opts.get<double>("main_loop_max_time")),
+        stop_early(opts.get<bool>("stop_early")),
+        starting_peak_memory(0) {
     assert(max_states_before_merge > 0);
     assert(max_states >= max_states_before_merge);
     assert(shrink_threshold_before_merge <= max_states_before_merge);
@@ -112,13 +112,13 @@ void MergeAndShrinkAlgorithm::warn_on_unusual_options() const {
     if (!label_reduction) {
         utils::g_log << dashes << endl
                      << "WARNING! You did not enable label reduction.\nThis may "
-            "drastically reduce the performance of merge-and-shrink!"
+                        "drastically reduce the performance of merge-and-shrink!"
                      << endl << dashes << endl;
     } else if (label_reduction->reduce_before_merging() && label_reduction->reduce_before_shrinking()) {
         utils::g_log << dashes << endl
                      << "WARNING! You set label reduction to be applied twice in each merge-and-shrink\n"
-            "iteration, both before shrinking and merging. This double computation effort\n"
-            "does not pay off for most configurations!"
+                        "iteration, both before shrinking and merging. This double computation effort\n"
+                        "does not pay off for most configurations!"
                      << endl << dashes << endl;
     } else {
         if (label_reduction->reduce_before_shrinking() &&
@@ -126,14 +126,14 @@ void MergeAndShrinkAlgorithm::warn_on_unusual_options() const {
              || shrink_strategy->get_name() == "random")) {
             utils::g_log << dashes << endl
                          << "WARNING! Bucket-based shrink strategies such as f-preserving random perform\n"
-                "best if used with label reduction before merging, not before shrinking!"
+                            "best if used with label reduction before merging, not before shrinking!"
                          << endl << dashes << endl;
         }
         if (label_reduction->reduce_before_merging() &&
             shrink_strategy->get_name() == "bisimulation") {
             utils::g_log << dashes << endl
                          << "WARNING! Shrinking based on bisimulation performs best if used with label\n"
-                "reduction before shrinking, not before merging!"
+                            "reduction before shrinking, not before merging!"
                          << endl << dashes << endl;
         }
     }
@@ -141,13 +141,13 @@ void MergeAndShrinkAlgorithm::warn_on_unusual_options() const {
     if (!prune_unreachable_states || !prune_irrelevant_states) {
         utils::g_log << dashes << endl
                      << "WARNING! Pruning is (partially) turned off!\nThis may "
-            "drastically reduce the performance of merge-and-shrink!"
+                        "drastically reduce the performance of merge-and-shrink!"
                      << endl << dashes << endl;
     }
 }
 
 bool MergeAndShrinkAlgorithm::ran_out_of_time(
-    const utils::CountdownTimer &timer) const {
+        const utils::CountdownTimer &timer) const {
     if (timer.is_expired()) {
         if (verbosity >= utils::Verbosity::NORMAL) {
             utils::g_log << "Ran out of time, stopping computation." << endl;
@@ -159,8 +159,8 @@ bool MergeAndShrinkAlgorithm::ran_out_of_time(
 }
 
 void MergeAndShrinkAlgorithm::main_loop(
-    FactoredTransitionSystem &fts,
-    const TaskProxy &task_proxy) {
+        FactoredTransitionSystem &fts,
+        const TaskProxy &task_proxy) {
     utils::CountdownTimer timer(main_loop_max_time);
     if (verbosity >= utils::Verbosity::NORMAL) {
         utils::g_log << "Starting main loop ";
@@ -183,14 +183,14 @@ void MergeAndShrinkAlgorithm::main_loop(
         label_reduction->initialize(task_proxy);
     }
     unique_ptr<MergeStrategy> merge_strategy =
-        merge_strategy_factory->compute_merge_strategy(task_proxy, fts);
+            merge_strategy_factory->compute_merge_strategy(task_proxy, fts);
     merge_strategy_factory = nullptr;
 
     auto log_main_loop_progress = [&timer](const string &msg) {
-            utils::g_log << "M&S algorithm main loop timer: "
-                         << timer.get_elapsed_time()
-                         << " (" << msg << ")" << endl;
-        };
+        utils::g_log << "M&S algorithm main loop timer: "
+                     << timer.get_elapsed_time()
+                     << " (" << msg << ")" << endl;
+    };
     int iteration_counter = 0;
 
     if (operator_mutex_pruning) {
@@ -230,14 +230,14 @@ void MergeAndShrinkAlgorithm::main_loop(
 
         // Shrinking
         bool shrunk = shrink_before_merge_step(
-            fts,
-            merge_index1,
-            merge_index2,
-            max_states,
-            max_states_before_merge,
-            shrink_threshold_before_merge,
-            *shrink_strategy,
-            verbosity);
+                fts,
+                merge_index1,
+                merge_index2,
+                max_states,
+                max_states_before_merge,
+                shrink_threshold_before_merge,
+                *shrink_strategy,
+                verbosity);
         if (verbosity >= utils::Verbosity::NORMAL && shrunk) {
             log_main_loop_progress("after shrinking");
         }
@@ -279,11 +279,11 @@ void MergeAndShrinkAlgorithm::main_loop(
         // Pruning
         if (prune_unreachable_states || prune_irrelevant_states) {
             bool pruned = prune_step(
-                fts,
-                merged_index,
-                prune_unreachable_states,
-                prune_irrelevant_states,
-                verbosity);
+                    fts,
+                    merged_index,
+                    prune_unreachable_states,
+                    prune_irrelevant_states,
+                    verbosity);
             if (verbosity >= utils::Verbosity::NORMAL && pruned) {
                 if (verbosity >= utils::Verbosity::VERBOSE) {
                     fts.statistics(merged_index);
@@ -301,7 +301,7 @@ void MergeAndShrinkAlgorithm::main_loop(
         if (!fts.is_factor_solvable(merged_index)) {
             if (verbosity >= utils::Verbosity::NORMAL) {
                 utils::g_log << "Abstract problem is unsolvable, stopping "
-                    "computation. " << endl << endl;
+                                "computation. " << endl << endl;
             }
             break;
         }
@@ -334,7 +334,7 @@ void MergeAndShrinkAlgorithm::main_loop(
 }
 
 FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_system(
-    const TaskProxy &task_proxy) {
+        const TaskProxy &task_proxy) {
     if (starting_peak_memory) {
         cerr << "Calling build_factored_transition_system twice is not "
              << "supported!" << endl;
@@ -350,19 +350,19 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
     utils::g_log << endl;
 
     const bool compute_init_distances =
-        shrink_strategy->requires_init_distances() ||
-        merge_strategy_factory->requires_init_distances() ||
-        prune_unreachable_states;
+            shrink_strategy->requires_init_distances() ||
+            merge_strategy_factory->requires_init_distances() ||
+            prune_unreachable_states;
     const bool compute_goal_distances =
-        shrink_strategy->requires_goal_distances() ||
-        merge_strategy_factory->requires_goal_distances() ||
-        prune_irrelevant_states;
+            shrink_strategy->requires_goal_distances() ||
+            merge_strategy_factory->requires_goal_distances() ||
+            prune_irrelevant_states;
     FactoredTransitionSystem fts =
-        create_factored_transition_system(
-            task_proxy,
-            compute_init_distances,
-            compute_goal_distances,
-            verbosity);
+            create_factored_transition_system(
+                    task_proxy,
+                    compute_init_distances,
+                    compute_goal_distances,
+                    verbosity);
     if (verbosity >= utils::Verbosity::NORMAL) {
         log_progress(timer, "after computation of atomic factors");
     }
@@ -379,11 +379,11 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
         assert(fts.is_active(index));
         if (prune_unreachable_states || prune_irrelevant_states) {
             bool pruned_factor = prune_step(
-                fts,
-                index,
-                prune_unreachable_states,
-                prune_irrelevant_states,
-                verbosity);
+                    fts,
+                    index,
+                    prune_unreachable_states,
+                    prune_irrelevant_states,
+                    verbosity);
             pruned = pruned || pruned_factor;
         }
         if (!fts.is_factor_solvable(index)) {
@@ -409,6 +409,7 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
 
     if (operator_mutex_pruning) {
         operator_mutex_pruning->finalize(fts);
+
         if (stop_early)
             std::exit(0);
     }
@@ -419,44 +420,44 @@ FactoredTransitionSystem MergeAndShrinkAlgorithm::build_factored_transition_syst
 void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
     // Merge strategy option.
     parser.add_option<shared_ptr<MergeStrategyFactory>>(
-        "merge_strategy",
-        "See detailed documentation for merge strategies. "
-        "We currently recommend SCC-DFP, which can be achieved using "
-        "{{{merge_strategy=merge_sccs(order_of_sccs=topological,merge_selector="
-        "score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order"
-        "]))}}}",
-        "merge_strategy=merge_stateless("
-        "merge_selector=score_based_filtering("
-        "scoring_functions=[goal_relevance,dfp,total_order("
-        "atomic_ts_order=reverse_level,product_ts_order=new_to_old,atomic_before_product=true)]))"
-        );
+            "merge_strategy",
+            "See detailed documentation for merge strategies. "
+            "We currently recommend SCC-DFP, which can be achieved using "
+            "{{{merge_strategy=merge_sccs(order_of_sccs=topological,merge_selector="
+            "score_based_filtering(scoring_functions=[goal_relevance,dfp,total_order"
+            "]))}}}",
+            "merge_strategy=merge_stateless("
+            "merge_selector=score_based_filtering("
+            "scoring_functions=[goal_relevance,dfp,total_order("
+            "atomic_ts_order=reverse_level,product_ts_order=new_to_old,atomic_before_product=true)]))"
+    );
 
     // Shrink strategy option.
     parser.add_option<shared_ptr<ShrinkStrategy>>(
-        "shrink_strategy",
-        "See detailed documentation for shrink strategies. "
-        "We currently recommend non-greedy shrink_bisimulation, which can be "
-        "achieved using {{{shrink_strategy=shrink_bisimulation(greedy=false)}}}",
-        "shrink_strategy=shrink_bisimulation(greedy=false)");
+            "shrink_strategy",
+            "See detailed documentation for shrink strategies. "
+            "We currently recommend non-greedy shrink_bisimulation, which can be "
+            "achieved using {{{shrink_strategy=shrink_bisimulation(greedy=false)}}}",
+            "shrink_strategy=shrink_bisimulation(greedy=false)");
 
     // Label reduction option.
     parser.add_option<shared_ptr<LabelReduction>>(
-        "label_reduction",
-        "See detailed documentation for labels. There is currently only "
-        "one 'option' to use label_reduction, which is {{{label_reduction=exact}}} "
-        "Also note the interaction with shrink strategies.",
-        "label_reduction=no_label_reduction");
+            "label_reduction",
+            "See detailed documentation for labels. There is currently only "
+            "one 'option' to use label_reduction, which is {{{label_reduction=exact}}} "
+            "Also note the interaction with shrink strategies.",
+            "label_reduction=no_label_reduction");
 
     // Pruning options.
     parser.add_option<bool>(
-        "prune_unreachable_states",
-        "If true, prune abstract states unreachable from the initial state.",
-        "true");
+            "prune_unreachable_states",
+            "If true, prune abstract states unreachable from the initial state.",
+            "true");
     parser.add_option<bool>(
-        "prune_irrelevant_states",
-        "If true, prune abstract states from which no goal state can be "
-        "reached.",
-        "true");
+            "prune_irrelevant_states",
+            "If true, prune abstract states from which no goal state can be "
+            "reached.",
+            "true");
 
     add_transition_system_size_limit_options_to_parser(parser);
 
@@ -469,15 +470,15 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
     utils::add_verbosity_option_to_parser(parser);
 
     parser.add_option<double>(
-        "main_loop_max_time",
-        "A limit in seconds on the runtime of the main loop of the algorithm. "
-        "If the limit is exceeded, the algorithm terminates, potentially "
-        "returning a factored transition system with several factors. Also "
-        "note that the time limit is only checked between transformations "
-        "of the main loop, but not during, so it can be exceeded if a "
-        "transformation is runtime-intense.",
-        "infinity",
-        Bounds("0.0", "infinity"));
+            "main_loop_max_time",
+            "A limit in seconds on the runtime of the main loop of the algorithm. "
+            "If the limit is exceeded, the algorithm terminates, potentially "
+            "returning a factored transition system with several factors. Also "
+            "note that the time limit is only checked between transformations "
+            "of the main loop, but not during, so it can be exceeded if a "
+            "transformation is runtime-intense.",
+            "infinity",
+            Bounds("0.0", "infinity"));
 
     parser.add_option<bool>(
             "stop_early",
@@ -487,23 +488,23 @@ void add_merge_and_shrink_algorithm_options_to_parser(OptionParser &parser) {
 
 void add_transition_system_size_limit_options_to_parser(OptionParser &parser) {
     parser.add_option<int>(
-        "max_states",
-        "maximum transition system size allowed at any time point.",
-        "max_states=50000",
-        Bounds("-1", "infinity"));
+            "max_states",
+            "maximum transition system size allowed at any time point.",
+            "max_states=50000",
+            Bounds("-1", "infinity"));
     parser.add_option<int>(
-        "max_states_before_merge",
-        "maximum transition system size allowed for two transition systems "
-        "before being merged to form the synchronized product.",
-        "-1",
-        Bounds("-1", "infinity"));
+            "max_states_before_merge",
+            "maximum transition system size allowed for two transition systems "
+            "before being merged to form the synchronized product.",
+            "-1",
+            Bounds("-1", "infinity"));
     parser.add_option<int>(
-        "threshold_before_merge",
-        "If a transition system, before being merged, surpasses this soft "
-        "transition system size limit, the shrink strategy is called to "
-        "possibly shrink the transition system.",
-        "1",
-        Bounds("-1", "infinity"));
+            "threshold_before_merge",
+            "If a transition system, before being merged, surpasses this soft "
+            "transition system size limit, the shrink strategy is called to "
+            "possibly shrink the transition system.",
+            "1",
+            Bounds("-1", "infinity"));
 }
 
 void handle_shrink_limit_options_defaults(Options &opts) {

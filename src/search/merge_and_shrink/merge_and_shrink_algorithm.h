@@ -33,6 +33,7 @@ class MergeAndShrinkAlgorithm {
     // Operator mutex
     const std::shared_ptr<op_mutex::OperatorMutexSearcher> operator_mutex_pruning;
 
+
     // Options for shrinking
     // Hard limit: the maximum size of a transition system at any point.
     const int max_states;
@@ -65,6 +66,9 @@ class MergeAndShrinkAlgorithm {
 public:
     explicit MergeAndShrinkAlgorithm(const options::Options &opts);
     FactoredTransitionSystem build_factored_transition_system(const TaskProxy &task_proxy);
+    unordered_set<op_mutex::OpMutex> get_label_mutexes(){
+        return operator_mutex_pruning->get_label_mutexes();
+    }
 };
 
 extern void add_merge_and_shrink_algorithm_options_to_parser(options::OptionParser &parser);

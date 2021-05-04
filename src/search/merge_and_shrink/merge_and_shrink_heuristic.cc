@@ -30,10 +30,11 @@ namespace merge_and_shrink {
 MergeAndShrinkHeuristic::MergeAndShrinkHeuristic(const options::Options &opts)
     : Heuristic(opts),
       verbosity(opts.get<utils::Verbosity>("verbosity")),
-      op_mutex_manager(task->get_num_operators()){
+      op_mutex_manager(){
     utils::g_log << "Initializing merge-and-shrink heuristic..." << endl;
     MergeAndShrinkAlgorithm algorithm(opts);
     FactoredTransitionSystem fts = algorithm.build_factored_transition_system(task_proxy);
+    op_mutex_manager = OpMutexStatusManager(7, algorithm.get_label_mutexes());
     extract_factors(fts);
     utils::g_log << "Done initializing merge-and-shrink heuristic." << endl << endl;
 }
@@ -137,7 +138,7 @@ void MergeAndShrinkHeuristic::notify_initial_state(const State &initial_state) {
 
 bool MergeAndShrinkHeuristic::notify_state_transition(
         const State &parent_state, OperatorID op_id, const State &state) {
-    op_mutex_manager.update_operators(parent_state, op_id, state);
+//    op_mutex_manager.update_operators(parent_state, op_id, state);
     return false;
 }
 

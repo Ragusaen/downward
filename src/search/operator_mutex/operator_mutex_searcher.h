@@ -59,6 +59,10 @@ public:
 
     vector<pair<int, int>> infer_label_group_mutex_in_condensed_ts(CondensedTransitionSystem &cts);
 
+    unordered_set<OpMutex> get_label_mutexes(){
+        return label_mutexes;
+    }
+
     bool run_on_intermediate = true;
 };
 

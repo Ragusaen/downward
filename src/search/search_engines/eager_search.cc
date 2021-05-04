@@ -203,7 +203,8 @@ SearchStatus EagerSearch::step() {
 
         bool skip;
         for (Evaluator *evaluator : path_dependent_evaluators) {
-            skip = evaluator->notify_state_transition(s, op_id, succ_state);
+            if(evaluator->notify_state_transition(s, op_id, succ_state))
+                skip = true;
         }
         if(skip)
             continue;

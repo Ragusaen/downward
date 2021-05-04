@@ -10,23 +10,32 @@ using namespace dynamic_bitset;
 
 namespace op_mutex {
 
-OpMutexStatusManager::OpMutexStatusManager(int _num_ops) : num_ops(_num_ops){
-//    unordered_map<int, DynamicBitset<bool>> abc({{27, DynamicBitset<bool>(50)}, {27, DynamicBitset<bool>(44)}});
-//    DynamicBitset<bool> x = DynamicBitset<bool>(50);
+OpMutexStatusManager::OpMutexStatusManager(int _num_ops, unordered_set<OpMutex> _label_mutexes) : num_ops(_num_ops), label_mutexes(_label_mutexes){
     utils::g_log << "test2" << endl;
+}
+
+void OpMutexStatusManager::is_applicable(const State &parent_state, OperatorID op_id, const State &state) {
 
 }
 
-void OpMutexStatusManager::update_operators(const State &parent_state, OperatorID op_id, const State &state) {
-    //fix
-//    if(ops_per_state.count(state.get_id().get_value())){
-//
-//    }
-//    else{
-//    }
-}
+#define ID get_id().get_value()
 
-void OpMutexStatusManager::add_initial(const State &state) {
-    ops_per_state.insert({state.get_id().get_value(), DynamicBitset<bool>(num_ops)});
+void OpMutexStatusManager::update_map(const State &parent_state, OperatorID op_id, const State &state) {
+//    DynamicBitset<> a = DynamicBitset<>(50);
+//    DynamicBitset<> b(a);
+//    a.set(4);
+//    b.reset();
+//    a &= b;
+    DynamicBitset<> path(ops_per_state.find(parent_state.ID)->second);
+    path.set(op_id.get_index());
+
+    auto st = ops_per_state.find(state.ID);
+    if(st != ops_per_state.end()){
+        st->second &= path;
+    }
+    else{
+        ops_per_state.insert({state.ID, path});
+    }
+
 }
 }

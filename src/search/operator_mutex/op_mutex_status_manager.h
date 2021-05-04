@@ -8,20 +8,24 @@
 #include "../per_state_bitset.h"
 #include "../algorithms/dynamic_bitset.h"
 #include "../task_proxy.h"
+#include "op_mutex.h"
+
 
 using namespace dynamic_bitset;
 using namespace std;
 
 namespace op_mutex {
 class OpMutexStatusManager {
-    unordered_map<int, DynamicBitset<bool>> ops_per_state;
-    const int num_ops;
+    unordered_map<int, DynamicBitset<>> ops_per_state;
+    int num_ops;
+    unordered_set<OpMutex> label_mutexes;
 
 public:
-    explicit OpMutexStatusManager(int num_operators);
+    explicit OpMutexStatusManager(int _num_ops, unordered_set<OpMutex> _label_mutexes);
+    OpMutexStatusManager() = default;
 
-    void add_initial(const State &state);
-    void update_operators(const State &parent_state, OperatorID op_id, const State &state);
+    void update_map(const State &parent_state, OperatorID op_id, const State &state);
+    void is_applicable(const State &parent_state, OperatorID op_id, const State &state);
 };
 }
 
