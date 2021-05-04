@@ -15,11 +15,12 @@ namespace op_mutex {
 
 unordered_set<OpMutex> PreviousOps::get_label_group_mutexes(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes) {
     unordered_set<OpMutex> label_group_mutexes;
+    label_group_mutexes.reserve(ler->get_size() * ler->get_size());
 
     for (int i = 0; i < ler->get_size(); i++) {
         for (int j = i + 1; j < ler->get_size(); j++) {
-            LabelGroup gi = ler->get_group(i);
-            LabelGroup gj = ler->get_group(j);
+            const LabelGroup gi = ler->get_group(i);
+            const LabelGroup gj = ler->get_group(j);
 
             for (int a : gi) {
                 for (int b : gj) {
@@ -29,7 +30,31 @@ unordered_set<OpMutex> PreviousOps::get_label_group_mutexes(const std::shared_pt
             }
 
             label_group_mutexes.emplace(i, j);
-            label_group_mutexes.emplace(j, i);
+
+            not_label_group_mutex:;
+        }
+    }
+
+    return label_group_mutexes;
+}
+
+vector<OpMutex> PreviousOps::get_label_group_mutexes_vector(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes) {
+    vector<OpMutex> label_group_mutexes;
+    label_group_mutexes.reserve(ler->get_size() * 4);
+
+    for (int i = 0; i < ler->get_size(); i++) {
+        for (int j = i + 1; j < ler->get_size(); j++) {
+            const LabelGroup gi = ler->get_group(i);
+            const LabelGroup gj = ler->get_group(j);
+
+            for (int a : gi) {
+                for (int b : gj) {
+                    if (!label_mutexes.count(OpMutex(a, b)))
+                        goto not_label_group_mutex;
+                }
+            }
+
+            label_group_mutexes.emplace_back(i, j);
 
             not_label_group_mutex:;
         }
@@ -330,7 +355,7 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
 }
 
 vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
-                                                            const unordered_set<OpMutex> &label_group_mutexes,
+                                                            vector<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
     // If there are no label group mutexes, we just skip computation
     if (label_group_mutexes.empty())
@@ -339,21 +364,15 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     Cudd bdd_manager;
     init_bdd_manager(bdd_manager);
 
-    // Create op-mutex BDD
-    assert(label_group_mutexes.size() % 2 == 0);
-    vector<OpMutex> lgm; lgm.reserve(label_group_mutexes.size() / 2);
-    for (auto it = label_group_mutexes.begin(); it != label_group_mutexes.end(); ++(++it)) {
-        // Always choose the ordering where the smallest label group is first
-        lgm.emplace_back(min(it->label1, it->label2), max(it->label1, it->label2));
-    }
+    // ---- Create op-mutex BDD ----
     // Sort on the smallest label group (has to be the first), this means that all label group mutexes that includes
     // label group 1 are group at the start, then all the remaining with label group 2 and so on...
-    sort(lgm.begin(), lgm.end(), [](OpMutex a, OpMutex b) { return a.label1 < b.label1; });
+    sort(label_group_mutexes.begin(), label_group_mutexes.end());
 
-    vector<BitBDD> lgm_bdds(lgm.size(), BitBDD(num_label_groups));
+    vector<BitBDD> lgm_bdds(label_group_mutexes.size(), BitBDD(num_label_groups));
     {
         size_t i = 0;
-        for (const OpMutex &m : lgm) {
+        for (const OpMutex &m : label_group_mutexes) {
             lgm_bdds[i] = BitBDD(!(bdd_manager.bddVar(m.label1) * bdd_manager.bddVar(m.label2)),
                                  DynamicBitset<>(num_label_groups, {size_t(m.label1), size_t(m.label2)}));
             i++;
@@ -363,7 +382,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
     utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
-    SetOverApprox(lgm_bdds, num_label_groups);
+    //SetOverApprox(lgm_bdds, num_label_groups);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -440,6 +459,21 @@ void BDDOLMPO::SetOverApprox(vector<BitBDD>& bit_bdds, const int numVars, const 
 void BDDOLMPO::SetUnderApprox(vector<BitBDD>& bit_bdds, const int numVars, const int threshold, const bool safe, const double quality) {
     for (auto & bit_bdd : bit_bdds)
         bit_bdd = BitBDD(bit_bdd.bdd.UnderApprox(bit_bdd.used_vars.count(), threshold, safe, quality), bit_bdd.used_vars);
+}
+
+void BDDOLMPO::run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler,
+                   unordered_set<OpMutex> &label_mutexes) {
+
+    vector<OpMutex> lgm = get_label_group_mutexes_vector(ler, label_mutexes);
+
+    vector<LabeledTransition> usable_transitions = find_usable_transitions(cts, lgm, ler->get_size());
+
+    if (cts.abstract_transitions.size() - usable_transitions.size() > 0) {
+        utils::g_log << "Unusable transitions: " << (cts.abstract_transitions.size() - usable_transitions.size()) << endl;
+
+        cts.abstract_transitions = usable_transitions;
+        sort(cts.abstract_transitions.begin(), cts.abstract_transitions.end());
+    }
 }
 
 shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {

@@ -14,13 +14,15 @@ using LabelIter = std::list<int>::iterator;
 using LabelConstIter = std::list<int>::const_iterator;
 
 class LabelGroup {
+
+    int cost;
+public:
     /*
       A label group contains a set of locally equivalent labels, possibly of
       different cost, and stores the minimum cost of all labels of the group.
     */
     std::list<int> labels;
-    int cost;
-public:
+
     LabelGroup() : cost(INF) {
     }
 

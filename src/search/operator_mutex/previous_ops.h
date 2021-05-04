@@ -26,6 +26,7 @@ protected:
     void count_parents(const CondensedTransitionSystem &cts, std::vector<int> &parents, int state);
 
     static unordered_set<OpMutex> get_label_group_mutexes(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
+    static vector<OpMutex> get_label_group_mutexes_vector(const std::shared_ptr<LabelEquivalenceRelation> &ler, unordered_set<OpMutex> &label_mutexes);
 };
 
 class NoPO : public PreviousOps {
@@ -95,7 +96,7 @@ private:
 typedef vector<BitBDD> BitBDDSet;
 typedef vector<BitBDDSet> StateBDDs;
 
-class BDDOLMPO : public UnreachableTransitionsPreviousOps {
+class BDDOLMPO : public PreviousOps {
 
 public:
     explicit BDDOLMPO(const options::Options& opts){
@@ -106,6 +107,12 @@ public:
     }
     ~BDDOLMPO() override = default;
 
+    void run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler, unordered_set<OpMutex> &label_mutexes) override;
+
+    bool will_prune() override {
+        return true;
+    }
+
 private:
     int max_bdd_size;
     int max_bdd_time;
@@ -115,7 +122,7 @@ private:
     //Cudd bdd_manager;
 
 protected :
-    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, const unordered_set<OpMutex> &label_group_mutexes, int num_label_groups) override;
+    vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, vector<OpMutex> &label_group_mutexes, int num_label_groups);
 
     static void SetOverApprox(vector<BitBDD>& bit_bdd, int numVars, int threshold = 10, bool safe = true, double quality = 1.0);
     static void SetUnderApprox(vector<BitBDD>& bit_bdd, int numVars, int threshold = 0, bool safe = true, double quality = 1.0);
