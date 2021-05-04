@@ -50,8 +50,7 @@ public:
     virtual bool notify_state_transition(
         const State & /*parent_state*/,
         OperatorID /*op_id*/,
-        const State & /*state*/) {
-    }
+        const State & /*state*/) { return false; }
 
     /*
       compute_result should compute the estimate and possibly
