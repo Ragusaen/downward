@@ -150,8 +150,6 @@ DynamicBitset<> NaSUSPO::find_unreachable_states(CondensedTransitionSystem &cts,
 
     unreachable_states_dfs(cts, cts.initial_abstract_state, path, fully_reachable, label_group_mutexes);
 
-    utils::g_log << "Found " << (fully_reachable.size() - fully_reachable.count()) << " unreachable states" << endl;
-
     return ~fully_reachable;
 }
 
@@ -373,7 +371,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 
     merge2(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
     utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
-    SetOverApprox(lgm_bdds, num_label_groups);
+    //SetOverApprox(lgm_bdds, num_label_groups);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -515,7 +513,7 @@ shared_ptr<NaSUSPO> _parse_nasuspo(OptionParser &parser) {
 
     return make_shared<NaSUSPO>(opts);
 }
-static Plugin<PreviousOps> _plugin_nasuspo("nasuspo", _parse_bddolmpo);
+static Plugin<PreviousOps> _plugin_nasuspo("nasuspo", _parse_nasuspo);
 
 shared_ptr<NaSUTPO> _parse_nasutpo(OptionParser &parser) {
     parser.document_synopsis(
