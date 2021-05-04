@@ -37,56 +37,41 @@ std::vector<T> flatten(const std::vector<std::vector<T>> &orig) {
 
 namespace op_mutex {
 OperatorMutexSearcher::OperatorMutexSearcher(const Options &opts){
-    auto reachability_option = opts.get<ReachabilityOption>("reachability_strategy");
-    switch(reachability_option){
-        case ReachabilityOption::GOAL_REACHABILITY:
-            reachability_strategy = unique_ptr<ReachabilityStrategy>(new GoalReachability());
-            break;
-        case ReachabilityOption::NO_GOAL_REACHABILITY:
-            reachability_strategy = unique_ptr<ReachabilityStrategy>(new NoGoalReachability());
-            break;
-    }
-
-    auto previous_ops_option = opts.get<PreviousOpsOption>("use_previous_ops");
-    if (previous_ops_option == PreviousOpsOption::NoPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NoPO());
-    } else if (previous_ops_option == PreviousOpsOption::NeLUSPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUSPO());
-    } else if (previous_ops_option == PreviousOpsOption::NaSUSPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUSPO());
-    } else if (previous_ops_option == PreviousOpsOption::NaSUTPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NaSUTPO());
-    } else if (previous_ops_option == PreviousOpsOption::NeLUTPO) {
-        previous_ops_strategy = unique_ptr<PreviousOps>(new NeLUTPO());
-    } else {
-        utils::g_log << "No previous ops strategy found, this is an internal error";
-        throw std::exception();
-    }
+    reachability_strategy = opts.get<shared_ptr<ReachabilityStrategy>>("reachability");
+    previous_ops_strategy = opts.get<shared_ptr<PreviousOps>>("previous_ops");
 
     max_ts_size = opts.get<int>("max_ts_size");
     run_on_intermediate = opts.get<bool>("use_intermediate");
-
-    if (previous_ops_option == PreviousOpsOption::NoPO && !run_on_intermediate) {
-        utils::g_log << "Warning: Running previous ops has no effect when use_intermediate is false" << endl;
-    }
+    utils::d_log.is_debug = opts.get<bool>("debug");
 }
 
-bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
+    __attribute__((unused)) bool transition_label_comparison(LabeledTransition t, int l) { return t.label_group < l; }
 
-bool transition_comparison(LabeledTransition a, int b) { return a.src < b; }
+    __attribute__((unused)) bool transition_comparison(LabeledTransition a, int b) { return a.src < b; }
 
 void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
     double start_time = utils::g_timer();
-    utils::g_log << "Operator mutex starting iteration " << iteration << endl;
-    int num_opmutex_before = label_mutexes.size();
+    utils::d_log << "Operator mutex starting iteration " << iteration << endl;
+    size_t num_opmutex_before = label_mutexes.size();
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
+        if (num_op_mutex_in_previous_run_of_fts_i.size() <= fts_i) {
+            num_op_mutex_in_previous_run_of_fts_i.resize(fts_i + 1);
+            goto must_run;
+        }
+        if (num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
+            continue;
+
+        must_run:
+
         TransitionSystem ts = fts.get_transition_system(fts_i);
         if (ts.get_num_states() <= max_ts_size) {
-            int before_label_mutexes = label_mutexes.size();
+            size_t before_label_mutexes = label_mutexes.size();
             infer_label_group_mutex_in_ts(fts, fts_i);
-            utils::g_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes) << endl;
+//            utils::d_log << "In ts_" << iteration << "_" << fts_i << " of size " << ts.get_num_states() << " found num new op-mutexes " << (label_mutexes.size() - before_label_mutexes)  << " Total op-mutexes: " << label_mutexes.size() << endl;
+
+            num_op_mutex_in_previous_run_of_fts_i[fts_i] = label_mutexes.size();
         }
     }
 
@@ -117,12 +102,12 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
 
     //tils::g_log << ts_to_dot(labeled_transitions, ts) << endl;
 
-    CondensedTransitionSystem cts = CondensedTransitionSystem(labeled_transitions, ts.get_num_states(),
+    CondensedTransitionSystem cts = CondensedTransitionSystem(fts_index, labeled_transitions, ts.get_num_states(),
                                                               initial_state, goal_states);
 
     //utils::g_log << cts_to_dot(cts) << endl;
 
-    if (cts.abstract_transitions.size() == 0) {
+    if (cts.abstract_transitions.empty()) {
         // This CTS is unusable
         utils::g_log << "The problem has NO transitions!" << endl;
         return;
@@ -145,7 +130,6 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
                 }
             }
         }
-
         fts.set_transitions(fts_index, new_transitions);
     }
 
@@ -155,7 +139,7 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
     auto ts2 = fts.get_transition_system(fts_index);
     auto tbg2 = ts2.get_transitions();
     for (size_t og = 0; og < tbg2.size(); og++) {
-        if (tbg2[og].size() == 0) {
+        if (tbg2[og].empty()) {
             for (size_t ig = 0; ig < tbg2.size(); ig++) {
                 label_group_mutexes.emplace_back(og, ig);
             }
@@ -272,40 +256,32 @@ void OperatorMutexSearcher::finalize(FactoredTransitionSystem &fts) {
 }
 
 void add_algo_options_to_parser(OptionParser &parser) {
-    vector<string> reachability_options;
-    reachability_options.emplace_back("goal");
-    reachability_options.emplace_back("no_goal");
-    parser.add_enum_option<ReachabilityOption>(
-            "reachability_strategy",
-            reachability_options,
+    parser.add_option<shared_ptr<ReachabilityStrategy>>(
+            "reachability",
             "This option is used for determining the strategy used for computing which states are reachable. "
-            "The default strategy is 'goal'. Other strategies are 'no_goal'.",
-            "goal");
+            "The default strategy is 'Goal()'. Other strategies are 'NoGoal()'.",
+            "Goal()");
 
-    vector<string> previous_ops_options;
-    previous_ops_options.emplace_back("NoPO");
-    previous_ops_options.emplace_back("NaSUSPO");
-    previous_ops_options.emplace_back("NaSUTPO");
-    previous_ops_options.emplace_back("NeLUSPO");
-    previous_ops_options.emplace_back("NeLUTPO");
-    parser.add_enum_option<PreviousOpsOption>(
-            "use_previous_ops",
-            previous_ops_options,
+    parser.add_option<shared_ptr<PreviousOps>>(
+            "previous_ops",
             "Use previous operator mutexes to find unreachable states. "
-            "The default strategy is 'NoPO'. Other strategies are 'NaSUSPO', 'NaSUTPO' and 'NeLUSPO'. ",
-            "NoPO");
+            "The default strategy is 'NoPO()'. Other strategies are 'NaSUSPO()', 'NaSUTPO()', 'NeLUSPO()', 'NeLUTPO()' and 'BDDOLMPO()'.",
+            "NoPO()");
 
     parser.add_option<int>(
             "max_ts_size",
-            "Maximum number of states a transition system can have that will be considered",
-            "5000"
-            );
+            "Maximum number of states a transition system can have that will be considered.",
+            "5000");
 
     parser.add_option<bool>(
             "use_intermediate",
             "Whether or not intermediate factors of MAS should be used.",
-            "true"
-            );
+            "true");
+
+    parser.add_option<bool>(
+            "debug",
+            "Extra prints that contains extra information and debug details.",
+            "false");
 }
 
 static shared_ptr<OperatorMutexSearcher> _parse(OptionParser &parser) {

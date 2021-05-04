@@ -16,22 +16,9 @@ using merge_and_shrink::FactoredTransitionSystem;
 using merge_and_shrink::Transition;
 
 namespace op_mutex {
-enum class ReachabilityOption {
-    GOAL_REACHABILITY,
-    NO_GOAL_REACHABILITY
-};
-
-enum class PreviousOpsOption{
-    NoPO,
-    NaSUSPO,
-    NaSUTPO,
-    NeLUSPO,
-    NeLUTPO
-};
-
 class OperatorMutexSearcher {
-    unique_ptr<ReachabilityStrategy> reachability_strategy;
-    unique_ptr<PreviousOps> previous_ops_strategy;
+    shared_ptr<ReachabilityStrategy> reachability_strategy;
+    shared_ptr<PreviousOps> previous_ops_strategy;
 
 private:
     int max_ts_size;
@@ -40,10 +27,11 @@ private:
 
     unordered_set<OpMutex> label_mutexes;
 
+    vector<int> num_op_mutex_in_previous_run_of_fts_i = vector<int>(1, 0);
+
     // This adds both symmetric op-mutexes
     void add_opmutex(int label1, int label2) {
         label_mutexes.emplace(label1, label2);
-        label_mutexes.emplace(label2, label1);
     }
 
 public:

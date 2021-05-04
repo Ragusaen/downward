@@ -95,3 +95,20 @@ if(PLUGIN_LP_SOLVER_ENABLED AND USE_LP)
         )
     endif()
 endif()
+
+# BDD plugin-enabling code snippet from Alvaro
+if(TRUE)
+    include(ExternalProject)
+    ExternalProject_add(
+      libcudd.a
+      PREFIX ${CMAKE_CURRENT_SOURCE_DIR}/cudd-3.0.0
+      SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/cudd-3.0.0
+      CONFIGURE_COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/cudd-3.0.0/configure --enable-obj --build=i686-pc-linux-gnu "CFLAGS=-m64 -Wall -Wextra -g -O3" "CXXFLAGS=-m64 -Wall -Wextra -std=c++0x -g -O3" "LDFLAGS=-m64"
+      BUILD_COMMAND make
+      INSTALL_COMMAND ls
+      BUILD_IN_SOURCE 1
+      )
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cudd-3.0.0/cudd)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cudd-3.0.0/cplusplus)
+    target_link_libraries(downward ${CMAKE_CURRENT_SOURCE_DIR}/cudd-3.0.0/cudd/.libs/libcudd.a)
+endif()

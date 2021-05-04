@@ -783,6 +783,7 @@ fast_downward_plugin(
             operator_mutex/ts_to_dot
             operator_mutex/labeled_transition
             operator_mutex/op_mutex_status_manager
+            operator_mutex/bdd_utils
 )
 
 fast_downward_add_plugin_sources(PLANNER_SOURCES)

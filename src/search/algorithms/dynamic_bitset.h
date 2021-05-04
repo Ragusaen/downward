@@ -4,6 +4,7 @@
 #include <cassert>
 #include <limits>
 #include <vector>
+#include <algorithm>
 
 /*
   Poor man's version of boost::dynamic_bitset, mostly copied from there.
@@ -20,7 +21,7 @@ class DynamicBitset {
         "Block type must be unsigned");
 
     std::vector<Block> blocks;
-    const std::size_t num_bits;
+    std::size_t num_bits;
 
     static const Block zeros;
     static const Block ones;
@@ -58,9 +59,12 @@ class DynamicBitset {
     }
 
 public:
-    explicit DynamicBitset(std::size_t num_bits)
-        : blocks(compute_num_blocks(num_bits), zeros),
+    explicit DynamicBitset(std::size_t num_bits, std::vector<size_t> init_set = std::vector<size_t>())
+    : blocks(compute_num_blocks(num_bits), zeros),
           num_bits(num_bits) {
+        for (int i : init_set) {
+            set(i);
+        }
     }
 
     std::size_t size() const {
@@ -127,15 +131,29 @@ public:
         return true;
     }
 
+    DynamicBitset<> operator|(const DynamicBitset<> &other) {
+        DynamicBitset<> res(std::max(other.size(), size()));
+        res |= other;
+        res |= *this;
+        return res;
+    }
+
+    DynamicBitset<> operator&(const DynamicBitset<> &other) {
+        DynamicBitset<> res(std::max(other.size(), size()));
+        res |= other;
+        res &= this;
+        return res;
+    }
+
     void operator|=(const DynamicBitset<> &other) {
-        for (std::size_t i = 0; i < blocks.size() && other.blocks.size(); i++) {
+        for (std::size_t i = 0; i < blocks.size() && i < other.blocks.size(); i++) {
             blocks[i] |= other.blocks[i];
         }
     }
 
     void operator&=(const DynamicBitset<> &other) {
         std::size_t i = 0;
-        for (; i < blocks.size() && other.blocks.size(); i++) {
+        for (; i < blocks.size() && i < other.blocks.size(); i++) {
             blocks[i] &= other.blocks[i];
         }
         for (; i < blocks.size(); i++) {
@@ -152,7 +170,6 @@ public:
 
         return ret;
     }
-
 };
 
 template<typename Block>

@@ -18,9 +18,10 @@ namespace op_mutex {
 class CondensedTransitionSystem {
 
 public:
-    CondensedTransitionSystem(std::vector<LabeledTransition> concrete_transitions, int num_concrete_states,
+    CondensedTransitionSystem(int fts_index, std::vector<LabeledTransition> concrete_transitions, int num_concrete_states,
                               int initial_concrete_state, const std::unordered_set<int> &goal_states);
 
+    int fts_index;
     std::vector<LabeledTransition> abstract_transitions;
     std::vector<LabeledTransition> concrete_transitions;
 
@@ -30,6 +31,7 @@ public:
 
     int initial_abstract_state;
     std::unordered_set<int> abstract_goal_states;
+
 
     std::vector<LabeledTransition> get_abstract_transitions_from_state(int source) const;
 

@@ -47,11 +47,11 @@ class MergeAndShrinkAlgorithm {
     const bool prune_unreachable_states;
     const bool prune_irrelevant_states;
 
-    // Stop after printing op-mutexes
-    const bool stop_early;
-
     const utils::Verbosity verbosity;
     const double main_loop_max_time;
+
+    // Stop after printing op-mutexes
+    const bool stop_early;
 
     long starting_peak_memory;
 

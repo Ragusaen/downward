@@ -105,4 +105,5 @@ void trace(const string &msg) {
 }
 
 Log g_log;
+DLog d_log;
 }
