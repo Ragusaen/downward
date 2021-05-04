@@ -141,8 +141,6 @@ DynamicBitset<> NaSUSPO::find_unreachable_states(CondensedTransitionSystem &cts,
 
     unreachable_states_dfs(cts, cts.initial_abstract_state, path, fully_reachable, label_group_mutexes);
 
-    utils::g_log << "Found " << (fully_reachable.size() - fully_reachable.count()) << " unreachable states" << endl;
-
     return ~fully_reachable;
 }
 
@@ -213,6 +211,7 @@ vector<LabeledTransition> NaSUTPO::find_usable_transitions(CondensedTransitionSy
     usable_transitions_dfs(cts, cts.initial_abstract_state, path, usable_transitions, label_group_mutexes);
 
     vector<LabeledTransition> ret;
+    ret.reserve(usable_transitions.size());
     for (const LabeledTransition &t : usable_transitions) {
         ret.push_back(t);
     }
@@ -288,17 +287,18 @@ NeLUTPO::find_usable_transitions(CondensedTransitionSystem &cts, const unordered
 
         std::vector<LabeledTransition> outgoing_transitions = cts.get_abstract_transitions_from_state(state);
         for (LabeledTransition t  : outgoing_transitions) {
-            if (t.target == state) {
-                usable_transitions.push_back(t);
-                continue;
-            }
-
             remaining_parents[t.target]--;
             if (remaining_parents[t.target] == 0)
                 ready_states.insert(t.target);
 
             // Only consider this transition if it is usable
             if (!is_usable(state_labels[state], t, label_group_mutexes))
+                continue;
+
+            usable_transitions.push_back(t);
+
+            // Do not compute necessary labels for self-loops
+            if (t.src == t.target)
                 continue;
 
             if (!has_visited[t.target]) {
@@ -311,7 +311,7 @@ NeLUTPO::find_usable_transitions(CondensedTransitionSystem &cts, const unordered
                 temp |= state_labels[state];
                 state_labels[t.target] &= temp;
             }
-            usable_transitions.push_back(t);
+
         }
     }
 
@@ -350,20 +350,20 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     // label group 1 are group at the start, then all the remaining with label group 2 and so on...
     sort(lgm.begin(), lgm.end(), [](OpMutex a, OpMutex b) { return a.label1 < b.label1; });
 
-    vector<BDD> lgm_bdds(lgm.size());
+    vector<BitBDD> lgm_bdds(lgm.size(), BitBDD(num_label_groups));
     {
         size_t i = 0;
         for (const OpMutex &m : lgm) {
-            lgm_bdds[i] = !(bdd_manager->bddVar(m.label1) * bdd_manager->bddVar(m.label2));
+            lgm_bdds[i] = BitBDD(!(bdd_manager->bddVar(m.label1) * bdd_manager->bddVar(m.label2)),
+                                 DynamicBitset<>(num_label_groups, {size_t(m.label1), size_t(m.label2)}));
             i++;
         }
     }
     utils::d_log << "lgm_bdds size before merge: " << lgm_bdds.size() << endl;
 
-
-    merge(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
+    merge2(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
     utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
-    SetOverApprox(&lgm_bdds, num_label_groups);
+    //SetOverApprox(lgm_bdds, num_label_groups);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -374,10 +374,10 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     assert(remaining_parents[cts.initial_abstract_state] == 0);
     ready_states.insert(cts.initial_abstract_state);
 
+    vector<vector<BitBDD>> state_bdds(cts.num_abstract_states, vector<BitBDD>(1, BitBDD(bdd_manager->bddZero(),
+                                                                                        DynamicBitset<>(num_label_groups))));
 
-    vector<vector<BDD>> state_bdds(cts.num_abstract_states, vector<BDD>(1, bdd_manager->bddZero()));
-
-    state_bdds[cts.initial_abstract_state].push_back(bdd_manager->bddOne());
+    state_bdds[cts.initial_abstract_state].push_back(BitBDD(bdd_manager->bddOne(), DynamicBitset<>(num_label_groups)));
 //    utils::d_log << "state bdds precomputed: " << state_bdds_precomputed << endl;
 
 //    utils::d_log << "Initial state: " << cts.initial_abstract_state << endl;
@@ -399,18 +399,18 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
                     ready_states.insert(t.target);
             }
 
-            vector<BDD> target_bdd_transition(state_bdds[state].size());
+            vector<BitBDD> target_bdd_transition(state_bdds[state].size(), BitBDD(num_label_groups));
             for (size_t i = 0; i < state_bdds[state].size(); i++) {
-                target_bdd_transition[i] = state_bdds[state][i] * bdd_manager->bddVar(t.label_group);
+                target_bdd_transition[i] = state_bdds[state][i] * BitBDD(bdd_manager->bddVar(t.label_group), DynamicBitset<>(num_label_groups, {size_t(t.label_group)}));
             }
 //            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds->at(state).size() << endl;
-            merge(*bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
+            merge2(*bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
 //            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
 
 
-            for (const BDD &lgm_bdd : lgm_bdds) {
-                for (const BDD &tbddt : target_bdd_transition)
-                    if ((lgm_bdd * tbddt).IsZero()) {
+            for (const BitBDD &lgm_bdd : lgm_bdds) {
+                for (const BitBDD &tbddt : target_bdd_transition)
+                    if ((lgm_bdd.bdd * tbddt.bdd).IsZero()) {
                         goto not_usable;
                     }
             }
@@ -418,7 +418,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
             if (t.src != t.target) {
 //                utils::d_log << "state_bdds.insert" << endl;
                 state_bdds[t.target].insert(state_bdds[t.target].end(), target_bdd_transition.begin(), target_bdd_transition.end());
-                merge(*bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
+                merge2(*bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
             }
 
 //            utils::d_log << "state_bdds[t.target] size: " << state_bdds->at(t.target).size() << endl;
@@ -432,9 +432,14 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     return usable_transitions;
 }
 
-void BDDOLMPO::SetOverApprox(vector<BDD> *BDDs, const int numVars, const int threshold, const bool safe, const double quality) {
-    for (auto & BDD : *BDDs)
-        BDD = BDD.OverApprox(numVars, threshold, safe, quality);
+void BDDOLMPO::SetOverApprox(vector<BitBDD>& bit_bdds, const int numVars, const int threshold, const bool safe, const double quality) {
+    for (auto & bit_bdd : bit_bdds)
+        bit_bdd = BitBDD(bit_bdd.bdd.OverApprox(bit_bdd.used_vars.count(), threshold, safe, quality), bit_bdd.used_vars);
+}
+
+void BDDOLMPO::SetUnderApprox(vector<BitBDD>& bit_bdds, const int numVars, const int threshold, const bool safe, const double quality) {
+    for (auto & bit_bdd : bit_bdds)
+        bit_bdd = BitBDD(bit_bdd.bdd.UnderApprox(bit_bdd.used_vars.count(), threshold, safe, quality), bit_bdd.used_vars);
 }
 
 shared_ptr<NeLUSPO> _parse_neluspo(OptionParser &parser) {
