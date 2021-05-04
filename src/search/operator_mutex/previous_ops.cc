@@ -23,7 +23,7 @@ unordered_set<OpMutex> PreviousOps::get_label_group_mutexes(const std::shared_pt
 
             for (int a : gi) {
                 for (int b : gj) {
-                    if (!label_mutexes.count(OpMutex(a, b)))
+                    if (label_mutexes.find(OpMutex(a, b)) == label_mutexes.end())
                         goto not_label_group_mutex;
                 }
             }
@@ -341,7 +341,7 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
 vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
                                                             const unordered_set<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
-    bdd_manager = init_bdd_manager(num_label_groups);
+    shared_ptr<Cudd> bdd_manager = init_bdd_manager(num_label_groups);
     bdd_manager->AutodynEnable(CUDD_REORDER_SYMM_SIFT);
     bdd_manager->ReduceHeap(CUDD_REORDER_SYMM_SIFT, 3000);
 
@@ -368,11 +368,9 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
             i++;
         }
     }
-    utils::d_log << "lgm_bdds size before merge: " << lgm_bdds.size() << endl;
 
     merge2(*bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
-    utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
-    //SetOverApprox(lgm_bdds, num_label_groups);
+    SetOverApprox(lgm_bdds);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -415,7 +413,6 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 //            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds->at(state).size() << endl;
             merge2(*bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
 //            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
-
 
             for (const BitBDD &lgm_bdd : lgm_bdds) {
                 for (const BitBDD &tbddt : target_bdd_transition)
