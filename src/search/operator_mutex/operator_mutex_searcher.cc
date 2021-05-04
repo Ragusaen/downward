@@ -130,7 +130,6 @@ void OperatorMutexSearcher::infer_label_group_mutex_in_ts(FactoredTransitionSyst
                 }
             }
         }
-
         fts.set_transitions(fts_index, new_transitions);
     }
 
