@@ -24,7 +24,7 @@ unordered_set<OpMutex> PreviousOps::get_label_group_mutexes(const std::shared_pt
 
             for (int a : gi) {
                 for (int b : gj) {
-                    if (!label_mutexes.count(OpMutex(a, b)))
+                    if (label_mutexes.find(OpMutex(a, b)) == label_mutexes.end())
                         goto not_label_group_mutex;
                 }
             }
@@ -378,7 +378,6 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
             i++;
         }
     }
-    utils::d_log << "lgm_bdds size before merge: " << lgm_bdds.size() << endl;
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
     utils::d_log << "lgm_bdds size after merge: " << lgm_bdds.size() << endl;
@@ -425,7 +424,6 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 //            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds->at(state).size() << endl;
             merge2(bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
 //            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
-
 
             for (const BitBDD &lgm_bdd : lgm_bdds) {
                 for (const BitBDD &tbddt : target_bdd_transition)

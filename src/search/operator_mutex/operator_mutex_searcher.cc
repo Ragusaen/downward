@@ -56,11 +56,11 @@ void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
-        if (num_op_mutex_in_previous_run_of_fts_i.size() <= fts_i) {
+        if (num_op_mutex_in_previous_run_of_fts_i.size() <= size_t(fts_i)) {
             num_op_mutex_in_previous_run_of_fts_i.resize(fts_i + 1);
             goto must_run;
         }
-        if (num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
+        if (size_t(num_op_mutex_in_previous_run_of_fts_i[fts_i]) == label_mutexes.size())
             continue;
 
         must_run:
