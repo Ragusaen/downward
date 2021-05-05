@@ -260,13 +260,13 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "reachability",
             "This option is used for determining the strategy used for computing which states are reachable. "
             "The default strategy is 'Goal()'. Other strategies are 'NoGoal()'.",
-            "Goal()");
+            "goal");
 
     parser.add_option<shared_ptr<PreviousOps>>(
             "previous_ops",
             "Use previous operator mutexes to find unreachable states. "
             "The default strategy is 'NoPO()'. Other strategies are 'NaSUSPO()', 'NaSUTPO()', 'NeLUSPO()', 'NeLUTPO()' and 'BDDOLMPO()'.",
-            "NoPO()");
+            "nopo");
 
     parser.add_option<int>(
             "max_ts_size",
