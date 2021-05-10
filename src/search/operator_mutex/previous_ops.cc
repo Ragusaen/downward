@@ -380,7 +380,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     }
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
-    SetOverApprox(lgm_bdds);
+    SetSupersetHeavyBranch(lgm_bdds);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -448,14 +448,9 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     return usable_transitions;
 }
 
-void BDDOLMPO::SetOverApprox(vector<BitBDD>& bit_bdds, const int numVars, const int threshold, const bool safe, const double quality) {
+void BDDOLMPO::SetSupersetHeavyBranch(vector<BitBDD>& bit_bdds) {
     for (auto & bit_bdd : bit_bdds)
-        bit_bdd = BitBDD(bit_bdd.bdd.OverApprox(bit_bdd.used_vars.count(), threshold, safe, quality), bit_bdd.used_vars);
-}
-
-void BDDOLMPO::SetUnderApprox(vector<BitBDD>& bit_bdds, const int numVars, const int threshold, const bool safe, const double quality) {
-    for (auto & bit_bdd : bit_bdds)
-        bit_bdd = BitBDD(bit_bdd.bdd.UnderApprox(bit_bdd.used_vars.count(), threshold, safe, quality), bit_bdd.used_vars);
+        bit_bdd = BitBDD(bit_bdd.bdd.SupersetHeavyBranch(bit_bdd.used_vars.size(), 0), bit_bdd.used_vars);
 }
 
 void BDDOLMPO::run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler,

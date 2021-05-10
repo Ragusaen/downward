@@ -119,14 +119,10 @@ private:
 
     // Vector of bdds for each state for each fts
     vector<StateBDDs> fts_state_bdd;
-    //Cudd bdd_manager;
 
 protected :
     vector<LabeledTransition> find_usable_transitions(CondensedTransitionSystem &cts, vector<OpMutex> &label_group_mutexes, int num_label_groups);
-
-    static void SetOverApprox(vector<BitBDD>& bit_bdd, int numVars = 0, int threshold = 10, bool safe = true, double quality = 1.0);
-    static void SetUnderApprox(vector<BitBDD>& bit_bdd, int numVars = 0, int threshold = 0, bool safe = true, double quality = 1.0);
-
+    static void SetSupersetHeavyBranch(vector<BitBDD> &bit_bdds);
 };
 }
 
