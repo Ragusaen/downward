@@ -381,10 +381,8 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
 
-    if (approximate) {
-        utils::d_log << "Approximate" << endl;
+    if (approximate) 
         SetSupersetHeavyBranch(lgm_bdds);
-    }
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
