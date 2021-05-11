@@ -76,6 +76,7 @@ void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
     }
 
     utils::g_log << "Operator mutex finished iteration " << iteration << ". Found an additional " << (label_mutexes.size() - num_opmutex_before) << " operator mutexes" << endl << endl;
+    utils::g_log << "Total number of operator mutexes: " << label_mutexes.size() << endl;
     iteration++;
     runtime += utils::g_timer() - start_time;
 }

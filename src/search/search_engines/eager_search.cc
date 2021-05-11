@@ -204,14 +204,16 @@ SearchStatus EagerSearch::step() {
         bool skip = false;
         for (Evaluator *evaluator : path_dependent_evaluators) {
             if (!(evaluator->notify_state_transition(s, op_id, succ_state)))
-                skip = true;
+                succ_node.mark_as_dead_end();
+                statistics.inc_dead_ends();
         }
-        if (skip)
-            continue;
+
 
         // Previously encountered dead end. Don't re-evaluate.
-        if (succ_node.is_dead_end())
+        if (succ_node.is_dead_end()){
             continue;
+        }
+
 
         if (succ_node.is_new()) {
             // We have not seen this state before.
