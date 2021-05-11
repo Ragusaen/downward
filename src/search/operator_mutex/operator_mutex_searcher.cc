@@ -56,11 +56,11 @@ void OperatorMutexSearcher::run(FactoredTransitionSystem &fts) {
 
     // Iterate over all active indices in the fts
     for (int fts_i : fts) {
-        if (num_op_mutex_in_previous_run_of_fts_i.size() <= fts_i) {
+        if (num_op_mutex_in_previous_run_of_fts_i.size() <= size_t(fts_i)) {
             num_op_mutex_in_previous_run_of_fts_i.resize(fts_i + 1);
             goto must_run;
         }
-        if (num_op_mutex_in_previous_run_of_fts_i[fts_i] == label_mutexes.size())
+        if (size_t(num_op_mutex_in_previous_run_of_fts_i[fts_i]) == label_mutexes.size())
             continue;
 
         must_run:
@@ -260,13 +260,13 @@ void add_algo_options_to_parser(OptionParser &parser) {
             "reachability",
             "This option is used for determining the strategy used for computing which states are reachable. "
             "The default strategy is 'Goal()'. Other strategies are 'NoGoal()'.",
-            "Goal()");
+            "goal");
 
     parser.add_option<shared_ptr<PreviousOps>>(
             "previous_ops",
             "Use previous operator mutexes to find unreachable states. "
             "The default strategy is 'NoPO()'. Other strategies are 'NaSUSPO()', 'NaSUTPO()', 'NeLUSPO()', 'NeLUTPO()' and 'BDDOLMPO()'.",
-            "NoPO()");
+            "nopo");
 
     parser.add_option<int>(
             "max_ts_size",

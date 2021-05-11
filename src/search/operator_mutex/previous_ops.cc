@@ -380,6 +380,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     }
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
+
     SetSupersetHeavyBranch(lgm_bdds);
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
