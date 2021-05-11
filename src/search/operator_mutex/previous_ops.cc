@@ -381,7 +381,10 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
 
-    SetSupersetHeavyBranch(lgm_bdds);
+    if (approximate) {
+        utils::d_log << "Approximate" << endl;
+        SetSupersetHeavyBranch(lgm_bdds);
+    }
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -510,6 +513,10 @@ shared_ptr<BDDOLMPO> _parse_bddolmpo(OptionParser &parser) {
             "max_bdd_time",
             "maximum time (ms) to generate mutex BDDs",
             "1");
+    parser.add_option<bool>(
+            "approximate",
+            "boolean, indicating whether BDDOLMPO should approximate op-mutex BDDs.",
+            "true");
 
     options::Options opts = parser.parse();
     if (parser.dry_run()) {

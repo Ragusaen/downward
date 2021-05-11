@@ -102,8 +102,7 @@ public:
     explicit BDDOLMPO(const options::Options& opts){
         max_bdd_size = opts.get<int>("max_bdd_size");
         max_bdd_time = opts.get<int>("max_bdd_time");
-
-
+        approximate = opts.get<bool>("approximate");
     }
     ~BDDOLMPO() override = default;
 
@@ -116,6 +115,7 @@ public:
 private:
     int max_bdd_size;
     int max_bdd_time;
+    bool approximate;
 
     // Vector of bdds for each state for each fts
     vector<StateBDDs> fts_state_bdd;
