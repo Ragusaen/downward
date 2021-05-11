@@ -31,7 +31,8 @@ private:
 
     // This adds both symmetric op-mutexes
     void add_opmutex(int label1, int label2) {
-        label_mutexes.emplace(label1, label2);
+        if (label1 != label2)
+            label_mutexes.emplace(label1, label2);
     }
 
 public:

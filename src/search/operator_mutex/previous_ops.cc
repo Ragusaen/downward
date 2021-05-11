@@ -255,35 +255,27 @@ void NaSUTPO::usable_transitions_dfs(
         // Check that this path is valid (i.e. it contains no two operators that are op-mutex)
         DynamicBitset<> labels_in_path(path.size());
         labels_in_path |= path;
-        labels_in_path.set(t.label_group);
 
-        bool is_label_group_mutex = false;
-        for(size_t path_label_group = 0; path_label_group < path.size(); path_label_group++){
+        for(int path_label_group = 0; size_t(path_label_group) < path.size(); path_label_group++){
             // Skip this label if it is not in path
-            if (!path[path_label_group])
-                continue;
-
-            if(label_group_mutexes.count(OpMutex(t.label_group, path_label_group))){
-                is_label_group_mutex = true;
+            if(path[path_label_group] && label_group_mutexes.count(OpMutex(t.label_group, path_label_group))){
+                goto continue_outer;
             }
         }
+
+        usable_transitions.insert(t);
+
         // Do not consider this path to target state if the it is unreachable
-        if (is_label_group_mutex)
-            continue;
-        else
-            usable_transitions.insert(t);
+        if (t.src != t.target) {
+            bool prev_bit = path[t.label_group];
+            path.set(t.label_group);
+            usable_transitions_dfs(cts, t.target, path, usable_transitions, label_group_mutexes);
 
-        if (t.src == t.target) {
-            continue;
+            // Only reset this bit if it was not set before
+            if(!prev_bit)
+                path.reset(t.label_group);
         }
-
-        bool prev_bit = path[t.label_group];
-        path.set(t.label_group);
-        usable_transitions_dfs(cts, t.target, path, usable_transitions, label_group_mutexes);
-
-        // Only reset this bit if it was not set before
-        if(!prev_bit)
-            path.reset(t.label_group);
+        continue_outer:;
     }
 }
 
