@@ -94,7 +94,7 @@ ATTRIBUTES = [
     #project.EVALUATIONS_PER_TIME,
 ]
 
-report = AbsoluteReport(attributes=ATTRIBUTES)
+report = AbsoluteReport(attributes=ATTRIBUTES, format="tex", filter_coverage=1)
 
 name = "test-abs"
 outfile = f"{name}.{report.output_format}"
