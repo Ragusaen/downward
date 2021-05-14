@@ -45,7 +45,7 @@ CONFIGS = [
 ]
 
 BUILD_OPTIONS = []
-DRIVER_OPTIONS = ['--validate', '--overall-time-limit', '20m', '--overall-memory-limit', '9000M']
+DRIVER_OPTIONS = ['--validate', '--overall-time-limit', '5m', '--overall-memory-limit', '9000M']
 
 for config_nick, config in CONFIGS:
     exp.add_algorithm(
@@ -60,9 +60,10 @@ for config_nick, config in CONFIGS:
 #Domains and problems. must use environment variables or have benchmarks and downward REPO in same folder
 
 #Run on entire strips suite
-SUITE = ["agricola-opt18-strips", "airport", "barman-opt11-strips", "barman-opt14-strips", "childsnack-opt14-strips", "data-network-opt18-strips", "depot", "floortile-opt11-strips", "floortile-opt14-strips", "freecell", "ged-opt14-strips", "grid", "hiking-opt14-strips", "mystery", "nomystery-opt11-strips", "openstacks-opt08-strips", "openstacks-opt11-strips", "openstacks-opt14-strips", "openstacks-strips", "organic-synthesis-opt18-strips", "organic-synthesis-split-opt18-strips", "parcprinter-08-strips", "parcprinter-opt11-strips", "parking-opt11-strips", "parking-opt14-strips", "pathways", "pegsol-08-strips", "pegsol-opt11-strips", "petri-net-alignment-opt18-strips", "pipesworld-notankage", "pipesworld-tankage", "psr-small", "rovers", "scanalyzer-08-strips", "scanalyzer-opt11-strips", "snake-opt18-strips", "sokoban-opt08-strips", "sokoban-opt11-strips", "spider-opt18-strips", "tidybot-opt11-strips", "tidybot-opt14-strips", "tpp", "transport-opt08-strips", "transport-opt11-strips", "transport-opt14-strips", "trucks-strips", "woodworking-opt08-strips", "woodworking-opt11-strips", "zenotravel"]
+SUITE = ["agricola-opt18-strips", "barman-opt11-strips", "barman-opt14-strips", "caldera-opt18-adl", "cavediving-14-adl", "childsnack-opt14-strips", "floortile-opt11-strips", "floortile-opt14-strips", "hiking-opt14-strips", "nomystery-opt11-strips", "nurikabe-opt18-adl", "openstacks", "openstacks-opt08-strips", "openstacks-opt11-strips", "openstacks-opt14-strips", "organic-synthesis-opt18-strips", "parcprinter-08-strips", "parcprinter-opt11-strips", "pathways", "pegsol-08-strips", "pegsol-opt11-strips", "petri-net-alignment-opt18-strips", "pipesworld-notankage", "pipesworld-tankage", "rovers", "snake-opt18-strips", "sokoban-opt08-strips", "sokoban-opt11-strips", "spider-opt18-strips", "tidybot-opt11-strips", "tidybot-opt14-strips", "tpp", "trucks", "woodworking-opt08-strips", "woodworking-opt11-strips"]
 
 exp.add_suite("../../../benchmarks", SUITE)
+exp.add_suite("../../../benchmarks", ["freecell:p01.pddl", "freecell:p02.pddl", "freecell:p03.pddl"])
 
 
 # If using environment variables
@@ -94,7 +95,7 @@ ATTRIBUTES = [
     #project.EVALUATIONS_PER_TIME,
 ]
 
-report = AbsoluteReport(attributes=ATTRIBUTES, format="tex", filter_coverage=1)
+report = AbsoluteReport(attributes=ATTRIBUTES, format="tex")
 
 name = "test-abs"
 outfile = f"{name}.{report.output_format}"

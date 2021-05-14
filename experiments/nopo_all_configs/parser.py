@@ -50,7 +50,7 @@ def main():
         r"f = (\d+) \[1 evaluated, 0 expanded, t=.+s, \d+ KB\]",
         type=int,
     )
-    parser.add_pattern(
+    parser.add_bottom_up_pattern(
         "operator_mutexes_num",
         r"Total number of operator mutexes: (\d+)\n",
         type=int,
