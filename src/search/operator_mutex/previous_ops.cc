@@ -361,6 +361,13 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     // label group 1 are group at the start, then all the remaining with label group 2 and so on...
     sort(label_group_mutexes.begin(), label_group_mutexes.end());
 
+    // Find out which label groups have any op-mutex
+    DynamicBitset<> label_group_has_op_mutex = DynamicBitset<>(num_label_groups);
+    for (OpMutex &lgm : label_group_mutexes) {
+        label_group_has_op_mutex.set(lgm.label1);
+        label_group_has_op_mutex.set(lgm.label2);
+    }
+
     vector<BitBDD> lgm_bdds(label_group_mutexes.size(), BitBDD(num_label_groups));
     {
         size_t i = 0;
@@ -410,25 +417,33 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
                     ready_states.insert(t.target);
             }
 
-            BitBDDSet target_bdd_transition(state_bdds[state].size(), BitBDD(num_label_groups));
-            for (size_t i = 0; i < state_bdds[state].size(); i++) {
-                target_bdd_transition[i] = state_bdds[state][i] * BitBDD(bdd_manager.bddVar(t.label_group), DynamicBitset<>(num_label_groups, {size_t(t.label_group)}));
-            }
-//            utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds->at(state).size() << endl;
-            merge2(bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
-//            utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
+            if (label_group_has_op_mutex[t.label_group]) {
+                BitBDDSet target_bdd_transition(state_bdds[state].size(), BitBDD(num_label_groups));
+                for (size_t i = 0; i < state_bdds[state].size(); i++) {
+                    target_bdd_transition[i] = state_bdds[state][i] * BitBDD(bdd_manager.bddVar(t.label_group), DynamicBitset<>(num_label_groups, {size_t(t.label_group)}));
+                }
+//              utils::d_log << "target_bdd_transition size: " << target_bdd_transition.size() << ", state_bdds[state] size: " << state_bdds->at(state).size() << endl;
+                merge2(bdd_manager, target_bdd_transition, mergeOrBDD, max_bdd_time, max_bdd_size);
+//              utils::d_log << "target_bdd_transition size after merge: " << target_bdd_transition.size() << endl;
 
-            for (const BitBDD &lgm_bdd : lgm_bdds) {
-                for (const BitBDD &tbddt : target_bdd_transition)
-                    if ((lgm_bdd.bdd * tbddt.bdd).IsZero()) {
-                        goto not_usable;
-                    }
-            }
+                for (const BitBDD &lgm_bdd : lgm_bdds) {
+                    for (const BitBDD &tbddt : target_bdd_transition)
+                        if ((lgm_bdd.bdd * tbddt.bdd).IsZero()) {
+                            goto not_usable;
+                        }
+                }
 
-            if (t.src != t.target) {
-//                utils::d_log << "state_bdds.insert" << endl;
-                state_bdds[t.target].insert(state_bdds[t.target].end(), target_bdd_transition.begin(), target_bdd_transition.end());
-                merge2(bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
+                if (t.src != t.target) {
+//                  utils::d_log << "state_bdds.insert" << endl;
+                    state_bdds[t.target].insert(state_bdds[t.target].end(), target_bdd_transition.begin(), target_bdd_transition.end());
+                    merge2(bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
+                }
+            } else {
+                if (t.src != t.target) {
+//                  utils::d_log << "state_bdds.insert" << endl;
+                    state_bdds[t.target].insert(state_bdds[t.target].end(), state_bdds[t.src].begin(), state_bdds[t.src].end());
+                    merge2(bdd_manager, state_bdds[t.target], mergeOrBDD, max_bdd_time, max_bdd_size);
+                }
             }
 
 //            utils::d_log << "state_bdds[t.target] size: " << state_bdds->at(t.target).size() << endl;

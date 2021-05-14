@@ -13,6 +13,8 @@
 #include "previous_ops.h"
 #include "labeled_transition.h"
 #include "ts_to_dot.h"
+#include "operator_mutex_searcher.h"
+
 #include <iostream>
 #include <string>
 #include <utility>
