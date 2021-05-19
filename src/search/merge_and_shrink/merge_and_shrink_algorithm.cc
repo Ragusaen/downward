@@ -193,6 +193,10 @@ void MergeAndShrinkAlgorithm::main_loop(
     };
     int iteration_counter = 0;
 
+    if (operator_mutex_pruning) {
+        operator_mutex_pruning->run(fts);
+    }
+
     while (fts.get_num_active_entries() > 1) {
         // Choose next transition systems to merge
         pair<int, int> merge_indices = merge_strategy->get_next();
