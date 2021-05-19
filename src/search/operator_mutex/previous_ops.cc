@@ -346,6 +346,17 @@ bool NeLUTPO::is_usable(const DynamicBitset<> &label_landmarks, LabeledTransitio
     return true;
 }
 
+void BDDOLMPO::SetSupersetHeavyBranch(vector<BitBDD>& bit_bdds) {
+    for (auto & bit_bdd : bit_bdds)
+        bit_bdd = BitBDD(bit_bdd.bdd.SupersetHeavyBranch(bit_bdd.used_vars.count(), 0), bit_bdd.used_vars);
+}
+
+void SetOverApprox(vector<BitBDD>& bit_bdds) {
+    for (auto &bit_bdd : bit_bdds) {
+        bit_bdd = BitBDD(bit_bdd.bdd.OverApprox(bit_bdd.used_vars.count(), 0), bit_bdd.used_vars);
+    }
+}
+
 vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionSystem &cts,
                                                             vector<OpMutex> &label_group_mutexes,
                                                             int num_label_groups) {
@@ -380,8 +391,13 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
 
     merge2(bdd_manager, lgm_bdds, mergeAndBDD, max_bdd_time, max_bdd_size);
 
-    if (approximate) 
-        SetSupersetHeavyBranch(lgm_bdds);
+    if (approximate) {
+        if (approximation_technique == 1) {
+            SetSupersetHeavyBranch(lgm_bdds);
+        } else if (approximation_technique == 2) {
+            SetOverApprox(lgm_bdds);
+        }
+    }
 
     std::vector<int> remaining_parents(cts.num_abstract_states);
     count_parents(cts, remaining_parents, cts.initial_abstract_state);
@@ -457,10 +473,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
     return usable_transitions;
 }
 
-void BDDOLMPO::SetSupersetHeavyBranch(vector<BitBDD>& bit_bdds) {
-    for (auto & bit_bdd : bit_bdds)
-        bit_bdd = BitBDD(bit_bdd.bdd.SupersetHeavyBranch(bit_bdd.used_vars.size(), 0), bit_bdd.used_vars);
-}
+
 
 void BDDOLMPO::run(CondensedTransitionSystem &cts, std::shared_ptr<LabelEquivalenceRelation> ler,
                    unordered_set<OpMutex> &label_mutexes) {
@@ -522,6 +535,11 @@ shared_ptr<BDDOLMPO> _parse_bddolmpo(OptionParser &parser) {
             "approximate",
             "boolean, indicating whether BDDOLMPO should approximate op-mutex BDDs.",
             "true");
+    parser.add_option<int>(
+            "approximation_technique",
+            "1=heavy branch, 2=overapproximation",
+            "2"
+            );
 
     options::Options opts = parser.parse();
     if (parser.dry_run()) {
@@ -576,4 +594,3 @@ static Plugin<PreviousOps> _plugin_nopo("nopo", _parse_nopo);
 
 static PluginTypePlugin<PreviousOps> _type_plugin("previous_ops", "The strategy for which to use previously found op-mutexes to find more.");
 }
-
