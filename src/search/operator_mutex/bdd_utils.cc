@@ -7,13 +7,23 @@ void exceptionError(const std::string) {
     throw BDDError();
 }
 
-void init_bdd_manager(Cudd &bdd_manager) {
+void init_bdd_manager(Cudd &bdd_manager, int variable_ordering_method) {
     bdd_manager.setHandler(exceptionError);
     bdd_manager.setTimeoutHandler(exceptionError);
     bdd_manager.setNodesExceededHandler(exceptionError);
 
-    bdd_manager.AutodynEnable(CUDD_REORDER_SYMM_SIFT);
-    bdd_manager.ReduceHeap(CUDD_REORDER_SYMM_SIFT, 3000);
+    if (variable_ordering_method == 1) {
+        bdd_manager.AutodynEnable(CUDD_REORDER_ANNEALING);
+    } else if (variable_ordering_method == 2) {
+        bdd_manager.AutodynEnable(CUDD_REORDER_GENETIC);
+    } else if (variable_ordering_method == 3) {
+        bdd_manager.AutodynEnable(CUDD_REORDER_RANDOM);
+    } else if (variable_ordering_method == 4) {
+        bdd_manager.AutodynEnable(CUDD_REORDER_WINDOW2);
+    } else if (variable_ordering_method == 5) {
+        bdd_manager.AutodynEnable(CUDD_REORDER_SYMM_SIFT);
+    }
+
 }
 
 

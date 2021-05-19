@@ -365,7 +365,7 @@ vector<LabeledTransition> BDDOLMPO::find_usable_transitions(CondensedTransitionS
         return cts.abstract_transitions;
 
     Cudd bdd_manager;
-    init_bdd_manager(bdd_manager);
+    init_bdd_manager(bdd_manager, variable_ordering);
 
     // ---- Create op-mutex BDD ----
     // Sort on the smallest label group (has to be the first), this means that all label group mutexes that includes
@@ -539,6 +539,11 @@ shared_ptr<BDDOLMPO> _parse_bddolmpo(OptionParser &parser) {
             "approximation_technique",
             "1=heavy branch, 2=overapproximation",
             "2"
+            );
+    parser.add_option<int>(
+            "variable_ordering",
+            "0=none, 1=reorder annealing, 2=reorder genetic, 3=reorder random, 4=window2, 5=symshift",
+            "0"
             );
 
     options::Options opts = parser.parse();

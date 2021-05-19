@@ -31,7 +31,7 @@ struct BDDError {};
 
 void exceptionError(const std::string);
 
-void init_bdd_manager(Cudd &bdd_manager);
+void init_bdd_manager(Cudd &bdd_manager, int variable_ordering_method);
 
 template <class T>
 T getData(std::string line, const std::string &separator, const std::string &separator_end) {

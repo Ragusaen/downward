@@ -104,6 +104,7 @@ public:
         max_bdd_time = opts.get<int>("max_bdd_time");
         approximate = opts.get<bool>("approximate");
         approximation_technique = opts.get<int>("approximation_technique");
+        variable_ordering = opts.get<int>("variable_ordering");
     }
     ~BDDOLMPO() override = default;
 
@@ -118,6 +119,7 @@ private:
     int max_bdd_time;
     bool approximate;
     int approximation_technique;
+    int variable_ordering;
 
     // Vector of bdds for each state for each fts
     vector<StateBDDs> fts_state_bdd;
